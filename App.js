@@ -22,6 +22,7 @@ function AppContent() {
       <SafeAreaProvider>
         <NavigationContainer>
           <Tab.Navigator
+            initialRouteName="Home"
             screenOptions={{
               headerStyle: styles.header,
               headerTitleStyle: styles.headerTitle,
