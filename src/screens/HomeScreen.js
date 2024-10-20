@@ -11,7 +11,7 @@ export default function HomeScreen({navigation}) {
             <Card.Title
                 title="👋 Welcome"
                 titleVariant="titleMedium"
-                style={{...localStyles.cardTitle, ...styles.cardOnSurfaceColor}}
+                style={{...localStyles.cardTitle, ...styles.cardBackgroundColor}}
                 titleStyle={{...localStyles.titleCard, ...styles.cardTitle}}
                 right={(props) =>   <Pressable onPress={() => navigation.navigate('Profile')} > 
                                         <Avatar.Icon 
