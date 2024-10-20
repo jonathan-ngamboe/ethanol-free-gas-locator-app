@@ -1,17 +1,19 @@
-import { colors } from "./colors";
+import { MD3LightTheme, MD3DarkTheme } from 'react-native-paper';
 
 export const lightTheme = {
-  backgroundColor: colors.backgroundLight,
-  textColor: colors.textDark,
-  secondaryTextColor: colors.secondaryTextLight,
-  primary: colors.primary,
-  secondary: colors.secondary,
+  ...MD3LightTheme,
+  colors: {
+    ...MD3LightTheme.colors,
+    primary: '#5CC142',
+    accent: '#FFC107',
+  },
 };
 
 export const darkTheme = {
-  backgroundColor: colors.backgroundDark,
-  textColor: colors.textLight,
-  secondaryTextColor: colors.secondaryTextDark,
-  primary: colors.primary,
-  secondary: colors.secondary,
+  ...MD3DarkTheme,
+  colors: {
+    ...MD3DarkTheme.colors,
+    primary: '#5CC142',
+    accent: '#FFC107',
+  },
 };
