@@ -7,6 +7,7 @@ export const useGlobalStyles = () => {
   return StyleSheet.create({
     container: {
       flex: 1,
+      padding: 20,
       justifyContent: 'center',
       alignItems: 'center',
       backgroundColor: theme.colors.background,
@@ -18,13 +19,29 @@ export const useGlobalStyles = () => {
     },
   
     headerTitle: {
-      fontSize: 32,
+      fontSize: 24,
       color: theme.colors.onBackground,
     },
   
     tabBar: {
       backgroundColor: theme.colors.background,
       borderTopColor: theme.colors.background,
+    },
+
+    cardOnSurfaceColor: {
+      backgroundColor: theme.colors.inverseOnSurface,
+    },
+
+    cardOnBackgroundColor: {
+      backgroundColor: theme.colors.onBackground,
+    },
+
+    titleCardColor: {
+      color: theme.colors.background,
+    },
+
+    avatar: {
+      backgroundColor: theme.colors.accent,
     },
   
   });
