@@ -1,29 +1,31 @@
 import { StyleSheet } from 'react-native';
+import { useTheme } from '../context/ThemeContext';
 
-export const globalStyles = (theme) => StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: theme.backgroundColor,
-  },
+export const useGlobalStyles = () => {
+  const { theme } = useTheme();
 
-  header: {
-    backgroundColor: theme.backgroundColor,
-    shadowColor: theme.backgroundColor,
-  },
-
-  headerTitle: {
-    fontSize: 32,
-    color: theme.textColor,
-  },
-
-  tabBar: {
-    backgroundColor: theme.backgroundColor,
-    borderTopColor: theme.backgroundColor,
-  },
-
-  tabBarLabel: {
-    color: theme.secondaryTextColor,
-  },
-});
+  return StyleSheet.create({
+    container: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+      backgroundColor: theme.colors.background,
+    },
+  
+    header: {
+      backgroundColor: theme.colors.background,
+      shadowColor: theme.colors.background,
+    },
+  
+    headerTitle: {
+      fontSize: 32,
+      color: theme.colors.onBackground,
+    },
+  
+    tabBar: {
+      backgroundColor: theme.colors.background,
+      borderTopColor: theme.colors.background,
+    },
+  
+  });
+};

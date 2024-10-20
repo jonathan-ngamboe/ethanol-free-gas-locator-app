@@ -1,12 +1,11 @@
 import { View, Text } from 'react-native';
-import { lightTheme, darkTheme } from '../styles/theme';
-import { globalStyles } from '../styles/globalStyles';
+import { useGlobalStyles } from '../styles/globalStyles';
 
 export default function HomeScreen() {
-    const currentTheme = lightTheme;
-
+    const styles = useGlobalStyles();
+    
     return (
-        <View style={globalStyles(currentTheme).container}>
+        <View style={styles.container}>
             <Text>Home Screen</Text>
         </View>
     );
