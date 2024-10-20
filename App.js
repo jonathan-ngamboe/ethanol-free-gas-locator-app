@@ -28,7 +28,7 @@ export default function App() {
             tabBarStyle: globalStyles(currentTheme).tabBar,
             tabBarLabelStyle: globalStyles(currentTheme).tabBarLabel,
             tabBarActiveTintColor: currentTheme.primary,
-            tabBarInactiveTintColor: currentTheme.textColor,
+            tabBarInactiveTintColor: currentTheme.secondaryTextColor,
             tabBarIcon: ({ color, size }) => {
               return <Icon name="home-variant-outline" size={size} color={color} />;
             },
@@ -44,7 +44,7 @@ export default function App() {
             tabBarStyle: globalStyles(currentTheme).tabBar,
             tabBarLabelStyle: globalStyles(currentTheme).tabBarLabel,
             tabBarActiveTintColor: currentTheme.primary,
-            tabBarInactiveTintColor: currentTheme.textColor,
+            tabBarInactiveTintColor: currentTheme.secondaryTextColor,
             tabBarIcon: ({ color, size }) => {
               return <Icon name="map-search" size={size} color={color} />;
             },
@@ -61,7 +61,7 @@ export default function App() {
             tabBarStyle: globalStyles(currentTheme).tabBar,
             tabBarLabelStyle: globalStyles(currentTheme).tabBarLabel,
             tabBarActiveTintColor: currentTheme.primary,
-            tabBarInactiveTintColor: currentTheme.textColor,
+            tabBarInactiveTintColor: currentTheme.secondaryTextColor,
             tabBarIcon: ({ color, size }) => {
               return <Icon name="account" size={size} color={color} />;
             },
