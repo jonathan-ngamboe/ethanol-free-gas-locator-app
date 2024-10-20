@@ -1,5 +1,6 @@
 import { StyleSheet } from 'react-native';
 import { useTheme } from '../context/ThemeContext';
+import { SearchBar } from 'react-native-screens';
 
 export const useGlobalStyles = () => {
   const { theme } = useTheme();
@@ -22,26 +23,26 @@ export const useGlobalStyles = () => {
       fontSize: 24,
       color: theme.colors.onBackground,
     },
+
+    textColor: {
+      color: theme.colors.onBackground,
+    },
   
     tabBar: {
       backgroundColor: theme.colors.background,
       borderTopColor: theme.colors.background,
     },
 
-    cardOnSurfaceColor: {
+    cardBackgroundColor: {
       backgroundColor: theme.colors.inverseOnSurface,
-    },
-
-    cardOnBackgroundColor: {
-      backgroundColor: theme.colors.onBackground,
-    },
-
-    titleCardColor: {
-      color: theme.colors.background,
     },
 
     avatar: {
       backgroundColor: theme.colors.accent,
+    },
+
+    searchBar: {
+      borderColor: theme.colors.outline,
     },
   
   });
