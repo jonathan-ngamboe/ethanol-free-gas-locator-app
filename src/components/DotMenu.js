@@ -10,13 +10,18 @@ export default function DotMenu({itemID, props={}, items=[]}) {
     const openMenu = (stationId) => setVisibleMenuId(stationId);
     const closeMenu = () => setVisibleMenuId(null);
 
+    const handlePress = (onPress) => {
+        closeMenu();
+        onPress();
+    }
+
     const itemRender = items.map((item, index) => {
         return (
             <Menu.Item 
                 key={index} 
                 title={item.title} 
                 leadingIcon={item.icon} 
-                onPress={item.onPress}
+                onPress={() => handlePress(item.onPress)}
             />
         );
     });
