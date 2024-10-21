@@ -1,6 +1,7 @@
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { createStackNavigator } from '@react-navigation/stack';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { Provider as PaperProvider } from 'react-native-paper';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -10,12 +11,42 @@ import { useGlobalStyles } from './src/styles/globalStyles';
 import HomeScreen from './src/screens/HomeScreen';
 import ProfileScreen from './src/screens/ProfileScreen';
 import DiscoverScreen from './src/screens/DiscoverScreen';
+import SettingsScreen from './src/screens/SettingsScreen';
   
 const Tab = createBottomTabNavigator();
   
 function AppContent() {
   const { theme } = useTheme();
   const styles = useGlobalStyles();
+
+  const HomeStack = createStackNavigator();
+
+  function HomeStackScreen() {
+    return (
+      <HomeStack.Navigator
+        screenOptions={{
+          headerStyle: styles.header,
+          headerTitleStyle: styles.headerTitle,
+          headerTintColor: theme.colors.primary,
+        }}
+      >
+        <HomeStack.Screen 
+          name="Home" 
+          component={HomeScreen}
+          options={{
+            headerTitleAlign: 'left',
+          }} 
+        />
+        <HomeStack.Screen 
+          name="Profile" 
+          component={ProfileScreen}
+          options={{
+            headerTitle: "Profile", 
+          }}
+        />
+      </HomeStack.Navigator>
+    );
+  }
 
   return (
     <PaperProvider theme={theme}>
@@ -24,17 +55,16 @@ function AppContent() {
           <Tab.Navigator
             initialRouteName="Home"
             screenOptions={{
-              headerStyle: styles.header,
-              headerTitleStyle: styles.headerTitle,
               tabBarStyle: styles.tabBar,
               tabBarActiveTintColor: theme.colors.primary,
             }}
           >
               <Tab.Screen
-                name="Home"
-                component={HomeScreen}
+                name="HomeMain"
+                component={HomeStackScreen}
                 options={{
                   tabBarLabel: 'Home',
+                  headerShown: false,
                   headerTitleAlign: 'left',
                   tabBarIcon: ({ color, size }) => {
                     return <Icon name="home-variant-outline" size={size} color={color} />;
@@ -53,13 +83,15 @@ function AppContent() {
                 }}
               />
               <Tab.Screen 
-                name="Profile" 
-                component={ProfileScreen} 
+                name="Settings" 
+                component={SettingsScreen} 
                 options={{
-                  tabBarLabel: 'Profile',
+                  headerStyle: styles.header,
+                  headerTitleStyle: styles.headerTitle,
+                  tabBarLabel: 'Settings',
                   headerTitleAlign: 'left',
                   tabBarIcon: ({ color, size }) => {
-                    return <Icon name="account" size={size} color={color} />;
+                    return <Icon name="cog-outline" size={size} color={color} />;
                   },
                 }}
               />
