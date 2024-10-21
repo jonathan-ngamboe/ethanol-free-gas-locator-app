@@ -12,6 +12,7 @@ import HomeScreen from './src/screens/HomeScreen';
 import ProfileScreen from './src/screens/ProfileScreen';
 import DiscoverScreen from './src/screens/DiscoverScreen';
 import SettingsScreen from './src/screens/SettingsScreen';
+import StationDetails from './src/screens/StationDetails';
   
 const Tab = createBottomTabNavigator();
   
@@ -48,6 +49,33 @@ function AppContent() {
     );
   }
 
+  function DiscoverStackScreen() {
+    return (
+      <HomeStack.Navigator
+        screenOptions={{
+          headerStyle: styles.header,
+          headerTitleStyle: styles.headerTitle,
+          headerTintColor: theme.colors.primary,
+        }}
+      >
+        <HomeStack.Screen 
+          name="Map" 
+          component={DiscoverScreen}
+          options={{
+            headerShown: false,
+          }} 
+        />
+        <HomeStack.Screen 
+          name="StationDetails" 
+          component={StationDetails}
+          options={{
+            headerTitle: "Station Details", 
+          }}
+        />
+      </HomeStack.Navigator>
+    );
+  }
+
   return (
     <PaperProvider theme={theme}>
       <SafeAreaProvider>
@@ -60,7 +88,7 @@ function AppContent() {
             }}
           >
               <Tab.Screen
-                name="HomeMain"
+                name="HomeStack"
                 component={HomeStackScreen}
                 options={{
                   tabBarLabel: 'Home',
@@ -73,7 +101,7 @@ function AppContent() {
               /> 
               <Tab.Screen
                 name="Discover"
-                component={DiscoverScreen}
+                component={DiscoverStackScreen}
                 options={{
                   tabBarLabel: 'Discover',
                   headerShown: false,
