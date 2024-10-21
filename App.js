@@ -42,7 +42,7 @@ function AppContent() {
           name="Profile" 
           component={ProfileScreen}
           options={{
-            headerTitle: "Profile", 
+            headerTitle: "", 
           }}
         />
       </HomeStack.Navigator>
@@ -69,7 +69,7 @@ function AppContent() {
           name="StationDetails" 
           component={StationDetails}
           options={{
-            headerTitle: "Station Details", 
+            headerTitle: "", 
           }}
         />
       </HomeStack.Navigator>
