@@ -32,7 +32,7 @@ export default function CardSearchList({navigation}) {
 
     // Menu items
     const menuItems = [
-        { title: 'View details', icon: 'information-variant', onPress: () => console.log('View details') },
+        { title: 'View details', icon: 'information-variant', onPress: () => navigation.navigate('StationDetails') },
         { title: 'Show on map', icon: 'map-marker-radius-outline', onPress: () => console.log('Show on map') },
         { title: 'Directions', icon: 'directions', onPress: () => console.log('Directions') },
     ];
@@ -61,10 +61,10 @@ export default function CardSearchList({navigation}) {
                                             title={item.name} 
                                             titleStyle={{fontWeight: 'bold'}}
                                             description={`${item.distance} miles away`}
-                                            left={props => <List.Icon {...props} icon="gas-station" />}
+                                            left={props => <List.Icon {...props} icon="gas-station" style={{ paddingLeft: 30 }} />}
                                             right={props =><DotMenu itemID={item.id} props={props} items={menuItems} />}
+                                            onPress={() => navigation.navigate('StationDetails')}
                                         />
-  
                                     </List.Section>
                                 </View>
                             )}
@@ -134,7 +134,6 @@ const localStyles = StyleSheet.create({
 
     listContainer: {
         flex: 1,
-        paddingLeft: 20,
     },
 
     moreIndicatorContainer: {
