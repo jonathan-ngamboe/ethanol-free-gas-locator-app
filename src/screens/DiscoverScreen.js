@@ -2,37 +2,39 @@ import React from "react";
 import MapView, { Marker } from "react-native-maps";
 import { Card, Searchbar } from 'react-native-paper';
 import { useGlobalStyles } from '../styles/globalStyles';
-import { View, StyleSheet, Text } from "react-native";
+import { View, StyleSheet, Text, Keyboard, KeyboardAvoidingView, Platform } from "react-native";
 import { DEFAULT_REGION, ZOOM_LEVELS } from '../constants/mapConstants';
 
 export default function DiscoverScreen() {
     const styles = useGlobalStyles();
 
     return (
-        <View style={localStyles.container}>
-            <MapView
-                style={localStyles.map}
-                initialRegion={DEFAULT_REGION}
-                zoomEnabled={true}
-                zoomTapEnabled={true}
-                zoomControlEnabled={true}
-                zoomLevel={ZOOM_LEVELS.CITY}
-            />
-            <View style={localStyles.overlay}>
-                <Card style={{...localStyles.card, ...styles.cardBackgroundColor}}>
-                    <Searchbar
-                        placeholder="Search near ethanol stations"
-                        inputStyle={localStyles.searchInput}
-                        style={{...localStyles.searchBar, ...styles.searchBar}}
-                        //onChangeText={setSearchQuery}
-                        //value={searchQuery}
-                    />
-                    <Card.Content style={{alignItems: 'center', justifyContent: 'center', marginTop: 20}}>
-                        <Text style={styles.textColor}>Results will be displayed here</Text>
-                    </Card.Content>     
-                </Card>
+        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{flex: 1}}>
+            <View style={localStyles.container}>
+                <MapView
+                    style={localStyles.map}
+                    initialRegion={DEFAULT_REGION}
+                    zoomEnabled={true}
+                    zoomTapEnabled={true}
+                    zoomControlEnabled={true}
+                    zoomLevel={ZOOM_LEVELS.CITY}
+                />
+                <View style={localStyles.overlay}>
+                    <Card style={{...localStyles.card, ...styles.cardBackgroundColor}}>
+                        <Searchbar
+                            placeholder="Search near ethanol stations"
+                            inputStyle={localStyles.searchInput}
+                            style={{...localStyles.searchBar, ...styles.searchBar}}
+                            //onChangeText={setSearchQuery}
+                            //value={searchQuery}
+                        />
+                        <Card.Content style={{alignItems: 'center', justifyContent: 'center', marginTop: 20}}>
+                            <Text style={styles.textColor}>Results will be displayed here</Text>
+                        </Card.Content>     
+                    </Card>
+                </View>
             </View>
-        </View>
+        </KeyboardAvoidingView>
     );
 }
 
@@ -67,10 +69,6 @@ const localStyles = StyleSheet.create({
         shadowOpacity: 0.25,
         shadowRadius: 3.84,
         padding: 20,
-    },
-
-    cardTitle: {
-        fontSize: 18,
     },
 
     searchBar: {
