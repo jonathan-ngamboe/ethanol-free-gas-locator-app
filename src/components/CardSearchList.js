@@ -1,28 +1,32 @@
-import React from 'react';
-import { View, StyleSheet, FlatList } from 'react-native';
+import React, { useState } from 'react';
+import { View, StyleSheet, FlatList, Text } from 'react-native';
 import { Card, Searchbar, List } from 'react-native-paper';
 import { useGlobalStyles } from '../styles/globalStyles';
 
 export default function CardSearchList({navigation}) {
     const styles = useGlobalStyles();
+    const [isScrolled, setIsScrolled] = useState(false);
 
     const stationList = [
-        {
-            id: '1',
-            name: 'Shell',
-            distance: 0.5,
-        },
-        {
-            id: '2',
-            name: 'Chevron',
-            distance: 1.2,
-        },
-        {
-            id: '3',
-            name: 'Exxon',
-            distance: 2.3,
-        },
+        { id: '1', name: 'Shell', distance: 0.5 },
+        { id: '2', name: 'Exxon', distance: 1.2 },
+        { id: '3', name: 'BP', distance: 2.3 },
+        { id: '4', name: 'Chevron', distance: 3.5 },
+        { id: '5', name: 'Valero', distance: 5.0 },
     ];
+
+    const renderStationCount = () => {
+        if (stationList.length === 0) return 'No station found';
+        if (stationList.length === 1) return '1 station found';
+        return `${stationList.length} stations found`;
+    };
+
+    const handleScroll = (event) => {
+        const offsetY = event.nativeEvent.contentOffset.y;
+        setIsScrolled(offsetY > 0);
+    };
+
+    const hasMoreItems = stationList.length > 3;
 
     return (
         <Card style={{...localStyles.card, ...styles.cardBackgroundColor}}>
@@ -33,24 +37,40 @@ export default function CardSearchList({navigation}) {
                 //onChangeText={setSearchQuery}
                 //value={searchQuery}
             />
-            <Card.Content>
-                <FlatList
-                    data={stationList}
-                    renderItem={({item}) => (
-                        <View style={localStyles.stationContainer}>
-                            <List.Section>
-                                <List.Item 
-                                    title={item.name} 
-                                    titleStyle={{fontWeight: 'bold'}}
-                                    description={`${item.distance} miles away`}
-                                    left={props => <List.Icon {...props} icon="gas-station" />}
-                                    right={props => <List.Icon {...props} icon="dots-vertical" />}
-                                />
-                            </List.Section>
+            <Card.Content style={localStyles.contentContainer}>
+                <List.Subheader style={localStyles.subheader}>
+                    {renderStationCount()}
+                </List.Subheader>
+                <View style={localStyles.listContainerWrapper}>
+                    <View style={localStyles.listContainer}>
+                        <FlatList
+                            data={stationList}
+                            renderItem={({item}) => (
+                                <View>
+                                    <List.Section>
+                                        <List.Item 
+                                            title={item.name} 
+                                            titleStyle={{fontWeight: 'bold'}}
+                                            description={`${item.distance} miles away`}
+                                            left={props => <List.Icon {...props} icon="gas-station" />}
+                                            right={props => <List.Icon {...props} icon="dots-vertical" onClick={() => navigation.navigate('Profile')} />}
+                                        />
+                                    </List.Section>
+                                </View>
+                            )}
+                            keyExtractor={item => item.id}
+                            onScroll={handleScroll}
+                            scrollEventThrottle={16}
+                        />
+                    </View>
+                    {hasMoreItems && !isScrolled && (
+                        <View style={localStyles.moreIndicatorContainer}>
+                            <Text style={{ ...localStyles.moreIndicator, ...styles.moreIndicator }}>
+                                ↓ {stationList.length - 3} more stations
+                            </Text>
                         </View>
                     )}
-                    keyExtractor={item => item.id}
-                />
+                </View>
             </Card.Content>     
         </Card>
     );
@@ -60,15 +80,15 @@ const localStyles = StyleSheet.create({
     card: {
         borderRadius: 20,
         width: '100%',
-        elevation: 4, // For Android  
-        shadowColor: '#000', // For iOS
+        elevation: 4,
+        shadowColor: '#000',
         shadowOffset: {
             width: 0,
             height: 2,
         },
         shadowOpacity: 0.25,
         shadowRadius: 3.84,   
-        paddingBottom: 10, 
+        paddingBottom: 10,
     },
 
     searchBar: {
@@ -77,7 +97,7 @@ const localStyles = StyleSheet.create({
         height: 36, 
         justifyContent: 'center',
         marginHorizontal: 20,
-        marginTop: 20,
+        marginTop: 30,
     },
 
     searchInput: {
@@ -87,7 +107,39 @@ const localStyles = StyleSheet.create({
         textAlignVertical: 'center', 
     },
 
-    stationContainer: {
-        height: 60,
+    contentContainer: {
+        paddingHorizontal: 0,
+    },
+
+    subheader: {
+        textAlign: 'center',
+        paddingHorizontal: 16,
+    },
+
+    listContainerWrapper: {
+        position: 'relative',
+        height: 250,
+    },
+
+    listContainer: {
+        flex: 1,
+        paddingLeft: 20,
+    },
+
+    moreIndicatorContainer: {
+        position: 'absolute',
+        bottom: 0,
+        left: 0,
+        right: 0,
+        alignItems: 'center',
+    },
+
+    moreIndicator: {
+        fontSize: 12,
+        paddingHorizontal: 12,
+        paddingVertical: 4,
+        borderRadius: 12,
+        overflow: 'hidden',
+        borderWidth: StyleSheet.hairlineWidth,
     },
 });
