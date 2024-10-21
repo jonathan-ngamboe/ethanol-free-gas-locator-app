@@ -44,6 +44,11 @@ export const useGlobalStyles = () => {
     searchBar: {
       borderColor: theme.colors.outline,
     },
+
+    moreIndicator: {
+      color: theme.colors.background,
+      backgroundColor: theme.colors.onBackground,
+    },
   
   });
 };
