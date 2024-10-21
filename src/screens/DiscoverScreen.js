@@ -1,12 +1,30 @@
 import React from "react";
 import MapView, { Marker } from "react-native-maps";
-import { Card, Searchbar } from 'react-native-paper';
+import { Card, Searchbar, List } from 'react-native-paper';
 import { useGlobalStyles } from '../styles/globalStyles';
-import { View, StyleSheet, Text, Keyboard, KeyboardAvoidingView, Platform } from "react-native";
+import { View, StyleSheet, Text, KeyboardAvoidingView, Platform, FlatList } from "react-native";
 import { DEFAULT_REGION, ZOOM_LEVELS } from '../constants/mapConstants';
 
 export default function DiscoverScreen() {
     const styles = useGlobalStyles();
+
+    const stationList = [
+        {
+            id: '1',
+            name: 'Shell',
+            distance: 0.5,
+        },
+        {
+            id: '2',
+            name: 'Chevron',
+            distance: 1.2,
+        },
+        {
+            id: '3',
+            name: 'Exxon',
+            distance: 2.3,
+        },
+    ];
 
     return (
         <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{flex: 1}}>
@@ -28,8 +46,24 @@ export default function DiscoverScreen() {
                             //onChangeText={setSearchQuery}
                             //value={searchQuery}
                         />
-                        <Card.Content style={{alignItems: 'center', justifyContent: 'center', marginTop: 20}}>
-                            <Text style={styles.textColor}>Results will be displayed here</Text>
+                        <Card.Content>
+                            <FlatList
+                                data={stationList}
+                                renderItem={({item}) => (
+                                    <View style={localStyles.stationContainer}>
+                                        <List.Section>
+                                            <List.Item 
+                                                title={item.name} 
+                                                titleStyle={{fontWeight: 'bold'}}
+                                                description={`${item.distance} miles away`}
+                                                left={props => <List.Icon {...props} icon="gas-station" />}
+                                                right={props => <List.Icon {...props} icon="dots-vertical" />}
+                                            />
+                                        </List.Section>
+                                    </View>
+                                )}
+                                keyExtractor={item => item.id}
+                            />
                         </Card.Content>     
                     </Card>
                 </View>
@@ -42,6 +76,10 @@ const localStyles = StyleSheet.create({
     container: {
         flex: 1,
         position: 'relative',
+    },
+
+    stationContainer: {
+        height: 60,
     },
 
     map: {
@@ -67,8 +105,8 @@ const localStyles = StyleSheet.create({
             height: 2,
         },
         shadowOpacity: 0.25,
-        shadowRadius: 3.84,
-        padding: 20,
+        shadowRadius: 3.84,   
+        paddingBottom: 10, 
     },
 
     searchBar: {
@@ -76,7 +114,8 @@ const localStyles = StyleSheet.create({
         borderWidth: 1,
         height: 36, 
         justifyContent: 'center',
-        paddingHorizontal: 8,
+        marginHorizontal: 20,
+        marginTop: 20,
     },
 
     searchInput: {
