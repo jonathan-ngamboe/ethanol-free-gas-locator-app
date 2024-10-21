@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
+import { useGlobalStyles } from '../styles/globalStyles';
+import DotMenu from './DotMenu';
 import { View, StyleSheet, FlatList, Text } from 'react-native';
 import { Card, Searchbar, List } from 'react-native-paper';
-import { useGlobalStyles } from '../styles/globalStyles';
 
 export default function CardSearchList({navigation}) {
     const styles = useGlobalStyles();
@@ -21,12 +22,20 @@ export default function CardSearchList({navigation}) {
         return `${stationList.length} stations found`;
     };
 
+    // More items indicator
     const handleScroll = (event) => {
         const offsetY = event.nativeEvent.contentOffset.y;
         setIsScrolled(offsetY > 0);
     };
 
     const hasMoreItems = stationList.length > 3;
+
+    // Menu items
+    const menuItems = [
+        { title: 'View details', icon: 'information-variant', onPress: () => console.log('View details') },
+        { title: 'Show on map', icon: 'map-marker-radius-outline', onPress: () => console.log('Show on map') },
+        { title: 'Directions', icon: 'directions', onPress: () => console.log('Directions') },
+    ];
 
     return (
         <Card style={{...localStyles.card, ...styles.cardBackgroundColor}}>
@@ -53,8 +62,9 @@ export default function CardSearchList({navigation}) {
                                             titleStyle={{fontWeight: 'bold'}}
                                             description={`${item.distance} miles away`}
                                             left={props => <List.Icon {...props} icon="gas-station" />}
-                                            right={props => <List.Icon {...props} icon="dots-vertical" onClick={() => navigation.navigate('Profile')} />}
+                                            right={props =><DotMenu itemID={item.id} props={props} items={menuItems} />}
                                         />
+  
                                     </List.Section>
                                 </View>
                             )}
@@ -63,6 +73,7 @@ export default function CardSearchList({navigation}) {
                             scrollEventThrottle={16}
                         />
                     </View>
+  
                     {hasMoreItems && !isScrolled && (
                         <View style={localStyles.moreIndicatorContainer}>
                             <Text style={{ ...localStyles.moreIndicator, ...styles.moreIndicator }}>
@@ -93,7 +104,7 @@ const localStyles = StyleSheet.create({
 
     searchBar: {
         backgroundColor: 'transparent',
-        borderWidth: 1,
+        borderWidth: StyleSheet.hairlineWidth,
         height: 36, 
         justifyContent: 'center',
         marginHorizontal: 20,

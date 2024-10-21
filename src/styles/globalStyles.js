@@ -49,6 +49,11 @@ export const useGlobalStyles = () => {
       color: theme.colors.background,
       backgroundColor: theme.colors.onBackground,
     },
+
+    dotMenuColor: {
+      backgroundColor: theme.colors.inverseOnSurface,
+      borderColor: theme.colors.onSurface,
+    },
   
   });
 };
