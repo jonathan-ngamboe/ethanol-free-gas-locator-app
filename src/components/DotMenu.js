@@ -3,7 +3,7 @@ import { List, Menu } from 'react-native-paper';
 import { useGlobalStyles } from '../styles/globalStyles';
 import { StyleSheet, Pressable } from 'react-native';
 
-export default function DotMenu({navigation, itemID, props={}, items=[]}) {
+export default function DotMenu({itemID, props={}, items=[]}) {
     const styles = useGlobalStyles();
 
     const [visibleMenuId, setVisibleMenuId] = useState(null);
