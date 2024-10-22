@@ -1,7 +1,6 @@
 import { Alert, Linking, Platform } from 'react-native';
 
-export function OpenMap({ destinationName, destinationLat, destinationLon }) {
-    console.log('OpenMap', destinationName, destinationLat, destinationLon);
+export function openMap({ destinationName, destinationLat, destinationLon }) {
     const scheme = Platform.select({ ios: 'maps://0,0?q=', android: 'geo:0,0?q=' });
     const latLng = `${destinationLat},${destinationLon}`;
     const label = destinationName;
@@ -24,4 +23,9 @@ export function OpenMap({ destinationName, destinationLat, destinationLon }) {
     };
 
     openLink();        
+}
+
+export function openPhone(phoneNumber) {
+    const url = `tel:${phoneNumber}`;
+    Linking.openURL(url);
 }
