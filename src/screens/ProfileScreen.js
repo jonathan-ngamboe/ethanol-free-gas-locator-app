@@ -100,7 +100,7 @@ const localStyles = StyleSheet.create({
     },
 
     contentPaddingLeft: {
-        paddingLeft: 20,
+        paddingLeft: 30,
     },
 
     contentPaddingRight: {
