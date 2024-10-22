@@ -5,6 +5,12 @@ import { useGlobalStyles } from '../styles/globalStyles';
 
 export default function HomeScreen({navigation}) {
     const styles = useGlobalStyles();
+    const user = { 
+        firstName: 'John', 
+        lastName: 'Doe',
+        email: 'john@example.com',
+        isPro: false,
+    };
 
     return (
         <View style={ styles.container }>
@@ -14,9 +20,9 @@ export default function HomeScreen({navigation}) {
                 style={{...localStyles.cardTitle, ...styles.cardBackgroundColor}}
                 titleStyle={{...localStyles.titleCard, ...styles.cardTitle}}
                 right={(props) =>   <Pressable onPress={() => navigation.navigate('Profile')} > 
-                                        <Avatar.Icon 
+                                        <Avatar.Image 
+                                            source={{ uri: user?.avatar ? user.avatar : `https://avatar.iran.liara.run/public` }}
                                             {...props} 
-                                            icon="account" 
                                             size={45} 
                                             onPress={() => navigation.navigate('Profile')} 
                                             style={styles.avatar} 
