@@ -3,17 +3,18 @@ import { useGlobalStyles } from '../styles/globalStyles';
 import DotMenu from './DotMenu';
 import { View, StyleSheet, FlatList, Text } from 'react-native';
 import { Card, Searchbar, List } from 'react-native-paper';
+import { OpenMap } from '../navigation/ExternalNavigation';
 
 export default function CardSearchList({navigation}) {
     const styles = useGlobalStyles();
     const [isScrolled, setIsScrolled] = useState(false);
 
     const stationList = [
-        { id: '1', name: 'Shell', distance: 0.5 },
-        { id: '2', name: 'Exxon', distance: 1.2 },
-        { id: '3', name: 'BP', distance: 2.3 },
-        { id: '4', name: 'Chevron', distance: 3.5 },
-        { id: '5', name: 'Valero', distance: 5.0 },
+        { id: '1', name: 'Shell', distance: 0.5, lat: 29.7604, lon: -95.3698 },
+        { id: '2', name: 'Exxon', distance: 1.2, lat: 29.7604, lon: -95.3698 },
+        { id: '3', name: 'BP', distance: 2.3, lat: 29.7604, lon: -95.3698 },
+        { id: '4', name: 'Chevron', distance: 3.5, lat: 29.7604, lon: -95.3698 },
+        { id: '5', name: 'Valero', distance: 5.0, lat: 29.7604, lon: -95.3698 },
     ];
 
     const renderStationCount = () => {
@@ -31,10 +32,26 @@ export default function CardSearchList({navigation}) {
     const hasMoreItems = stationList.length > 3;
 
     // Menu items
-    const menuItems = [
-        { title: 'View details', icon: 'information-variant', onPress: () => navigation.navigate('StationDetails') },
-        { title: 'Show on map', icon: 'map-marker-radius-outline', onPress: () => console.log('Show on map') },
-        { title: 'Directions', icon: 'directions', onPress: () => console.log('Directions') },
+    const getMenuItems = (station) => [
+        { 
+            title: 'View details', 
+            icon: 'information-variant', 
+            onPress: () => navigation.navigate('StationDetails')
+        },
+        { 
+            title: 'Show on map', 
+            icon: 'map-marker-radius-outline', 
+            onPress: () => console.log('Show on map')
+        },
+        { 
+            title: 'Directions', 
+            icon: 'map', 
+            onPress: () => OpenMap({
+                destinationName: station.name,
+                destinationLat: station.lat,
+                destinationLon: station.lon
+            })
+        },
     ];
 
     return (
@@ -62,7 +79,7 @@ export default function CardSearchList({navigation}) {
                                             titleStyle={{fontWeight: 'bold'}}
                                             description={`${item.distance} miles away`}
                                             left={props => <List.Icon {...props} icon="gas-station" style={{ paddingLeft: 30 }} />}
-                                            right={props =><DotMenu itemID={item.id} props={props} items={menuItems} />}
+                                            right={props =><DotMenu itemID={item.id} props={props} items={getMenuItems(item)} />}
                                             onPress={() => navigation.navigate('StationDetails')}
                                         />
                                     </List.Section>
