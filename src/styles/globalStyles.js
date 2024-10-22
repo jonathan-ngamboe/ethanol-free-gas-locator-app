@@ -12,6 +12,13 @@ export const useGlobalStyles = () => {
       alignItems: 'center',
       backgroundColor: theme.colors.background,
     },
+
+    scrollView: {
+      flexGrow: 1,
+      padding: 20,
+      backgroundColor: theme.colors.background,
+      paddingBottom: 20,
+    },
   
     header: {
       backgroundColor: theme.colors.background,
