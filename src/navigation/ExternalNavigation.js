@@ -31,6 +31,10 @@ export async function openPhone(phoneNumber) {
     await Linking.openURL(url);
 }
 
+export async function openLink(url) {
+    await Linking.openURL(url);
+}
+
 export async function openEmail(email) {
     const url = `mailto:${email}`;
     await Linking.openURL(url);
