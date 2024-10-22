@@ -1,6 +1,7 @@
-import { Alert, Linking, Platform } from 'react-native';
+import { Alert, Linking, Platform, Share } from 'react-native';
+import * as Clipboard from 'expo-clipboard';
 
-export function openMap({ destinationName, destinationLat, destinationLon }) {
+export async function openMap({ destinationName, destinationLat, destinationLon }) {
     const scheme = Platform.select({ ios: 'maps://0,0?q=', android: 'geo:0,0?q=' });
     const latLng = `${destinationLat},${destinationLon}`;
     const label = destinationName;
@@ -22,10 +23,26 @@ export function openMap({ destinationName, destinationLat, destinationLon }) {
       }
     };
 
-    openLink();        
+    await openLink();        
 }
 
-export function openPhone(phoneNumber) {
+export async function openPhone(phoneNumber) {
     const url = `tel:${phoneNumber}`;
-    Linking.openURL(url);
+    await Linking.openURL(url);
+}
+
+export async function openEmail(email) {
+    const url = `mailto:${email}`;
+    await Linking.openURL(url);
+}
+
+export async function share(text) {
+    await Share.share({
+        message: text,
+    });
+}
+
+export async function copyToClipboard(text) {
+    await Clipboard.setStringAsync(text);
+    Alert.alert('Copied to clipboard');
 }
