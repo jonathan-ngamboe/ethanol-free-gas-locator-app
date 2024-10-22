@@ -7,7 +7,6 @@ export const useGlobalStyles = () => {
   return StyleSheet.create({
     container: {
       flex: 1,
-      padding: 20,
       justifyContent: 'center',
       alignItems: 'center',
       backgroundColor: theme.colors.background,
