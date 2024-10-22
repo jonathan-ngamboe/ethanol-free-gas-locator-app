@@ -1,10 +1,10 @@
 import React from 'react';
-import { View, StyleSheet, ScrollView } from 'react-native';
+import { View, StyleSheet, ScrollView, Pressable } from 'react-native';
 import { List, Chip, useTheme, Surface, Button } from 'react-native-paper';
 import MapView, { Marker } from "react-native-maps";
 import { useGlobalStyles } from '../styles/globalStyles';
 import { DEFAULT_REGION, ZOOM_LEVELS } from '../constants/mapConstants';
-import { OpenMap } from '../navigation/ExternalNavigation';
+import { openMap, openPhone } from '../navigation/ExternalNavigation';
 
 export default function StationDetails() {
     const styles = useGlobalStyles();
@@ -101,7 +101,7 @@ export default function StationDetails() {
                     textColor='white' 
                     style={{marginTop: 5}} 
                     icon="map" 
-                    onPress={() => OpenMap({ destinationName: station.station_name, destinationLat: station.lat, destinationLon: station.lon })}
+                    onPress={() => openMap({ destinationName: station.station_name, destinationLat: station.lat, destinationLon: station.lon })}
                     >Show directions in Maps
                 </Button>
 
@@ -117,11 +117,19 @@ export default function StationDetails() {
                         left={props => <List.Icon {...props} icon="clock-outline" />}
                     />
                     
-                    <List.Item
-                        title="Contact"
-                        description={station.station_phone}
-                        left={props => <List.Icon {...props} icon="phone" />}
-                    />
+                    <Pressable onPress={() => openPhone(station.station_phone)}>
+                        <List.Item
+                            title="Contact"
+                            descriptionStyle={{ 
+                                color: theme.colors.primary,
+                                textDecorationLine: 'underline',
+                                textDecorationColor: theme.colors.primary,
+                                opacity: 0.8  
+                            }}                            
+                            description={station.station_phone}
+                            left={props => <List.Icon {...props} icon="phone" />}
+                        />
+                    </Pressable>
 
                     <List.Item
                         title="Payment methods"
