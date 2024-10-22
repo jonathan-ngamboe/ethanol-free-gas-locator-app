@@ -34,7 +34,7 @@ export const HomeStack = () => {
           headerTitle: "",
           headerRight: () => (
             <Icon 
-              name="dots-vertical" 
+              name="pencil"
               size={24} 
               style={{ marginRight: 20 }} 
               color={theme.colors.primary} 
