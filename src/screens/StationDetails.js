@@ -63,7 +63,7 @@ export default function StationDetails() {
     return (
         <ScrollView contentContainerStyle={styles.scrollView} style={{backgroundColor: theme.colors.background}}>
             <View style={localStyles.mainView}>
-                <Surface elevation={4} style={{ height: 200, width: '100%' }}>
+                <Surface elevation={4} style={{ height: 200, width: '100%', marginTop: 10 }}>
                     <MapView
                         style={localStyles.map}
                         region={station.lat && station.lon
