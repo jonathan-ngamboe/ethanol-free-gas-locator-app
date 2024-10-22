@@ -6,6 +6,7 @@ import { useTheme } from '../../context/ThemeContext';
 import { useGlobalStyles } from '../../styles/globalStyles';
 import DiscoverScreen from '../../screens/DiscoverScreen';
 import StationDetails from '../../screens/StationDetails';
+import ProfileScreen from '../../screens/ProfileScreen';
 import DotMenu from '../../components/DotMenu';
 import { share, openEmail, copyToClipboard } from '../ExternalNavigation';
 
@@ -52,6 +53,13 @@ export const DiscoverStack = () => {
                 <DotMenu items={items} color={theme.colors.primary} style={{ marginRight: 20 }} />
             </View>
           ),
+        }}
+      />
+      <Stack.Screen
+        name="Profile"
+        component={ProfileScreen}
+        options={{
+          headerTitle: "",
         }}
       />
     </Stack.Navigator>
