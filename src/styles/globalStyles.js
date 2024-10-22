@@ -45,10 +45,6 @@ export const useGlobalStyles = () => {
       backgroundColor: theme.colors.accent,
     },
 
-    searchBar: {
-      borderColor: theme.colors.outline,
-    },
-
     moreIndicator: {
       color: theme.colors.background,
       backgroundColor: theme.colors.onBackground,
