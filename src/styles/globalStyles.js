@@ -39,7 +39,7 @@ export const useGlobalStyles = () => {
     },
 
     cardBackgroundColor: {
-      backgroundColor: theme.colors.inverseOnSurface,
+      backgroundColor: theme.colors.background,
     },
 
     avatar: {
