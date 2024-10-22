@@ -15,7 +15,6 @@ export const useGlobalStyles = () => {
 
     scrollView: {
       flexGrow: 1,
-      padding: 20,
       backgroundColor: theme.colors.background,
       paddingBottom: 20,
     },

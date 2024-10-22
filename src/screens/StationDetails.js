@@ -169,6 +169,7 @@ const localStyles = StyleSheet.create({
     mainView: {
         width: '100%',
         height: '100%',
+        paddingHorizontal: 20,
     },
 
     map: {
