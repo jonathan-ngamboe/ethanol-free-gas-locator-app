@@ -3,7 +3,6 @@ import { View, StyleSheet, ScrollView, Platform } from 'react-native';
 import { useTheme, Button, Switch, List } from 'react-native-paper';
 import ProfileCard from '../components/ProfileCard';
 import { share } from '../navigation/ExternalNavigation';
-import React, { useState } from 'react';
 import { openLink } from '../navigation/ExternalNavigation';
 
 export default function ProfileScreen() {
@@ -18,13 +17,6 @@ export default function ProfileScreen() {
         bannerImage: 'https://i.pinimg.com/736x/53/1b/f2/531bf28ee274611ab3b887c9c301d88a.jpg',
         isPro: false,
     };
-
-    const [profileSettings, setProfileSettings] = useState({
-        notifications: {
-            doNotDisturb: false,
-        },
-    });
-
 
     return (
         <ScrollView contentContainerStyle={styles.scrollView} style={{backgroundColor: theme.colors.background}}>
@@ -44,24 +36,9 @@ export default function ProfileScreen() {
                     />
 
                     <List.Item
-                        title="Notifications"
-                        titleStyle={{ ...localStyles.listTitle, color: theme.colors.outline }}
-                        style={localStyles.contentPaddingLeft} 
-                    />
-
-                    <List.Item
-                        title="Do not disturb"
-                        description={profileSettings.notifications.doNotDisturb === false ? `Off`: `On`}
-                        titleStyle={{ ...localStyles.listTitle }}
-                        left={props => <List.Icon {...props} icon={profileSettings.notifications.doNotDisturb === false ? 'bell' : 'bell-off'} color={theme.colors.primary} style={localStyles.contentPaddingLeft} />}
-                        right={(props) => <Switch {...props} value={profileSettings.notifications.doNotDisturb} onValueChange={() => setProfileSettings({ ...profileSettings, notifications: { doNotDisturb: !profileSettings.notifications.doNotDisturb } })} color={theme.colors.primary} style={localStyles.contentPaddingRight}/>}
-                        subtitleStyle={{...localStyles.listDescription, color: theme.colors.outline }}
-                    />
-
-                    <List.Item
                         title="Favorites"
                         titleStyle={{ ...localStyles.listTitle, color: theme.colors.outline }}
-                        style={localStyles.contentPaddingLeft} 
+                        style={{ ...localStyles.contentPaddingLeft, paddingBottom: 0 }}
                     />
 
                     <List.Item
@@ -75,11 +52,11 @@ export default function ProfileScreen() {
                     <List.Item
                         title="More"
                         titleStyle={{ ...localStyles.listTitle, color: theme.colors.outline }}
-                        style={localStyles.contentPaddingLeft} 
+                        style={{ ...localStyles.contentPaddingLeft, paddingBottom: 0 }}
                     />
 
                     <List.Item
-                        title="Rate this app"
+                        title="Rate the app"
                         titleStyle={{ ...localStyles.listTitle }}
                         left={props => <List.Icon {...props} icon="star-outline" color={theme.colors.primary} style={localStyles.contentPaddingLeft} />}
                         right={(props) => <List.Icon {...props} icon="chevron-right" color={theme.colors.primary} style={localStyles.contentPaddingRight}/>}
