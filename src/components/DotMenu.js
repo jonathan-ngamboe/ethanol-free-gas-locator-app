@@ -12,7 +12,9 @@ export default function DotMenu({itemID, props={}, items=[]}) {
 
     const handlePress = (onPress) => {
         closeMenu();
-        onPress();
+        if (onPress) {
+            onPress();
+        }
     }
 
     const itemRender = items.map((item, index) => {
