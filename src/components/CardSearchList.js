@@ -3,7 +3,7 @@ import { useGlobalStyles } from '../styles/globalStyles';
 import DotMenu from './DotMenu';
 import { View, StyleSheet, FlatList, Text } from 'react-native';
 import { Card, Searchbar, List } from 'react-native-paper';
-import { OpenMap } from '../navigation/ExternalNavigation';
+import { openMap } from '../navigation/ExternalNavigation';
 
 export default function CardSearchList({navigation}) {
     const styles = useGlobalStyles();
@@ -46,7 +46,7 @@ export default function CardSearchList({navigation}) {
         { 
             title: 'Directions', 
             icon: 'map', 
-            onPress: () => OpenMap({
+            onPress: () => openMap({
                 destinationName: station.name,
                 destinationLat: station.lat,
                 destinationLon: station.lon
