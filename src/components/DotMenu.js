@@ -3,7 +3,7 @@ import { List, Menu } from 'react-native-paper';
 import { useGlobalStyles } from '../styles/globalStyles';
 import { StyleSheet, Pressable } from 'react-native';
 
-export default function DotMenu({itemID, props={}, items=[]}) {
+export default function DotMenu({ itemID, color, style, items = [] }) {
     const styles = useGlobalStyles();
 
     const [visibleMenuId, setVisibleMenuId] = useState(null);
@@ -36,8 +36,8 @@ export default function DotMenu({itemID, props={}, items=[]}) {
             mode='flat'
             contentStyle={{...localStyles.dotMenu, ...styles.dotMenuColor}} 
             anchor={
-                <Pressable onPress={() => openMenu(itemID)}>
-                    <List.Icon {...props} icon="dots-vertical" />
+                <Pressable onPress={() => openMenu(itemID)} style={style}>
+                    <List.Icon icon="dots-vertical" color={color} />
                 </Pressable>
             }
         >

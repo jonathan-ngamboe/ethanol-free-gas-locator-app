@@ -79,7 +79,7 @@ export default function CardSearchList({navigation}) {
                                             titleStyle={{fontWeight: 'bold'}}
                                             description={`${item.distance} miles away`}
                                             left={props => <List.Icon {...props} icon="gas-station" style={{ paddingLeft: 30 }} />}
-                                            right={props =><DotMenu itemID={item.id} props={props} items={getMenuItems(item)} />}
+                                            right={props =><DotMenu itemID={item.id} color={props.color} style={props.style} items={getMenuItems(item)} />}
                                             onPress={() => navigation.navigate('StationDetails')}
                                         />
                                     </List.Section>
