@@ -1,6 +1,5 @@
 import { StyleSheet } from 'react-native';
 import { useTheme } from '../context/ThemeContext';
-import { SearchBar } from 'react-native-screens';
 
 export const useGlobalStyles = () => {
   const { theme } = useTheme();
