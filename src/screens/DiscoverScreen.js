@@ -1,24 +1,24 @@
 import React from "react";
 import { View, StyleSheet, KeyboardAvoidingView, Platform } from "react-native";
-import CardSearchList from '../components/CardSearchList';
+import Modal from "../components/Modal";
 import Map from "../components/Map";
 import SearchBar from '../components/searchBar';
+import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 
 export default function DiscoverScreen({navigation}) {
-
     return (
         <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{flex: 1}}>
-            <View style={localStyles.container}>
-                <Map/>
+            <BottomSheetModalProvider>
+                <View style={localStyles.container}>
+                    <Map/>
+                    
+                    <View style={localStyles.searchBarContainer}>
+                        <SearchBar navigation={navigation}/>
+                    </View>
 
-                <View style={localStyles.searchBarContainer}>
-                    <SearchBar navigation={navigation}/>
+                    <Modal />
                 </View>
-                
-                <View style={localStyles.overlay}>
-                    <CardSearchList navigation={navigation}/>
-                </View>
-            </View>
+            </BottomSheetModalProvider>
         </KeyboardAvoidingView>
     );
 }
@@ -28,15 +28,7 @@ const localStyles = StyleSheet.create({
         flex: 1,
         position: 'relative',
     },
-
-    overlay: {
-        position: 'absolute',
-        bottom: 15, 
-        width: '100%',
-        alignItems: 'center',
-        paddingHorizontal: 20,
-    },
-
+    
     searchBarContainer: {
         position: 'absolute',
         top: 50,  
