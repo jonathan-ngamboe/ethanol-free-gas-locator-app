@@ -1,18 +1,16 @@
 import React, { useCallback, useMemo, useRef, useEffect } from 'react';
-import { Text, StyleSheet } from 'react-native';
-import {
-  BottomSheetModal,
-  BottomSheetView,
-} from '@gorhom/bottom-sheet';
+import { Text, StyleSheet, } from 'react-native';
+import { BottomSheetModal, BottomSheetView } from '@gorhom/bottom-sheet';
 import { useTheme } from 'react-native-paper';
 
-export default function Modal({ initialSnapIndex = 1, snapToOnAction }) {
+
+export default function Modal({ initialSnapIndex = 1, snapToOnAction, renderItem }) {
   const theme = useTheme();
 
   const bottomSheetModalRef = useRef(null);
 
   // Snap Points used to define the different height of the bottom sheet.
-  const snapPoints = useMemo(() => [50, '30%'], []);
+  const snapPoints = useMemo(() => [50, 300], []);
 
   // Open the bottom sheet when the component mounts
   useEffect(() => {
@@ -33,6 +31,7 @@ export default function Modal({ initialSnapIndex = 1, snapToOnAction }) {
 
   return (
     <BottomSheetModal
+      enableDynamicSizing={true}
       ref={bottomSheetModalRef}
       index={initialSnapIndex}  // Default to the initial snap point (30% by default)
       snapPoints={snapPoints}
@@ -43,7 +42,11 @@ export default function Modal({ initialSnapIndex = 1, snapToOnAction }) {
       android_keyboardInputMode="adjustResize"
     >
       <BottomSheetView style={localStyles.contentContainer}>
-        <Text>Content</Text>
+
+        {renderItem ? renderItem : (
+          <Text>No content to display</Text>
+        )}
+
       </BottomSheetView>
 
     </BottomSheetModal>
@@ -72,5 +75,8 @@ const localStyles = StyleSheet.create({
   indicator: {
     backgroundColor: '#DDDDDD',
     width: 40,
+  },
+
+  carousel: {
   }
 });
