@@ -54,6 +54,12 @@ export const useGlobalStyles = () => {
       backgroundColor: theme.colors.inverseOnSurface,
       borderColor: theme.colors.onSurface,
     },
+
+    shadow: {
+      shadowColor: '#000', 
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.25, 
+    }
   
   });
 };
