@@ -35,47 +35,40 @@ export default function ProfileScreen() {
                         subtitleVariant='bodySmall'
                     />
 
-                    <List.Item
-                        title="Favorites"
-                        titleStyle={{ ...localStyles.listTitle, color: theme.colors.outline }}
-                        style={{ ...localStyles.contentPaddingLeft, paddingBottom: 0 }}
-                    />
+                    <List.Section title='Favorites' style={{...localStyles.listSection}} titleStyle={{...localStyles.listTitle, color: theme.colors.outline, ...localStyles.contentPaddingLeft}}>
+                        <List.Item
+                            title="My favorite stations"
+                            titleStyle={{ ...localStyles.listTitle }}
+                            left={props => <List.Icon {...props} icon="heart" color={theme.colors.primary} style={localStyles.contentPaddingLeft} />}
+                            right={(props) => <List.Icon {...props} icon="chevron-right" color={theme.colors.primary} style={localStyles.contentPaddingRight}/>}
+                            onPress={() => console.log('My favorite stations')}
+                        />
+                    </List.Section>
 
-                    <List.Item
-                        title="My favorite stations"
-                        titleStyle={{ ...localStyles.listTitle }}
-                        left={props => <List.Icon {...props} icon="heart" color={theme.colors.primary} style={localStyles.contentPaddingLeft} />}
-                        right={(props) => <List.Icon {...props} icon="chevron-right" color={theme.colors.primary} style={localStyles.contentPaddingRight}/>}
-                        onPress={() => console.log('My favorite stations')}
-                    />
-
-                    <List.Item
-                        title="More"
-                        titleStyle={{ ...localStyles.listTitle, color: theme.colors.outline }}
-                        style={{ ...localStyles.contentPaddingLeft, paddingBottom: 0 }}
-                    />
-
-                    <List.Item
-                        title="Rate the app"
-                        titleStyle={{ ...localStyles.listTitle }}
-                        left={props => <List.Icon {...props} icon="star-outline" color={theme.colors.primary} style={localStyles.contentPaddingLeft} />}
-                        right={(props) => <List.Icon {...props} icon="chevron-right" color={theme.colors.primary} style={localStyles.contentPaddingRight}/>}
-                        onPress={() => openLink(Platform.select({ ios: 'https://apps.apple.com/us/app/ethanol-free-gas-locator-app', android: 'https://play.google.com/store/apps/details?id=com.ethanol-free-gas-locator-app' }))}
-                    />
-                    <List.Item
-                        title="Logout"
-                        titleStyle={{ ...localStyles.listTitle }}
-                        left={props => <List.Icon {...props} icon="logout" color={theme.colors.primary} style={localStyles.contentPaddingLeft} />}
-                        right={(props) => <List.Icon {...props} icon="chevron-right" color={theme.colors.primary} style={localStyles.contentPaddingRight}/>}
-                        onPress={() => console.log('Logout')}
-                    />
-                    <List.Item
-                        title="Delete account"
-                        titleStyle={{ ...localStyles.listTitle }}
-                        left={props => <List.Icon {...props} icon="delete" color={theme.colors.primary} style={localStyles.contentPaddingLeft} />}
-                        right={(props) => <List.Icon {...props} icon="chevron-right" color={theme.colors.primary} style={localStyles.contentPaddingRight} />}
-                        onPress={() => console.log('Delete account')}
-                    />    
+                    <List.Section title='More' style={{...localStyles.listSection}} titleStyle={{...localStyles.listTitle, color: theme.colors.outline, ...localStyles.contentPaddingLeft}}>
+                        <List.Item
+                            title="Rate the app"
+                            titleStyle={{ ...localStyles.listTitle }}
+                            left={props => <List.Icon {...props} icon="star-outline" color={theme.colors.primary} style={localStyles.contentPaddingLeft} />}
+                            right={(props) => <List.Icon {...props} icon="chevron-right" color={theme.colors.primary} style={localStyles.contentPaddingRight}/>}
+                            onPress={() => openLink(Platform.select({ ios: 'https://apps.apple.com/us/app/ethanol-free-gas-locator-app', android: 'https://play.google.com/store/apps/details?id=com.ethanol-free-gas-locator-app' }))}
+                        />
+                        <List.Item
+                            title="Logout"
+                            titleStyle={{ ...localStyles.listTitle }}
+                            left={props => <List.Icon {...props} icon="logout" color={theme.colors.primary} style={localStyles.contentPaddingLeft} />}
+                            right={(props) => <List.Icon {...props} icon="chevron-right" color={theme.colors.primary} style={localStyles.contentPaddingRight}/>}
+                            onPress={() => console.log('Logout')}
+                        />
+                        <List.Item
+                            title="Delete account"
+                            titleStyle={{ ...localStyles.listTitle }}
+                            left={props => <List.Icon {...props} icon="delete" color={theme.colors.primary} style={localStyles.contentPaddingLeft} />}
+                            right={(props) => <List.Icon {...props} icon="chevron-right" color={theme.colors.primary} style={localStyles.contentPaddingRight} />}
+                            onPress={() => console.log('Delete account')}
+                        />  
+                    </List.Section>
+  
                 </List.Section>
             </View>
         </ScrollView>
@@ -105,5 +98,9 @@ const localStyles = StyleSheet.create({
 
     contentPaddingRight: {
         paddingRight: 20,
+    },
+
+    listSection: {
+        marginTop: 20,
     },
 });
