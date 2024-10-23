@@ -10,11 +10,9 @@ export default function DiscoverScreen({navigation}) {
 
     const handleMapTouch = () => {
         // Hide the keyboard 
-        if(Keyboard.isVisible) {
-            Keyboard.dismiss();
-        }
+        Keyboard.dismiss();
 
-        // Snap the bottom sheet to the top
+        // Snap the bottom sheet to the initial position
         if (bottomSheetRef.current) {
             bottomSheetRef.current(0); 
         }
