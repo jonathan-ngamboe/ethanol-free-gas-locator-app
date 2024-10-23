@@ -27,7 +27,7 @@ export const HomeStack = () => {
         }} 
       />
       <Stack.Screen 
-        name="Profile" 
+        name="ProfileStack" 
         component={ProfileStack}
         options={{
           headerShown: false,
