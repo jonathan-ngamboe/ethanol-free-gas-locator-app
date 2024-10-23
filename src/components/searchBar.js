@@ -19,7 +19,7 @@ export default function SearchBar({navigation}) {
     }
 
     const RightComponent = () => (
-        <Pressable onPress={() => navigation.navigate('Profile')}>
+        <Pressable onPress={() => navigation.navigate('ProfileStack')}>
             <Avatar.Image 
                 source={{ uri: user?.avatar || 'https://avatar.iran.liara.run/public' }}
                 size={45} 
