@@ -43,7 +43,7 @@ export default function ProfileCard({user}) {
                             fontSize: 12
                         }}
                     >
-                        {user?.isPro ? 'Pro' : 'Free'}
+                        {user?.isPro ? 'Full access' : 'Limited access'}
                     </Chip>
                 </View>
             </View>
