@@ -31,7 +31,7 @@ export default function SearchBar({navigation}) {
     return (
         <Searchbar
             placeholder="Search for a station"
-            style={{ ...localStyles.searchBar, backgroundColor: theme.colors.background, borderColor: theme.colors.outline }}
+            style={{ ...localStyles.searchBar, backgroundColor: theme.colors.background, shadowColor: theme.colors.onSurface }}
             inputStyle={localStyles.searchInput}
             icon='map-marker'
             iconColor={styles.textColor.color}
@@ -45,8 +45,11 @@ const localStyles = StyleSheet.create({
     searchBar: {
         width: '90%',
         height: 45,
-        borderWidth: StyleSheet.hairlineWidth,
+        shadowColor: '#000', 
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.25, 
     },
+    
     searchInput: {
         fontSize: 14,
         minHeight: 0, 
