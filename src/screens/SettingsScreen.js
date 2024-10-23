@@ -90,6 +90,6 @@ const localStyles = StyleSheet.create({
 
     listSection: {
         width: '100%',
-        marginTop: 20,
+        marginTop: 10,
     },
 });
