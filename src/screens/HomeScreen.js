@@ -1,6 +1,6 @@
 import { View, StyleSheet } from 'react-native';
 import { useGlobalStyles } from '../styles/globalStyles';
-import SearchBar from '../components/searchBar';
+import SearchBar from '../components/SearchBar';
 
 
 export default function HomeScreen({navigation}) {
