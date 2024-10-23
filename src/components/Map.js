@@ -2,7 +2,7 @@ import MapView, { Marker } from "react-native-maps";
 import { DEFAULT_REGION, ZOOM_LEVELS } from '../constants/mapConstants';
 import { StyleSheet } from "react-native";
 
-export default function Map() {
+export default function Map( { onTouch }) {
     return (
         <MapView
             style={localStyles.map}
@@ -11,6 +11,7 @@ export default function Map() {
             zoomTapEnabled={true}
             zoomControlEnabled={true}
             zoomLevel={ZOOM_LEVELS.CITY}
+            onTouchStart={onTouch}
         />
     );
 }

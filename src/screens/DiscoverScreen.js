@@ -1,22 +1,36 @@
-import React from "react";
-import { View, StyleSheet, KeyboardAvoidingView, Platform } from "react-native";
+import React, { useState, useRef } from "react";
+import { View, StyleSheet, KeyboardAvoidingView, Platform, Keyboard } from "react-native";
 import Modal from "../components/Modal";
 import Map from "../components/Map";
 import SearchBar from '../components/searchBar';
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 
 export default function DiscoverScreen({navigation}) {
+    const bottomSheetRef = useRef(null);
+
+    const handleMapTouch = () => {
+        // Hide the keyboard 
+        if(Keyboard.isVisible) {
+            Keyboard.dismiss();
+        }
+
+        // Snap the bottom sheet to the top
+        if (bottomSheetRef.current) {
+            bottomSheetRef.current(0); 
+        }
+    };
+
     return (
         <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{flex: 1}}>
             <BottomSheetModalProvider>
                 <View style={localStyles.container}>
-                    <Map/>
+                    <Map onTouch={handleMapTouch} />
                     
                     <View style={localStyles.searchBarContainer}>
                         <SearchBar navigation={navigation}/>
                     </View>
 
-                    <Modal />
+                    <Modal initialSnapIndex={1} snapToOnAction={(snap) => bottomSheetRef.current = snap} />
                 </View>
             </BottomSheetModalProvider>
         </KeyboardAvoidingView>
