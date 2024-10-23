@@ -4,6 +4,7 @@ import { Provider as PaperProvider } from 'react-native-paper';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { ThemeProvider, useTheme } from './src/context/ThemeContext';
 import { TabNavigator } from './src/navigation/TabNavigator';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 function AppContent() {
   const { theme } = useTheme();
@@ -21,8 +22,10 @@ function AppContent() {
 
 export default function App() {
   return (
-    <ThemeProvider>
-      <AppContent />
-    </ThemeProvider>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+        <ThemeProvider>
+          <AppContent />
+        </ThemeProvider>
+    </GestureHandlerRootView>
   );
 }
