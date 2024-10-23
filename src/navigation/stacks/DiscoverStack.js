@@ -6,7 +6,7 @@ import { useTheme } from '../../context/ThemeContext';
 import { useGlobalStyles } from '../../styles/globalStyles';
 import DiscoverScreen from '../../screens/DiscoverScreen';
 import StationDetails from '../../screens/StationDetails';
-import ProfileScreen from '../../screens/ProfileScreen';
+import { ProfileStack } from './ProfileStack';
 import DotMenu from '../../components/DotMenu';
 import { share, openEmail, copyToClipboard } from '../ExternalNavigation';
 
@@ -55,11 +55,11 @@ export const DiscoverStack = () => {
           ),
         }}
       />
-      <Stack.Screen
-        name="Profile"
-        component={ProfileScreen}
+      <Stack.Screen 
+        name="ProfileStack" 
+        component={ProfileStack}
         options={{
-          headerTitle: "",
+          headerShown: false,
         }}
       />
     </Stack.Navigator>
