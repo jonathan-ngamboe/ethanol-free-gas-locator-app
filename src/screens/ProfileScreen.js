@@ -5,7 +5,7 @@ import ProfileCard from '../components/ProfileCard';
 import { share } from '../navigation/ExternalNavigation';
 import { openLink } from '../navigation/ExternalNavigation';
 
-export default function ProfileScreen() {
+export default function ProfileScreen({ navigation }) {
     const styles = useGlobalStyles();
     const theme = useTheme();
 
@@ -35,13 +35,20 @@ export default function ProfileScreen() {
                         subtitleVariant='bodySmall'
                     />
 
-                    <List.Section title='Favorites' style={{...localStyles.listSection}} titleStyle={{...localStyles.listTitle, color: theme.colors.outline, ...localStyles.contentPaddingLeft}}>
+                    <List.Section title='Stations' style={{...localStyles.listSection}} titleStyle={{...localStyles.listTitle, color: theme.colors.outline, ...localStyles.contentPaddingLeft}}>
                         <List.Item
                             title="My favorite stations"
                             titleStyle={{ ...localStyles.listTitle }}
                             left={props => <List.Icon {...props} icon="heart" color={theme.colors.primary} style={localStyles.contentPaddingLeft} />}
                             right={(props) => <List.Icon {...props} icon="chevron-right" color={theme.colors.primary} style={localStyles.contentPaddingRight}/>}
-                            onPress={() => console.log('My favorite stations')}
+                            onPress={() => navigation.navigate('Favorites')}
+                        />
+                        <List.Item
+                            title="My search history"
+                            titleStyle={{ ...localStyles.listTitle }}
+                            left={props => <List.Icon {...props} icon="history" color={theme.colors.primary} style={localStyles.contentPaddingLeft} />}
+                            right={(props) => <List.Icon {...props} icon="chevron-right" color={theme.colors.primary} style={localStyles.contentPaddingRight}/>}
+                            onPress={() => navigation.navigate('History')}
                         />
                     </List.Section>
 
@@ -101,6 +108,6 @@ const localStyles = StyleSheet.create({
     },
 
     listSection: {
-        marginTop: 20,
+        marginTop: 10,
     },
 });
