@@ -43,7 +43,7 @@ export default function Modal({ initialSnapIndex = 1, snapToOnAction, renderItem
     >
       <BottomSheetView style={localStyles.contentContainer}>
 
-        {renderItem ? renderItem : (
+        {renderItem ? renderItem() : (
           <Text>No content to display</Text>
         )}
 
