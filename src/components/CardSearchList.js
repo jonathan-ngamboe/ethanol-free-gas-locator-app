@@ -5,7 +5,7 @@ import { View, StyleSheet, FlatList, Text } from 'react-native';
 import { Card, Searchbar, List } from 'react-native-paper';
 import { openMap } from '../navigation/ExternalNavigation';
 
-export default function CardSearchList({navigation}) {
+export default function CardSearchList({ navigation }) {
     const styles = useGlobalStyles();
     const [isScrolled, setIsScrolled] = useState(false);
 
@@ -36,7 +36,7 @@ export default function CardSearchList({navigation}) {
         { 
             title: 'View details', 
             icon: 'information-variant', 
-            onPress: () => navigation.navigate('StationDetails')
+            onPress: () => navigation.navigate('StationDetails', { station: station })
         },
         { 
             title: 'Show on map', 
@@ -80,7 +80,7 @@ export default function CardSearchList({navigation}) {
                                             description={`${item.distance} miles away`}
                                             left={props => <List.Icon {...props} icon="gas-station" style={{ paddingLeft: 30 }} />}
                                             right={props =><DotMenu itemID={item.id} color={props.color} style={props.style} items={getMenuItems(item)} />}
-                                            onPress={() => navigation.navigate('StationDetails')}
+                                            onPress={() => navigation.navigate('StationDetails', { station: item })}
                                         />
                                     </List.Section>
                                 </View>
