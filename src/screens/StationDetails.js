@@ -1,190 +1,299 @@
 import React from 'react';
-import { View, StyleSheet, ScrollView, Pressable } from 'react-native';
-import { List, Chip, useTheme, Surface, Button } from 'react-native-paper';
+import { View, StyleSheet, ScrollView, Pressable, Text } from 'react-native';
+import { List, useTheme, Surface, Button, Divider, Chip } from 'react-native-paper';
 import MapView, { Marker } from "react-native-maps";
+import { openMap, openPhone, openLink } from '../navigation/ExternalNavigation';
 import { useGlobalStyles } from '../styles/globalStyles';
-import { DEFAULT_REGION, ZOOM_LEVELS } from '../constants/mapConstants';
-import { openMap, openPhone } from '../navigation/ExternalNavigation';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
-export default function StationDetails({ station }) {
-    const styles = useGlobalStyles();
+export default function StationDetails({ route }) {
     const theme = useTheme();
+    const styles = useGlobalStyles();
 
+    const { station } = route.params;
+
+    // Format the payment methods
     const formatPaymentMethods = (cards) => {
+        if (!cards) return null;
         const methodMap = {
-        'V': 'Visa',
-        'M': 'MasterCard',
-        'A': 'AmEx',
-        'CREDIT': 'Credit'
+            'V': 'Visa',
+            'M': 'MasterCard',
+            'D': 'Discover',
+            'A': 'AmEx',
+            'CREDIT': 'Credit',
+            'DEBIT': 'Debit',
+            'CASH': 'Cash'
         };
         return cards.split(' ')
-        .map(card => methodMap[card] || card)
-        .join(', ');
+            .map(card => methodMap[card] || card)
+            .filter(Boolean);
     };
 
+    // Check if the station is available (Status E = Available)
+    const getStatusInfo = () => {
+        const statusMap = {
+            'E': { label: 'Available', color: theme.colors.primary, icon: 'check-circle' },
+            'P': { label: 'Planned', color: theme.colors.warning, icon: 'clock-outline' },
+            'T': { label: 'Unavailable', color: theme.colors.error, icon: 'alert-circle' }
+        };
+        return statusMap[station?.status_code] || statusMap['T'];
+    };
+
+    const statusInfo = getStatusInfo();
+
+    // Check if the station has any details
     const hasAnyDetails = station && Object.keys(station).length > 0;
 
-    const hasAdditionalDetails = station && Object.keys(station).some(key => 
-        !['name', 'street_address', 'city', 'state', 'zip', 'lat', 'lon'].includes(key) && station[key]
-    );
+    // Check if the station has station details
+    const hasStationDetails = station && station.ev_network_web || station.station_phone || station.access_days_time || station.access_code;
 
-    // Code deleted to avoid multiple API calls. The coordonates will be fetched and savec in database once.
-    // Fetch coordinates for the station address
-    // const [coordinates, setCoordinates] = useState(null);
-    //useEffect(() => {
-    //    const getCoordinates = async () => {
-    //        try {
-    //            const address = `${station?.street_address}, ${station?.city}, ${station?.state} ${station?.zip}`;
-    //            const coords = await fetchCoordinates(address);
-    //            if (coords) {
-    //                setCoordinates(coords);
-    //            } else {
-    //                console.error('No coordinates found for the address:', address);
-    //            }
-    //        } catch (err) {
-    //            console.error(err);
-    //        } 
-    //    };
+    // Check if the station has additional information
+    const hasAdditionalInformation = station && station.e85_other_ethanol_blends?.length > 0 || station?.cards_accepted || station?.intersection_directions;
 
-    //    getCoordinates();
-    //}, []);
+    // Check if the station has destination coordinates
+    const hasDestinationCoordinates = station?.latitude && station?.longitude
 
     return (
-        <ScrollView contentContainerStyle={styles.scrollView} style={{backgroundColor: theme.colors.background}}>
+        <ScrollView style={[{ backgroundColor: theme.colors.background }, styles.scrollView]} contentContainerStyle={{ flexGrow: 1 }}>
             {hasAnyDetails && (
-            <>
-                <View style={localStyles.mainView}>
-                    <Surface elevation={4} style={{ height: 200, width: '100%', marginTop: 10 }}>
-                        <MapView
-                            style={localStyles.map}
-                            region={
-                                typeof station?.lat === 'number' && typeof station?.lon === 'number'
-                                ? {
-                                    latitude: station.lat,
-                                    longitude: station.lon,
-                                    latitudeDelta: ZOOM_LEVELS.CITY,
-                                    longitudeDelta: ZOOM_LEVELS.NEIGHBORHOOD
-                                    }
-                                : DEFAULT_REGION
-                            }                          
-                            zoomEnabled={true}
-                            zoomTapEnabled={true}
-                            zoomControlEnabled={true}
-                        >
-                            <Marker
-                                coordinate={{ latitude: station?.lat ? station.lat : 0, longitude: station?.lon ? station.lon : 0 }}
-                                title={station?.name ? station.name : 'NO NAME'}
-                                description={[
-                                    station?.street_address,
-                                    station?.city,
-                                    [station?.state, station?.zip].filter(Boolean).join(' ')
-                                ].filter(Boolean).join(', ')}                          />
-                        </MapView>
-                    </Surface>
-
-                    {hasAdditionalDetails && (
-                    <>
-                        <List.Item
-                            title={station?.name ? station.name : 'NO NAME'}
-                            description={[
-                                station?.street_address,
-                                station?.city,
-                                [station?.state, station?.zip].filter(Boolean).join(' ') 
-                            ].filter(Boolean).join(', ')}                            
-                            left={props => <List.Icon {...props} icon="map-marker-radius-outline" color={theme.colors.primary} style={{ paddingLeft: 0 }} />}
-                            titleStyle={localStyles.title}
-                            descriptionStyle={localStyles.addressDescription}
-                            style={{marginTop: 10}}
-                        />
-
-                        { station?.name && station?.lat && station?.lon && (
-                            <Button 
-                                mode="contained" 
-                                textColor='white' 
-                                style={{marginTop: 5}} 
-                                icon="map" 
-                                onPress={() => openMap({ destinationName: station.name, destinationLat: station?.lat ? station.lat : 0, destinationLon: station?.lon ? station.lon : 0 })}
-                                >Show directions in Maps
-                            </Button>
-                        )}
-
-                        <List.Section>
-                            <List.Item
-                                title="Details"
-                                titleStyle={localStyles.title}
-                            />
-
-                            {station?.access_days_time && (
-                            <List.Item
-                                title="Opening hours"
-                                description={station?.access_days_time}
-                                left={props => <List.Icon {...props} icon="clock-outline" />}
-                            />
-                            )}
-                            
-                            {station?.station_phone && (
-                                <Pressable onPress={() => openPhone(station.station_phone)}>
-                                    <List.Item
-                                        title="Contact"
-                                        descriptionStyle={{ 
-                                            color: theme.colors.primary,
-                                            textDecorationLine: 'underline',
-                                            textDecorationColor: theme.colors.primary,
-                                            opacity: 0.8  
-                                        }}                            
-                                        description={station?.station_phone}
-                                        left={props => <List.Icon {...props} icon="phone" />}
+                <>
+                    {/* Map */}
+                    { hasDestinationCoordinates && (
+                    <View style={styles.contentPaddingHorizontal}>
+                        <Surface elevation={4} style={localStyles.mapContainer}>
+                            <MapView
+                                style={localStyles.map}
+                                region={{
+                                    latitude: station?.latitude || 0,
+                                    longitude: station?.longitude || 0,
+                                    latitudeDelta: 0.02,
+                                    longitudeDelta: 0.02
+                                }}
+                                zoomEnabled={true}
+                            >
+                                {station?.station_name && station?.street_address && station?.city && station?.state && station?.zip && (
+                                    <Marker
+                                        coordinate={{
+                                            latitude: station?.latitude || 0,
+                                            longitude: station?.longitude || 0
+                                        }}
+                                        title={station?.station_name}
+                                        description={[
+                                            station?.street_address,
+                                            station?.city,
+                                            [station?.state, station?.zip].filter(Boolean).join(' ')
+                                        ].filter(Boolean).join(', ')}                          
                                     />
-                                </Pressable>
-                            )}
+                                )}
+                            </MapView>
+                        </Surface>
+                    </View>
+                    )}
 
-                            {station?.station_website && (
+                    <View style={localStyles.contentContainer}>
+                        {/* Header */}
+                        <List.Section style={[styles.listSection, styles.contentPaddingHorizontal]}>
+                            {/* Title, address and directions */}
+                            {station?.station_name && station?.street_address && station?.city && station?.state && station?.zip && (
                                 <List.Item
-                                    title="Payment methods"
-                                    description={formatPaymentMethods(station.cards_accepted)}
-                                    left={props => <List.Icon {...props} icon="credit-card" />}
+                                    title={station?.station_name}
+                                    description={[
+                                        station?.street_address,
+                                        station?.city,
+                                        [station?.state, station?.zip].filter(Boolean).join(' ')
+                                    ].filter(Boolean).join(', ')}
+                                    left={props => (
+                                        <List.Icon {...props} icon="map-marker" color={theme.colors.primary} />
+                                    )}
+                                    titleStyle={styles.listTitle}
+                                    descriptionStyle={styles.listDescription}
                                 />
                             )}
 
-                            {station?.ev_level2_evse_num > 0 && station.ev_dc_fast_num > 0 &&
-                                <List.Item
-                                    title="EV Network"
-                                    description={`${station?.ev_level2_evse_num} Level 2 • ${station?.ev_dc_fast_num} DC Fast`}
-                                    left={props => <List.Icon {...props} icon="gas-station" />}
-                                    />
-                            }
+                            {/* Subheader */}
+                                <View style={localStyles.headerContainer}>
+                                    {station?.status_code && (
+                                        <List.Item
+                                            title={statusInfo.label}
+                                            titleNumberOfLines={2}
+                                            left={props => (
+                                                <Icon {...props} name={statusInfo.icon} color={statusInfo.color} size={24} />
+                                            )}
+                                            titleStyle={[ localStyles.subHeaderTitle, {color: statusInfo.color} ]}
+                                            style={{ flex: 1 }}
+                                        />
+                                    )}
 
-                            {station?.ev_pricing_info && (
-                            <>
-                                <List.Item
-                                title="Connector types"
-                                titleStyle={localStyles.title}
-                                />
-                                <View style={localStyles.chipContainer}>
-                                {station?.ev_connector_types.map((type) => (
-                                    <Chip
-                                    style={{ backgroundColor: theme.colors.accent }}
-                                    key={type}
-                                    textStyle={{ color: theme.colors.onAccent, fontSize: 12 }}
-                                    >
-                                    {type}
-                                    </Chip>
-                                ))}
+                                    { station?.distance && (
+                                        <List.Item
+                                            title={`${station.distance.toFixed(2)} miles`}
+                                            titleNumberOfLines={2}
+                                            left={props => <Icon {...props} name="map-marker-distance" color={theme.colors.onBackground} size={24} />}
+                                            titleStyle={[ localStyles.subHeaderTitle, {color: theme.colors.onBackground} ]}
+                                            style={{ flex: 1 }}
+                                        />
+                                    )}
+                                    
+                                    {station?.e85_blender_pump && (
+                                        <List.Item
+                                            title="Blender Pump"
+                                            titleNumberOfLines={2}
+                                            left={props => <Icon {...props} name="gas-station" color={theme.colors.onBackground} size={24} />}
+                                            titleStyle={[ localStyles.subHeaderTitle, {color: theme.colors.onBackground} ]}
+                                            style={{ flex: 1 }}
+                                        />
+                                    )}
                                 </View>
-                            </>
+                            
+                            { hasDestinationCoordinates && (
+                                <Button 
+                                    mode="contained" 
+                                    textColor='white' 
+                                    style={{marginTop: 5}} 
+                                    icon="map" 
+                                    onPress={() => openMap({ destinationName: station.station_name, destinationLat: station?.latitude ? station.latitude : 0, destinationLon: station?.longitude ? station.longitude : 0 })}
+                                    >Show directions in Maps
+                                </Button>
                             )}
                         </List.Section>
-                    </>
-                    )}
-                </View>
-            </>
+
+                        {/* Station details */}
+                        {hasStationDetails && (
+                            <>
+
+                                <Divider style={styles.divider} />
+
+                                <List.Section title='Station details' style={{...styles.listSection}} titleStyle={{...styles.listTitle, color: theme.colors.outline, ...styles.contentPaddingLeft}}>
+
+                                    {/* Website */}
+                                    {station?.ev_network_web && (
+                                        <Pressable onPress={() => openLink(station.ev_network_web)}>
+                                            <List.Item
+                                                title="Website"
+                                                description={station.ev_network_web}
+                                                left={props => <List.Icon {...props} icon="web" />}
+                                                titleStyle={styles.listTitle}
+                                                descriptionStyle={styles.listDescription}
+                                                style={styles.contentPaddingHorizontal}
+                                            />
+                                        </Pressable>
+                                    )}
+
+                                    {/* Open hours */}
+                                    {station?.access_days_time && (
+                                        <List.Item
+                                            title="Opening hours"
+                                            description={station.access_days_time}
+                                            left={props => <List.Icon {...props} icon="clock-outline" />}
+                                            titleStyle={styles.listTitle}
+                                            style={styles.contentPaddingHorizontal}
+                                        />
+                                    )}
+
+                                    {/* Phone */}
+                                    {station?.station_phone && (
+                                        <Pressable onPress={() => openPhone(station.station_phone)}>
+                                            <List.Item
+                                                title="Contact"
+                                                description={station.station_phone}
+                                                left={props => <List.Icon {...props} icon="phone" />}
+                                                titleStyle={styles.listTitle}
+                                                descriptionStyle={localStyles.phoneNumber}
+                                                style={styles.contentPaddingHorizontal}
+                                            />
+                                        </Pressable>
+                                    )}
+
+                                    {/* public or private */}
+                                    {station?.access_code && (
+                                        <List.Item
+                                            title={(station.access_code).charAt(0).toUpperCase() + (station.access_code).slice(1)}
+                                            description={`This is a ${station?.access_code} station`}
+                                            left={props => <List.Icon {...props} icon={station.access_code === "public" ? "account-group-outline" : "lock"} />}
+                                            titleStyle={styles.listTitle}
+                                            style={styles.contentPaddingHorizontal}
+                                        />
+                                    )}
+                                </List.Section>
+                            </>
+                        )}
+
+
+                        {/* Additional information */}
+                        {hasAdditionalInformation && (
+                            <>
+                                <Divider style={styles.divider} />
+
+                                <List.Section title='Additional information' style={{...styles.listSection}} titleStyle={{...styles.listTitle, color: theme.colors.outline, ...styles.contentPaddingLeft}}>
+                                    {station?.e85_other_ethanol_blends?.length > 0 && (
+                                        <>
+                                                <View style={styles.contentPaddingHorizontal}>
+                                                    <List.Item title="Ethanol blends" titleStyle={styles.listTitle} left={props => <List.Icon {...props} icon="water" />} />
+                                                    <View style={[localStyles.chipsContainer, styles.contentPaddingHorizontal]}>
+                                                        <Chip
+                                                            style={[localStyles.blend, { backgroundColor: theme.colors.accent }]}
+                                                            textStyle={{ color: theme.colors.onAccent }}
+                                                        >
+                                                            E85
+                                                        </Chip>
+                                                        {station.e85_other_ethanol_blends.map((blend) => (
+                                                            <Chip
+                                                                key={blend}
+                                                                style={[localStyles.blend, { backgroundColor: theme.colors.accent }]}
+                                                                textStyle={{ color: theme.colors.onAccent }}
+                                                            >
+                                                                {blend}
+                                                            </Chip>
+                                                        ))}
+                                                    </View>
+                                                </View>
+                                        </>
+                                    )}
+
+                                    {/* Payment methods */}
+                                    {station?.cards_accepted && (
+                                        <>
+                                            <View style={styles.contentPaddingHorizontal}>
+                                                <List.Item title="Payment methods" titleStyle={styles.listTitle} left={props => <List.Icon {...props} icon="credit-card" />} />
+                                                <View style={[localStyles.chipsContainer, styles.contentPaddingHorizontal]}>
+                                                    {formatPaymentMethods(station.cards_accepted).map((method) => (
+                                                        <Chip
+                                                            key={method}
+                                                            style={[localStyles.paymentMethod, { backgroundColor: theme.colors.accent }]}
+                                                            textStyle={{ color: theme.colors.onAccent }}
+                                                        >
+                                                            {method}
+                                                        </Chip>
+                                                    ))}
+                                                </View>
+                                            </View>
+                                        </>
+                                    )}
+
+                                    {/* Complementary information */}
+                                    {station?.intersection_directions && (
+                                        <View style={styles.contentPaddingHorizontal}>
+                                            <List.Item
+                                                title="Intersection directions"
+                                                description={station.intersection_directions}
+                                                left={props => <List.Icon {...props} icon="sign-direction" />}
+                                                titleStyle={styles.listTitle}
+                                                style={localStyles.lastItem}
+                                            />
+                                        </View>
+                                    )}
+                                </List.Section>
+                            </>
+                        )}
+                    </View>
+                </>
             )}
             {!hasAnyDetails && (
                 <List.Item
                     title="No details found"
-                    titleStyle={localStyles.title}
+                    titleStyle={styles.listTitle}
                     description="An error occurred while fetching the station details. Please try again later."
-                    descriptionStyle={localStyles.addressDescription}
+                    descriptionStyle={styles.listDescription}
                     left={props => <List.Icon {...props} icon="alert-circle-outline" />}
                     style={{ width: '100%', height: '100%', justifyContent: 'center'}}
                 />
@@ -193,32 +302,54 @@ export default function StationDetails({ station }) {
     );
 }
 
-
 const localStyles = StyleSheet.create({
-    mainView: {
+    mapContainer: {
+        height: 200,
         width: '100%',
-        height: '100%',
-        paddingHorizontal: 20,
+        marginTop: 10,
     },
 
     map: {
         width: '100%',
         height: '100%',
     },
-    
-    title: {
-        fontSize: 16,
-        fontWeight: 'bold',
-    },
-    addressDescription: {
-        fontSize: 14,
+
+    contentContainer: {
+        paddingVertical: 16,
     },
 
-    chipContainer: {
+    headerContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: 16,
+    },
+
+    phoneNumber: {
+        textDecorationLine: 'underline',
+    },
+
+    chipsContainer: {
         flexDirection: 'row',
         flexWrap: 'wrap',
         gap: 8,
-        paddingLeft: 17,
+        marginBottom: 16,
+    },
+
+    blend: {
+        marginRight: 8,
+    },
+
+    paymentMethod: {
+        marginRight: 8,
+    },
+
+    lastItem: {
+        marginBottom: 16,
+    },
+
+    subHeaderTitle: { 
+        fontSize: 12,
+        fontWeight: 'bold',
     },
 });
-
