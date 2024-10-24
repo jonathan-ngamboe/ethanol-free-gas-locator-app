@@ -59,7 +59,40 @@ export const useGlobalStyles = () => {
       shadowColor: '#000', 
       shadowOffset: { width: 0, height: 2 },
       shadowOpacity: 0.25, 
-    }
+    },
+
+    contentPaddingLeft: {
+      paddingLeft: 30,
+    },
+
+    contentPaddingRight: {
+      paddingRight: 20,
+    },
+
+    contentPaddingHorizontal: {
+      paddingHorizontal: 20,
+    },
+
+    listTitle: {
+      fontSize: 16,
+      fontWeight: 'bold',
+      lineHeight: 0,
+    },
+
+    listSection: {
+      width: '100%',
+      marginTop: 10,
+    },
+
+    listDescription: {
+      fontSize: 14,
+      lineHeight: 0,
+    },
+
+    divider: {
+      marginHorizontal: 20,
+      marginVertical: 10,
+  },
   
   });
 };
