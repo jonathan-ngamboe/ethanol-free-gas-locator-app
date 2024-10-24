@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useRef, useEffect } from 'react';
+import React, { useCallback, useMemo, useRef, useEffect, useState } from 'react';
 import { Text, StyleSheet, } from 'react-native';
 import { BottomSheetModal, BottomSheetView } from '@gorhom/bottom-sheet';
 import { useTheme } from 'react-native-paper';
@@ -6,6 +6,8 @@ import { useTheme } from 'react-native-paper';
 
 export default function Modal({ initialSnapIndex = 1, snapToOnAction, renderItem }) {
   const theme = useTheme();
+
+  const [hideContent, setHideContent] = useState(false);
 
   const bottomSheetModalRef = useRef(null);
 
@@ -29,6 +31,12 @@ export default function Modal({ initialSnapIndex = 1, snapToOnAction, renderItem
     }
   }, [snapToOnAction, snapToPosition]);
 
+  // Function to toggle the content visibility
+  const toggleContent = () => {
+    setHideContent(!hideContent);
+  }
+
+
   return (
     <BottomSheetModal
       enableDynamicSizing={true}
@@ -40,12 +48,11 @@ export default function Modal({ initialSnapIndex = 1, snapToOnAction, renderItem
       enablePanDownToClose={false}
       enableOverDrag={false}
       android_keyboardInputMode="adjustResize"
+      onChange={toggleContent}
     >
       <BottomSheetView style={localStyles.contentContainer}>
 
-        {renderItem ? renderItem() : (
-          <Text>No content to display</Text>
-        )}
+        { !hideContent ? <></> : renderItem ? renderItem() : <Text>No content</Text> }
 
       </BottomSheetView>
 
