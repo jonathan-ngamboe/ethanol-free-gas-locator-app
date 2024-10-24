@@ -5,9 +5,28 @@ import Map from "../components/Map";
 import SearchBar from '../components/SearchBar';
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import StationCarousel from "../components/StationCarousel";
+import { Avatar, useTheme } from 'react-native-paper';
+import { useRoute, useFocusEffect } from '@react-navigation/native';  
 
 export default function DiscoverScreen({navigation}) {
+    const route = useRoute();
+    const theme = useTheme();
     const bottomSheetRef = useRef(null);
+
+    // Handle the transition from the HomeScreen to the DiscoverScreen
+    const searchBarRef = useRef(null);  
+
+    // Get the search query from the route params
+    const searchQuery = route.params?.searchQuery || '';
+
+    // Force focus on the search bar when the the last screen was the HomeScreen
+    useFocusEffect(
+        React.useCallback(() => {
+            if (searchBarRef.current) {
+                searchBarRef.current.focus();  // Give focus to the search bar to display the keyboard
+            }
+        }, [searchQuery])
+    );
 
     // Function to handle the touch event on the map
     const handleMapTouch = () => {
@@ -85,6 +104,15 @@ export default function DiscoverScreen({navigation}) {
         minimalE85Station,
     ];
 
+    const filterIcon = (
+        <Avatar.Icon
+            icon='filter-variant'
+            size={45}
+            style={{backgroundColor: theme.colors.background}}
+            color={theme.colors.onBackground}
+        />
+    )
+
     return (
         <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{flex: 1}}>
             <BottomSheetModalProvider>
@@ -92,7 +120,13 @@ export default function DiscoverScreen({navigation}) {
                     <Map onTouch={handleMapTouch} />
                     
                     <View style={localStyles.searchBarContainer}>
-                        <SearchBar navigation={navigation}/>
+                        <SearchBar
+                            barRef={searchBarRef}
+                            leftIcon='map-marker'
+                            onLeftIconPress={() => console.log('Map icon pressed')}
+                            rightComponent={filterIcon}
+                            onRightComponentPress={() => console.log('Filter icon pressed')}
+                        />
                     </View>
 
                     <Modal 
