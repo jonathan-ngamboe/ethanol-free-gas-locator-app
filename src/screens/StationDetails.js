@@ -167,16 +167,17 @@ export default function StationDetails({ route }) {
 
                                     {/* Website */}
                                     {station?.ev_network_web && (
-                                        <Pressable onPress={() => openLink(station.ev_network_web)}>
                                             <List.Item
                                                 title="Website"
-                                                description={station.ev_network_web}
+                                                description={() => 
+                                                    <Pressable onPress={() => openLink(station.ev_network_web)}>
+                                                        <Text style={ localStyles.link }>{station.ev_network_web}</Text>
+                                                    </Pressable>
+                                                }
                                                 left={props => <List.Icon {...props} icon="web" />}
                                                 titleStyle={styles.listTitle}
-                                                descriptionStyle={styles.listDescription}
                                                 style={styles.contentPaddingHorizontal}
                                             />
-                                        </Pressable>
                                     )}
 
                                     {/* Open hours */}
@@ -195,10 +196,13 @@ export default function StationDetails({ route }) {
                                         <Pressable onPress={() => openPhone(station.station_phone)}>
                                             <List.Item
                                                 title="Contact"
-                                                description={station.station_phone}
+                                                description={() =>
+                                                    <Pressable onPress={() => openPhone(station.station_phone)}>
+                                                        <Text style={ localStyles.link }>{station.station_phone}</Text>
+                                                    </Pressable>
+                                                }
                                                 left={props => <List.Icon {...props} icon="phone" />}
                                                 titleStyle={styles.listTitle}
-                                                descriptionStyle={localStyles.phoneNumber}
                                                 style={styles.contentPaddingHorizontal}
                                             />
                                         </Pressable>
@@ -325,7 +329,7 @@ const localStyles = StyleSheet.create({
         marginBottom: 16,
     },
 
-    phoneNumber: {
+    link: {
         textDecorationLine: 'underline',
     },
 
