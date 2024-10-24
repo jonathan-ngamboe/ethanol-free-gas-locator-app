@@ -2,6 +2,7 @@ import React, { useCallback, useMemo, useRef, useEffect, useState } from 'react'
 import { Text, StyleSheet, } from 'react-native';
 import { BottomSheetModal, BottomSheetView } from '@gorhom/bottom-sheet';
 import { useTheme } from 'react-native-paper';
+import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 
 
 export default function Modal({ initialSnapIndex = 1, snapToOnAction, renderItem }) {
@@ -52,7 +53,15 @@ export default function Modal({ initialSnapIndex = 1, snapToOnAction, renderItem
     >
       <BottomSheetView style={localStyles.contentContainer}>
 
+      <Animated.View
+        key={hideContent ? 'hidden' : 'visible'}
+        entering={FadeIn.duration(350)}
+        exiting={FadeOut.duration(200)}
+        style={{ flex: 1, width: '100%', alignItems: 'center', justifyContent: 'center' }}
+      >
         { !hideContent ? <></> : renderItem ? renderItem() : <Text>No content</Text> }
+
+      </Animated.View>
 
       </BottomSheetView>
 
