@@ -59,6 +59,7 @@ export const useGlobalStyles = () => {
       shadowColor: '#000', 
       shadowOffset: { width: 0, height: 2 },
       shadowOpacity: 0.25, 
+      shadowColor: theme.colors.onSurface,
     },
 
     contentPaddingLeft: {
