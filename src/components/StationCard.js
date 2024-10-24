@@ -1,148 +1,239 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
-import { Text, useTheme, Card, List, Button, Chip } from 'react-native-paper';
-import { MaterialCommunityIcons } from '@expo/vector-icons'; // Assurez-vous d'avoir installé ce package
+import { Text, useTheme, Card, Button, List } from 'react-native-paper';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import DotMenu from './DotMenu';
 import { useGlobalStyles } from '../styles/globalStyles';
+import { openMap, copyToClipboard } from '../navigation/ExternalNavigation';
 
-export default function StationCard({ station, onPress, showShadow=true }) {
-    const styles = useGlobalStyles();
+export default function StationCard({ station, onPressPrimaryButton, onPressSecondaryButton, showShadow = true,}) {
     const theme = useTheme();
+    const styles = useGlobalStyles();
+
+    // Format the address
+    const getFormattedAddress = () => {
+        const parts = [
+            station?.street_address,
+            station?.city,
+            station?.state && station?.zip ? `${station.state} ${station.zip}` : null
+        ].filter(Boolean);
+        return parts.join(', ');
+    };
+
+    // Check if the station is available (Status E = Available)
+    const getStatusInfo = () => {
+        const statusMap = {
+            'E': { label: 'Available', color: theme.colors.primary, icon: 'check-circle' },
+            'P': { label: 'Planned', color: theme.colors.warning, icon: 'clock-outline' },
+            'T': { label: 'Unavailable', color: theme.colors.error, icon: 'alert-circle' }
+        };
+        return statusMap[station?.status_code] || statusMap['T'];
+    };
+
+    const statusInfo = getStatusInfo();
+
+
+    const getMenuItems = (station) => [
+        { 
+            title: 'Add to favorites',
+            icon: 'heart-outline',
+            onPress: () => console.log('Add to favorites')
+        },
+        { 
+            title: 'Show on map', 
+            icon: 'map-marker-radius-outline', 
+            onPress: () => console.log('Show on map')
+        },
+        { 
+            title: 'Copy address',
+            icon: 'content-copy',
+            onPress: () => copyToClipboard(getFormattedAddress())
+        },
+    ];
 
     return (
-        <Card
-            style={{ ...localStyles.card, backgroundColor: theme.colors.background, ...(showShadow ? styles.shadow : {} ) }}
-
-            elevation={0}
-        >
-            {/* Header with Title and Distance */}
-            <Card.Title
-                    title={station?.name ? station.name : 'NO NAME'}
-                    titleStyle={[
-                    localStyles.stationName,
-                    { color: theme.colors.onSurface }
+        <View style={ showShadow ? styles.shadow : {} }>
+            <Card 
+                mode='contained'
+                style={[
+                    localStyles.card,
+                    { backgroundColor: theme.colors.background },
+                    showShadow ? styles.shadow : {}
                 ]}
-                subtitle={[
-                    station?.street_address,
-                    station?.city,
-                    [station?.state, station?.zip].filter(Boolean).join(' ')
-                ].filter(Boolean).join(', ')}                
-                subtitleStyle={{ color: theme.colors.onSurfaceVariant }}
-                right={() => (
-                    <View style={localStyles.distanceContainer}>
-                        <List.Icon
-                            icon="map-marker-distance"
-                            size={20}
-                            color={theme.colors.onSurfaceVariant}
+            >
+                <View style={localStyles.cardContent}>
+                    <View style={localStyles.content}>
+                        {/* Header Section */}
+                        <List.Item
+                            title={station?.station_name || ''}
+                            titleStyle={styles.listTitle}
+                            description={getFormattedAddress()}
+                            left={(props) => (
+                                <List.Icon 
+                                    {...props} 
+                                    icon="gas-station" 
+                                    color={theme.colors.primary}
+                                />
+                            )}
+                            right={(props) => (
+                                <DotMenu 
+                                    {...props} 
+                                    items={getMenuItems(station)}
+                                />
+                            )}
+                            style={{paddingVertical: 0, paddingRight: 16 }}
                         />
-                        <Text style={{ color: theme.colors.onSurfaceVariant }}>
-                            {station.distance} mi
-                        </Text>
+
+                        {/* Content Section */}
+                        <View style={localStyles.infoRow}>
+                            <View style={localStyles.distanceContainer}>
+                                <Icon 
+                                    name="map-marker-distance"
+                                    size={16}
+                                    color={theme.colors.onSurfaceVariant}
+                                />
+                                <Text 
+                                    variant="bodyMedium"
+                                    style={{ color: theme.colors.onSurfaceVariant }}
+                                >
+                                    {station?.distance?.toFixed(1) || '?'} mi
+                                </Text>
+                            </View>
+                            <View style={localStyles.statusContainer}>
+                                <Icon 
+                                    name={statusInfo.icon}
+                                    size={16}
+                                    color={statusInfo.color}
+                                />
+                                <Text 
+                                    variant="bodyMedium"
+                                    style={{ color: statusInfo.color }}
+                                >
+                                    {statusInfo.label}
+                                </Text>
+                            </View>
+                        </View>
+
+                        <View style={localStyles.tagsContainer}>
+                            {station?.access_days_time && (
+                                <View style={localStyles.tag}>
+                                    <Icon 
+                                        name="clock-outline"
+                                        size={14}
+                                        color={theme.colors.onSurfaceVariant}
+                                    />
+                                    <Text 
+                                        variant="bodySmall"
+                                        style={{ color: theme.colors.onSurfaceVariant }}
+                                        numberOfLines={1}
+                                    >
+                                        {station.access_days_time}
+                                    </Text>
+                                </View>
+                            )}
+                            {station?.access_code && (
+                                <View style={localStyles.tag}>
+                                    <Icon 
+                                        name={station.access_code === "public" ? "account-group-outline" : "lock"}
+                                        size={14}
+                                        color={theme.colors.onSurfaceVariant}
+                                    />
+                                    <Text 
+                                        variant="bodySmall"
+                                        style={{ color: theme.colors.onSurfaceVariant }}
+                                    >
+                                        {station.access_code.charAt(0).toUpperCase() + station.access_code.slice(1)}
+                                    </Text>
+                                </View>
+                            )}
+                        </View>
+
+                        {/* Actions Section */}
+                        <View style={localStyles.actions}>
+                            <Button
+                                mode="contained"
+                                icon="map"
+                                buttonColor={theme.colors.primary}
+                                textColor={theme.colors.background}
+                                onPress={onPressPrimaryButton}
+                                style={localStyles.navigationButton}
+                            >
+                                Directions
+                            </Button>
+                            <Button
+                                mode="text"
+                                icon="chevron-right"
+                                onPress={onPressSecondaryButton}
+                            >
+                                Details
+                            </Button>
+                        </View>
                     </View>
-                )}
-                rightStyle={{ marginRight: 16 }}
-                left={props => (
-                    <List.Icon
-                        {...props}
-                        icon="gas-station"
-                        color={theme.colors.primary}
-                    />
-                )}
-            />
-
-            {/* Price Section */}
-            <Card.Content style={localStyles.content}>
-                <View style={localStyles.priceContainer}>
-                    <Text
-                        style={[
-                            localStyles.price,
-                            { color: theme.colors.primary }
-                        ]}
-                        variant="headlineMedium"
-                    >
-                        ${station.price}
-                    </Text>
-                    <Text
-                        style={{ color: theme.colors.onSurfaceVariant }}
-                        variant="titleMedium"
-                    >
-                        /L E85
-                    </Text>
                 </View>
-            </Card.Content>
-
-            {/* Footer with Status and Button */}
-            <View style={localStyles.footer}>
-                <Chip
-                    mode="flat"
-                    style={{
-                        backgroundColor: station.isOpen
-                            ? theme.colors.successContainer
-                            : theme.colors.errorContainer,
-                        borderRadius: 8,
-                    }}
-                    textStyle={{
-                        color: station.isOpen
-                            ? theme.colors.success
-                            : theme.colors.error
-                    }}
-                >
-                    <MaterialCommunityIcons 
-                        name={station.isOpen ? "check-circle" : "close-circle"} 
-                        size={20} 
-                        color={station.isOpen ? theme.colors.success : theme.colors.error} 
-                    />
-                    {station.isOpen ? ' Open' : ' Closed'}
-                </Chip>
-                <Button
-                    mode="text"
-                    onPress={onPress}
-                    icon="chevron-right"
-                    contentStyle={{ flexDirection: 'row-reverse' }}
-                    labelStyle={{ color: theme.colors.primary }}
-                >
-                    View details
-                </Button>
-            </View>
-        </Card>
+            </Card>
+        </View>
     );
 }
 
 const localStyles = StyleSheet.create({
     card: {
-        marginLeft: 10,
-        marginRight: 25,
-        borderRadius: 12,
+        margin: 20,
+        padding: 10,
+    },
+
+    cardContent: {
+        height: '100%',
+        overflow: 'hidden',
+    },
+
+    content: {
+        flex: 1,
+        justifyContent: 'space-between',
+    },
+
+    actions: {
+        flexDirection: 'row',
+        justifyContent: 'flex-end',
+        alignItems: 'center',
+        gap: 8,
+        paddingHorizontal: 20,
+        paddingBottom: 5,
+        paddingTop: 10,
+    },
+
+    infoRow: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        paddingHorizontal: 20,
     },
 
     distanceContainer: {
         flexDirection: 'row',
         alignItems: 'center',
-    },
-
-    stationName: {
-        fontSize: 18,
-        fontWeight: 'bold',
-    },
-
-    content: {
-        paddingHorizontal: 20,
-    },
-
-    priceContainer: {
-        flexDirection: 'row',
-        alignItems: 'baseline',
         gap: 4,
     },
 
-    price: {
-        fontWeight: '700',
+
+    statusContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 4,
     },
 
-    footer: {
+    tagsContainer: {
         flexDirection: 'row',
-        justifyContent: 'space-between',
+        flexWrap: 'wrap',
+        gap: 8,
+        paddingHorizontal: 20,
+    },
+
+    tag: {
+        flexDirection: 'row',
         alignItems: 'center',
-        paddingLeft: 20,
-        paddingVertical: 20,
+        gap: 4,
+    },
+
+    navigationButton: {
+        flex: 1,
     },
 });
