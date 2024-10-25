@@ -9,6 +9,58 @@ export default function ProfileScreen({ navigation }) {
     const styles = useGlobalStyles();
     const theme = useTheme();
 
+    const exampleE85Station = {
+        // Essential station identification
+        id: 1519,
+        station_name: "Springfield E85 Station",
+        fuel_type_code: "E85",  // Important pour identifier le type de carburant
+        
+        // Location information
+        street_address: "1394 S Sepulveda Blvd",
+        city: "Los Angeles",
+        state: "CA",
+        zip: "90024",
+        
+        // Station status and accessibility
+        status_code: "T",      // E = Available, P = Planned, T = Temporarily Unavailable
+        access_code: "public", // public ou private
+        access_days_time: "24 hours daily",
+        
+        // E85 specific information
+        e85_blender_pump: true,  // Indique si la station a une pompe de mélange
+        e85_other_ethanol_blends: ["E15", "E20-E25"], // Autres mélanges disponibles
+        
+        // Payment information
+        cards_accepted: "CREDIT DEBIT CASH V M D A", // Types de paiement acceptés
+        
+        // Additional useful information
+        ev_network_web: "http://www.example.com", // Site web de la station
+        station_phone: "310-555-0123",
+        access_days_time: "24 hours daily",
+        facility_type: "GAS_STATION", // Type d'établissement
+        
+        // Optionnel : informations de navigation
+        latitude: 34.0453,
+        longitude: -118.4441,
+        intersection_directions: "Corner of Sepulveda and Santa Monica Blvd", // Aide à la localisation
+
+        // Distance from the user's location
+        distance: 0.5, // Distance en miles
+    };
+
+    const minimalE85Station = {
+        id: 1520,
+        fuel_type_code: "E85",
+        station_name: "Quick E85",
+        street_address: "123 Main St",
+        city: "Springfield",
+        state: "IL",
+        status_code: "T",
+        access_code: "public",
+        latitude: 34.0453,
+        longitude: -118.4441,
+    };
+
     const user = { 
         firstName: 'Monkey D.',
         lastName: 'Luffy',
@@ -16,6 +68,8 @@ export default function ProfileScreen({ navigation }) {
         avatar: 'https://i.pinimg.com/736x/1e/8b/f3/1e8bf3b2adefdfe76bb5dfe9bafe1ed5.jpg',
         bannerImage: 'https://i.pinimg.com/736x/53/1b/f2/531bf28ee274611ab3b887c9c301d88a.jpg',
         isPro: false,
+        favoriteStations: [exampleE85Station],
+        searchHistory: [minimalE85Station, exampleE85Station ],
     };
 
     return (
@@ -43,14 +97,28 @@ export default function ProfileScreen({ navigation }) {
                             titleStyle={{ ...styles.listTitle }}
                             left={props => <List.Icon {...props} icon="heart" color={theme.colors.primary} style={styles.contentPaddingLeft} />}
                             right={(props) => <List.Icon {...props} icon="chevron-right" color={theme.colors.primary} style={styles.contentPaddingRight}/>}
-                            onPress={() => navigation.navigate('Favorites')}
+                            onPress={() => navigation.navigate('ListScreenStack', {
+                                screen: 'List Screen',
+                                params: {           
+                                  stationList: user.favoriteStations, 
+                                  pageTitle: 'Favorites',
+                                  pageIcon: 'heart'
+                                }
+                              })}
                         />
                         <List.Item
                             title="My search history"
                             titleStyle={{ ...styles.listTitle }}
                             left={props => <List.Icon {...props} icon="history" color={theme.colors.primary} style={styles.contentPaddingLeft} />}
                             right={(props) => <List.Icon {...props} icon="chevron-right" color={theme.colors.primary} style={styles.contentPaddingRight}/>}
-                            onPress={() => navigation.navigate('History')}
+                            onPress={() => navigation.navigate('ListScreenStack', {
+                                screen: 'List Screen',  
+                                params: {             
+                                  stationList: user.searchHistory, 
+                                  pageTitle: 'Search History',
+                                  pageIcon: 'history'
+                                }
+                              })}
                         />
                     </List.Section>
 
