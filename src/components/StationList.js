@@ -7,7 +7,7 @@ import { openMap } from '../navigation/ExternalNavigation';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 
-export default function stationList({ stationList, navigation }) {
+export default function stationList({ stationList, navigation, displayHeader = true, showMoreIndicator = true }) {
     const styles = useGlobalStyles();
     const [isScrolled, setIsScrolled] = useState(false);
     const theme = useTheme();
@@ -47,6 +47,8 @@ export default function stationList({ stationList, navigation }) {
 
     return (
         <List.Section style={localStyles.contentContainer}>
+            {/* Header */}
+            {displayHeader && (
             <List.Item
                 title={renderStationCount()}
                 titleStyle={styles.listTitle}
@@ -59,6 +61,9 @@ export default function stationList({ stationList, navigation }) {
                     />}
                 style={localStyles.header}
             />
+            )}
+
+            {/* Stations */}
             <List.Section>
                 <FlatList
                     data={stationList}
@@ -83,7 +88,7 @@ export default function stationList({ stationList, navigation }) {
                     style={{ height: '100%'}}
                 />
 
-            {hasMoreItems && !isScrolled && (
+            {hasMoreItems && !isScrolled && showMoreIndicator && (
                 <View style={localStyles.moreIndicatorContainer}>
                     <Text style={{ ...localStyles.moreIndicator, ...styles.moreIndicator }}>
                         ↓ {stationList.length - 3} more stations
@@ -124,7 +129,4 @@ const localStyles = StyleSheet.create({
         borderWidth: StyleSheet.hairlineWidth,
     },
 
-    divider: {
-        //marginHorizontal: 20,
-    },
 });
