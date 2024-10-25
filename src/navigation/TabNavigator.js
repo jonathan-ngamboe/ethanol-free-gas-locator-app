@@ -17,6 +17,7 @@ export const TabNavigator = () => {
     <Tab.Navigator
       initialRouteName="Home"
       screenOptions={{
+        lazy: false,
         tabBarStyle: styles.tabBar,
         tabBarActiveTintColor: theme.colors.primary,
       }}
