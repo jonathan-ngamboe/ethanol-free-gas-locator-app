@@ -30,8 +30,6 @@ export default function DiscoverScreen({navigation}) {
     // Force focus on the search bar when the the last screen was the HomeScreen
     useFocusEffect(
         React.useCallback(() => {
-            console.log('openKeyboard', openKeyboard);
-            console.log('route.params', params);
             if (searchBarRef.current && openKeyboard) {
                 searchBarRef.current.focus();  // Give focus to the search bar to display the keyboard
                 
