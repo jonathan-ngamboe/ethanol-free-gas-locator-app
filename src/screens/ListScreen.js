@@ -46,6 +46,7 @@ export default function ListScreen({ navigation }) {
                     />
 
                     {/* View mode SegmentedButtons */}
+                    <Text style={[styles.listSection, { color: theme.colors.outline, fontWeight: 'bold' }]}>View mode</Text>
                     <SegmentedButtons
                         value={viewMode}
                         density='small'
@@ -96,6 +97,7 @@ export default function ListScreen({ navigation }) {
                                 />
                             )}
                             ItemSeparatorComponent={() => <Divider style={styles.divider} />}
+                            style={{ marginTop: 22 }}
                         />
                     )}
                 </List.Section>
@@ -109,12 +111,10 @@ const localStyles = StyleSheet.create({
     contentContainer: {
         flex: 1,
         width: '100%',
-        //backgroundColor: 'orange',
         justifyContent: 'center',
     },
 
     header: {
-        //backgroundColor: 'red',
     },
 
     headerTitle: {
@@ -125,6 +125,8 @@ const localStyles = StyleSheet.create({
     listSection: {
         flex: 1,
         justifyContent: 'flex-start',
+        //backgroundColor: 'red',
+        marginVertical: 0,
     },
 
     stationCard: {
