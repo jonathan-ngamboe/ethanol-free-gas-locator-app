@@ -6,7 +6,7 @@ import DotMenu from './DotMenu';
 import { useGlobalStyles } from '../styles/globalStyles';
 import { openMap, copyToClipboard } from '../navigation/ExternalNavigation';
 
-export default function StationCard({ station, onPressPrimaryButton, onPressSecondaryButton, showShadow = true,}) {
+export default function StationCard({ station, onPressPrimaryButton, onPressSecondaryButton, showShadow = true, cardContainerStyle }) {
     const theme = useTheme();
     const styles = useGlobalStyles();
 
@@ -52,7 +52,7 @@ export default function StationCard({ station, onPressPrimaryButton, onPressSeco
     ];
 
     return (
-        <View style={ showShadow ? styles.shadow : {} }>
+        <View style={[ showShadow ? styles.shadow : {}, cardContainerStyle ]}>
             <Card 
                 mode='contained'
                 style={[
