@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useRef } from 'react';
 import { StyleSheet, View, Dimensions } from 'react-native';
 import { useTheme, Title, List } from 'react-native-paper';
 
@@ -6,8 +6,9 @@ import StationCard from './StationCard';
 import { openMap } from '../navigation/ExternalNavigation';
 import { useGlobalStyles } from '../styles/globalStyles';
 
-import Carousel, { Pagination, } from "react-native-reanimated-carousel";
+import Carousel from "react-native-reanimated-carousel";
 import { useSharedValue } from "react-native-reanimated";
+import CarouselPagination from './CarouselPagination';
 
 
 export default function StationCarousel({ stationList, navigation }) {
@@ -16,12 +17,12 @@ export default function StationCarousel({ stationList, navigation }) {
     const theme = useTheme();
     
     // Create a ref for the carousel
-    const ref = React.useRef(null);
+    const ref = useRef(null);
+
+    const [currentIndex, setCurrentIndex] = useState(0);
+
     // Create a shared value for the carousel progress
     const progress = useSharedValue(0);
-
-    // Prepare the data for the pagination
-    const data = new Array(stationList?.length).fill(0);
 
     const renderItem = ({ item, index }) => (
         <StationCard 
@@ -34,12 +35,11 @@ export default function StationCarousel({ stationList, navigation }) {
         />
     );
 
-    const onPressPagination = (index) => {
-        // Scroll to the selected index
+    const handleDotPress = (index) => {
         if (ref.current) {
             ref.current.scrollTo({
-                count: index - Math.round(progress.value),
-                animated: false,
+                index: index,
+                animated: true,
             });
         }
     };
@@ -62,24 +62,23 @@ export default function StationCarousel({ stationList, navigation }) {
                         ref={ref}
                         loop={false}
                         width={width}
-                        height={'auto'}
-                        data={stationList ? stationList : []}
+                        height="auto"
+                        data={stationList}
                         scrollAnimationDuration={1000}
                         renderItem={renderItem}
-                        onProgressChange={(offsetProgress, absoluteProgress) => {
-                            progress.value = Math.round(absoluteProgress);
+                        onScrollEnd={(index) => {
+                            setCurrentIndex(index);
                         }}
+                        defaultIndex={0}
                         mode="horizontal"
                     />
                 </View>
-                <Pagination.Basic 
-                    progress={progress}
-                    data={data}
-                    onPress={onPressPagination}
-                    dotStyle={{ backgroundColor: theme.colors.outline, ...localStyles.paginationDot }}
-                    activeDotStyle={{ backgroundColor: theme.colors.primary, ...localStyles.paginationActiveDot }}
-                    containerStyle={localStyles.paginationContainer}
-                />
+                <CarouselPagination
+                        totalItems={stationList.length}
+                        currentIndex={currentIndex}
+                        onDotPress={handleDotPress}
+                        maxDotsToShow={5}
+                    />
             </>
             )}
             { stationList?.length <= 0 && (
@@ -102,32 +101,14 @@ const localStyles = StyleSheet.create({
 
     header: {
         paddingVertical: 0,
+        paddingRight: 0,
     },
-
+    
     carouselContainer: {
         justifyContent: 'center',
         alignItems: 'center',
         padding: 0,
         margin: 0,
         maxHeight: 220,
-    },
-
-    paginationContainer: {
-        justifyContent: 'center',
-        gap: 10, 
-        marginBottom: 20,
-    },
-    
-    paginationDot: {
-        width: 20,
-        height: 4,
-        borderRadius: 2,
-    },
-    
-    paginationActiveDot: {
-        width: 20,
-        height: 4,
-        borderRadius: 2,
-    },
-
+    }
 });
