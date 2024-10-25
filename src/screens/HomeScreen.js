@@ -26,19 +26,20 @@ export default function HomeScreen({navigation}) {
     );
 
     const navigateToMap = () => {
-        navigation.navigate('Discover', { searchQuery: '' });
+        navigation.navigate('Map', { 
+            openKeyboard: true 
+        });
     };
-
     return (
         <View style={ styles.container }>
             <View style={localStyles.searchBarContainer}>
                 {isFocused && 
                     <SearchBar
                         leftIcon='map-marker'
-                        onLeftIconPress={navigateToMap}
+                        onLeftIconPress={navigateToMap} // Open the map when the left icon is pressed and get the user's location (TODO)
                         rightComponent={searchBarRightComponent}
                         onRightComponentPress={() => navigation.navigate('ProfileStack')}
-                        onFocus={navigateToMap} 
+                        onFocus={navigateToMap} // Open the map when the search bar is focused
                         />
                 }
             </View>
