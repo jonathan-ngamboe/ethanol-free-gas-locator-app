@@ -73,7 +73,8 @@ const localStyles = StyleSheet.create({
   contentContainer: {
     flex: 1,
     alignItems: 'center',
-    padding: 24,
+    padding: 0,
+    margin: 0,
   },
 
   modalBackground: {
@@ -93,6 +94,4 @@ const localStyles = StyleSheet.create({
     width: 40,
   },
 
-  carousel: {
-  }
 });
