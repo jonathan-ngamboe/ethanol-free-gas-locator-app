@@ -134,15 +134,15 @@ export default function ProfileScreen({ navigation }) {
                         />
                         <List.Item
                             title="Logout"
-                            titleStyle={{ ...styles.listTitle }}
-                            left={props => <List.Icon {...props} icon="logout" color={theme.colors.primary} style={styles.contentPaddingLeft} />}
+                            titleStyle={{ ...styles.listTitle, color: theme.colors.outline }}
+                            left={props => <List.Icon {...props} icon="logout" color={theme.colors.outline} style={styles.contentPaddingLeft} />}
                             right={(props) => <List.Icon {...props} icon="chevron-right" color={theme.colors.primary} style={styles.contentPaddingRight}/>}
                             onPress={() => console.log('Logout')}
                         />
                         <List.Item
                             title="Delete account"
-                            titleStyle={{ ...styles.listTitle }}
-                            left={props => <List.Icon {...props} icon="delete" color={theme.colors.primary} style={styles.contentPaddingLeft} />}
+                            titleStyle={{ ...styles.listTitle, color: theme.colors.error }}
+                            left={props => <List.Icon {...props} icon="delete" color={theme.colors.error} style={styles.contentPaddingLeft} />}
                             right={(props) => <List.Icon {...props} icon="chevron-right" color={theme.colors.primary} style={styles.contentPaddingRight} />}
                             onPress={() => console.log('Delete account')}
                         />  
