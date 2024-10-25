@@ -27,14 +27,20 @@ export const ThemeProvider = ({ children }) => {
     // Get the theme based on the state
     const theme = isDarkMode ? darkTheme : lightTheme;
   
-    // Fonction pour changer manuellement le thème
+    // Function to manually toggle the theme
     const toggleTheme = () => {
       setIsDarkMode(!isDarkMode);
     };
+
+    // Function to manually set the theme
+
+    const setTheme = (theme) => {
+      setIsDarkMode(theme === 'dark');
+    }
   
     // Wrap the entire app with the theme context to make the theme available to all components
     return (
-      <ThemeContext.Provider value={{ theme, isDarkMode, toggleTheme }}>
+      <ThemeContext.Provider value={{ theme, isDarkMode, toggleTheme, setTheme }}>
         {children}
       </ThemeContext.Provider>
     );
