@@ -3,8 +3,6 @@ import { useGlobalStyles } from '../styles/globalStyles';
 import DotMenu from './DotMenu';
 import { View, StyleSheet, FlatList, Text } from 'react-native';
 import { List, useTheme, Divider } from 'react-native-paper';
-import { openMap } from '../navigation/ExternalNavigation';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 
 export default function stationList({ stationList, navigation, displayHeader = true, showMoreIndicator = true }) {
@@ -74,7 +72,7 @@ export default function stationList({ stationList, navigation, displayHeader = t
                                     title={item.station_name} 
                                     titleStyle={styles.listTitle}
                                     description={`${item.distance} miles away`}
-                                    left={props => <List.Icon {...props} icon="gas-station" style={{ paddingLeft: 20 }} />}
+                                    left={props => <List.Icon {...props} icon="gas-station" style={{ paddingLeft: 20 }} color={theme.colors.primary} />}
                                     right={props =><DotMenu itemID={item.id} color={props.color} style={props.style} items={getMenuItems(item)} />}
                                     onPress={() => navigation.navigate('StationDetails', { station: item })}
                                 />
