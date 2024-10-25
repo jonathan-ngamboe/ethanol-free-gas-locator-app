@@ -51,8 +51,7 @@ export const useGlobalStyles = () => {
     },
 
     dotMenuColor: {
-      backgroundColor: theme.colors.inverseOnSurface,
-      borderColor: theme.colors.onSurface,
+      backgroundColor: theme.colors.background,
     },
 
     shadow: {
