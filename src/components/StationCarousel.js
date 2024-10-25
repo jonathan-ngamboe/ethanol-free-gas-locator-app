@@ -19,6 +19,13 @@ export default function StationCarousel({ stationList, navigation }) {
     // Create a ref for the carousel
     const ref = useRef(null);
 
+    // Function to render the station count
+    const renderStationCount = () => {
+        if (stationList.length === 0) return 'No station found';
+        if (stationList.length === 1) return '1 Station found';
+        return `${stationList.length} Stations found`;
+    };
+
     const [currentIndex, setCurrentIndex] = useState(0);
 
     // Create a shared value for the carousel progress
@@ -49,9 +56,9 @@ export default function StationCarousel({ stationList, navigation }) {
             { stationList?.length > 0 && (
             <>
                 <List.Item 
-                    title="Stations"
+                    title={renderStationCount()}
                     titleStyle={styles.listTitle}
-                    description="Swipe to see more stations"
+                    description="Swipe to see more"
                     descriptionStyle={styles.listDescription}
                     left={() => <List.Icon icon="arrow-left" color={theme.colors.primary} />}
                     right={() => <List.Icon icon="arrow-right" color={theme.colors.primary} />}
@@ -101,7 +108,7 @@ const localStyles = StyleSheet.create({
 
     header: {
         paddingVertical: 0,
-        paddingRight: 0,
+        paddingLeft: 20,
     },
     
     carouselContainer: {
