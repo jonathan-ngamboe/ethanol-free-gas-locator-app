@@ -7,41 +7,78 @@ import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import StationCarousel from "../components/StationCarousel";
 import { Avatar, useTheme } from 'react-native-paper';
 import { useRoute, useFocusEffect } from '@react-navigation/native';  
+import StationList from "../components/StationList";
+
 
 export default function DiscoverScreen({navigation}) {
     const route = useRoute();
+    const params = route.params;
     const theme = useTheme();
+
+    // Used to choose between the carousel and the list
+    const displayModal = useRef('carousel');
+
+    // Reference to the bottom sheet modal
     const bottomSheetRef = useRef(null);
 
-    // Handle the transition from the HomeScreen to the DiscoverScreen
+    // Reference to the search bar. Handle the transition from the HomeScreen to the DiscoverScreen
     const searchBarRef = useRef(null);  
 
     // Get the search query from the route params
-    const searchQuery = route.params?.searchQuery || '';
+    const {openKeyboard = false} = params || {};
 
     // Force focus on the search bar when the the last screen was the HomeScreen
     useFocusEffect(
         React.useCallback(() => {
-            if (searchBarRef.current) {
+            console.log('openKeyboard', openKeyboard);
+            console.log('route.params', params);
+            if (searchBarRef.current && openKeyboard) {
                 searchBarRef.current.focus();  // Give focus to the search bar to display the keyboard
+                
+                // Hide the modal
+                setTimeout(() => {
+                    closeModal();
+                }, 2000); 
+
+                // Reset the openKeyboard parameter to avoid opening the keyboard again
+                navigation.setParams({
+                    ...params,
+                    openKeyboard: false
+                });
             }
-        }, [searchQuery])
+        }, [openKeyboard])
     );
+
+    // Function to close the modal
+    const closeModal = () => {
+        if (bottomSheetRef.current) {
+            bottomSheetRef.current(0);
+        }
+    }
+    // Function to open the modal
+    const openModal = () => {
+        if (bottomSheetRef.current) {
+            bottomSheetRef.current(1);
+        }
+    }
 
     // Function to handle the touch event on the map
     const handleMapTouch = () => {
         // Hide the keyboard 
         Keyboard.dismiss();
+        // Close the modal
+        closeModal();
+    };
 
-        // Snap the bottom sheet to the initial position
-        if (bottomSheetRef.current) {
-            bottomSheetRef.current(0); 
-        }
+    const renderStationCarousel = () => {
+        return (
+            <StationCarousel stationList={stationList} navigation={navigation} />
+        );
     };
 
     const renderStationList = () => {
         return (
-            <StationCarousel stationList={stationList} navigation={navigation} />
+            <StationList stationList={stationList} navigation={navigation} />
         );
     };
 
@@ -133,7 +170,7 @@ export default function DiscoverScreen({navigation}) {
                         initialSnapIndex={1} 
                         snapToOnAction={(snap) => bottomSheetRef.current = snap} 
                         stationList={stationList}
-                        renderItem={renderStationList}
+                        renderItem={() => displayModal.current === 'carousel' ? renderStationCarousel() : renderStationList()}
                     />
                 </View>
             </BottomSheetModalProvider>
