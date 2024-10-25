@@ -177,7 +177,6 @@ export default function StationCard({ station, onPressPrimaryButton, onPressSeco
 
 const localStyles = StyleSheet.create({
     card: {
-        margin: 20,
         padding: 10,
     },
 
