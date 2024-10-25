@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useTheme } from '../context/ThemeContext';
@@ -6,6 +6,8 @@ import { useGlobalStyles } from '../styles/globalStyles';
 import SettingsScreen from '../screens/SettingsScreen';
 import { HomeStack } from './stacks/HomeStack';
 import { DiscoverStack } from './stacks/DiscoverStack';
+import { settingsConstants } from '../constants/storageConstants';
+import { loadData } from '../utils/asyncStorage';
 
 const Tab = createBottomTabNavigator();
 
@@ -13,9 +15,26 @@ export const TabNavigator = () => {
   const { theme } = useTheme();
   const styles = useGlobalStyles();
 
+  
+  const [startScreen, setStartScreen] = useState(null);
+
+  useEffect(() => {
+    const fetchSettings = async () => {
+      const loadedSettings = await loadData(settingsConstants.SETTINGS_KEY);
+      setStartScreen(loadedSettings?.startScreen || 'Home');
+    };
+    fetchSettings();
+  }, []);
+
+  // Load the tab navigator only when the startScreen is loaded from asyncStorage
+  if (!startScreen) {
+    return null;
+  }
+
+
   return (
     <Tab.Navigator
-      initialRouteName="Home"
+      initialRouteName={startScreen}
       screenOptions={{
         lazy: false,
         tabBarStyle: styles.tabBar,
