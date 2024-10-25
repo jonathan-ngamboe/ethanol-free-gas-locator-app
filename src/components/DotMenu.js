@@ -34,7 +34,7 @@ export default function DotMenu({ itemID, color, style, items = [] }) {
             onDismiss={closeMenu}
             anchorPosition='bottom'
             mode='flat'
-            contentStyle={{...localStyles.dotMenu, ...styles.dotMenuColor}} 
+            contentStyle={[localStyles.dotMenu, styles.dotMenuColor, styles.shadow]} 
             anchor={
                 <Pressable onPress={() => openMenu(itemID)} style={style}>
                     <List.Icon icon="dots-vertical" color={color} />
