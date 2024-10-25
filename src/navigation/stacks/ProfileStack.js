@@ -2,8 +2,7 @@ import React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 import { useTheme } from '../../context/ThemeContext';
 import { useGlobalStyles } from '../../styles/globalStyles';
-import FavoriteScreen from '../../screens/FavoriteScreen';
-import HistoryScreen from '../../screens/HistoryScreen';
+import { ListScreenStack } from './ListScreenStack';
 import ProfileScreen from '../../screens/ProfileScreen';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
@@ -38,17 +37,10 @@ export const ProfileStack = () => {
         }}
       />
       <Stack.Screen 
-        name="Favorites"
-        component={FavoriteScreen}
+        name="ListScreenStack"
+        component={ListScreenStack}
         options={{
-          headerTitle: "", 
-        }}
-      />
-      <Stack.Screen
-        name="History"
-        component={HistoryScreen}
-        options={{
-          headerTitle: "",
+          headerShown: false,
         }}
       />
     </Stack.Navigator>
