@@ -5,7 +5,7 @@ import { useTheme } from 'react-native-paper';
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 
 
-export default function Modal({ initialSnapIndex = 1, snapToOnAction, renderItem }) {
+export default function Modal({ initialSnapIndex = 1, snapToOnAction, renderItem, backgroundColor }) {
   const theme = useTheme();
 
   const [hideContent, setHideContent] = useState(false);
@@ -33,8 +33,22 @@ export default function Modal({ initialSnapIndex = 1, snapToOnAction, renderItem
   }, [snapToOnAction, snapToPosition]);
 
   // Function to toggle the content visibility
-  const toggleContent = () => {
+  const toggleContent = (index) => {
+    updateModalBackgroundColor(index);
     setHideContent(!hideContent);
+  };
+
+  // Dynamically change the background color
+  const [modalBackgroundColor, setModalBackgroundColor] = useState('');
+  const updateModalBackgroundColor = (index) => {
+    console.log('Is content hidden ?', hideContent);
+    // Set backgroundColor when modal is at the bottom index
+    if (index === 0) {
+      setModalBackgroundColor(theme.colors.background);
+    // Top index
+    } else {
+      setModalBackgroundColor(backgroundColor || theme.colors.background);
+    }
   }
 
 
@@ -44,7 +58,7 @@ export default function Modal({ initialSnapIndex = 1, snapToOnAction, renderItem
       ref={bottomSheetModalRef}
       index={initialSnapIndex}  // Default to the initial snap point (30% by default)
       snapPoints={snapPoints}
-      backgroundStyle={{ ...localStyles.modalBackground, backgroundColor: theme.colors.background, shadowColor: theme.colors.onSurface }}
+      backgroundStyle={{ ...localStyles.modalBackground, backgroundColor: modalBackgroundColor, shadowColor: theme.colors.onSurface }}
       handleIndicatorStyle={localStyles.indicator}
       enablePanDownToClose={false}
       enableOverDrag={false}
