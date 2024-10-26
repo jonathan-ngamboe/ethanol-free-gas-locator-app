@@ -6,7 +6,7 @@ import DotMenu from './DotMenu';
 import { useGlobalStyles } from '../styles/globalStyles';
 import { openMap, copyToClipboard } from '../navigation/ExternalNavigation';
 
-export default function StationCard({ station, onPressPrimaryButton, onPressSecondaryButton, showShadow = true, cardContainerStyle }) {
+export default function StationCard({ station, onPressPrimaryButton, onPressSecondaryButton, showShadow = true, cardContainerStyle, cardColor }) {
     const theme = useTheme();
     const styles = useGlobalStyles();
 
@@ -56,8 +56,7 @@ export default function StationCard({ station, onPressPrimaryButton, onPressSeco
             <Card 
                 mode='contained'
                 style={[
-                    localStyles.card,
-                    { backgroundColor: theme.colors.background },
+                    { backgroundColor: cardColor || theme.colors.background },
                     showShadow ? styles.shadow : {}
                 ]}
             >
@@ -176,13 +175,10 @@ export default function StationCard({ station, onPressPrimaryButton, onPressSeco
 }
 
 const localStyles = StyleSheet.create({
-    card: {
-        padding: 10,
-    },
-
     cardContent: {
         height: '100%',
         overflow: 'hidden',
+        paddingVertical: 10,
     },
 
     content: {
