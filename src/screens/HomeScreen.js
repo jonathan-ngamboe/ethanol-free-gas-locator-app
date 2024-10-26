@@ -1,11 +1,11 @@
-import { View, StyleSheet, ScrollView, Text } from 'react-native';
+import { View, StyleSheet, ScrollView, Text, StatusBar } from 'react-native';
 import { useGlobalStyles } from '../styles/globalStyles';
 import SearchBar from '../components/SearchBar';
 import { Avatar, List, useTheme } from 'react-native-paper';
 import { useIsFocused } from '@react-navigation/native'; 
-import StationCarousel from '../components/StationCarousel';
 import StatsCard from '../components/StatsCard';
 import DotMenu from '../components/DotMenu';
+import React, {useEffect} from 'react';
 
 export default function HomeScreen({navigation}) {
     const styles = useGlobalStyles();
@@ -98,6 +98,7 @@ export default function HomeScreen({navigation}) {
         },
     ];
 
+    // Function to display the stations in a list. Note: Flatlist can not be used because of the scrollview
     const renderStationList = (stationList) => {
         return (
             <List.Section style={localStyles.listContainer}>
@@ -129,6 +130,15 @@ export default function HomeScreen({navigation}) {
             </List.Section>
         );
     };    
+
+    // Change the status bar color depending of the theme only in this screen
+    useEffect(() => {
+        if (isFocused) {
+          StatusBar.setBarStyle(theme.dark ? 'dark-content' : 'light-content');
+        } else {
+          StatusBar.setBarStyle(theme.dark ? 'light-content' : 'dark-content');
+        }
+      }, [isFocused, theme]);
 
     return (
         <View style={[styles.container, { alignItems: 'stretch' }]}>  
