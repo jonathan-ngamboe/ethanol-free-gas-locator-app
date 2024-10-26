@@ -21,7 +21,7 @@ export const TabNavigator = () => {
   useEffect(() => {
     const fetchSettings = async () => {
       const loadedSettings = await loadData(settingsConstants.SETTINGS_KEY);
-      setStartScreen(loadedSettings?.startScreen || 'Home');
+      setStartScreen(loadedSettings?.startScreen || 'Discover');
     };
     fetchSettings();
   }, []);
