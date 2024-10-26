@@ -1,12 +1,13 @@
 import { View, ScrollView, Platform } from 'react-native';
 import { useGlobalStyles } from '../styles/globalStyles';
 import { useTheme as themeContext } from '../context/ThemeContext';
-import { useTheme, Divider, Switch, List, RadioButton } from 'react-native-paper';
+import { useTheme, Divider, Switch, List, RadioButton, Text } from 'react-native-paper';
 import { useState } from 'react';
 import { openLink } from '../navigation/ExternalNavigation';
 import { storeData, loadData } from '../utils/asyncStorage';
 import { useEffect } from 'react';  
 import { settingsConstants } from '../constants/storageConstants';
+import { helpUrl, appStoreUrl, playStoreUrl, websiteUrl, bottomMessage, appVersion } from '../constants/generalConstants';
 
 export default function SettingsScreen() {
     const styles = useGlobalStyles();
@@ -30,7 +31,6 @@ export default function SettingsScreen() {
         const fetchSettings = async () => {
           const loadedSettings = await loadData(settingsConstants.SETTINGS_KEY);
            setSettings(loadedSettings || settings);
-           console.log('Settings loaded fron storage', loadedSettings);
 
            // Set the theme 
            setTheme(loadedSettings.theme);
@@ -124,11 +124,19 @@ export default function SettingsScreen() {
                 {/* More */}
                 <List.Section title='More' style={{...styles.listSection}} titleStyle={{...styles.listTitle, color: theme.colors.outline, ...styles.contentPaddingLeft}}>
                     <List.Item
+                        title="Help"
+                        titleStyle={{ ...styles.listTitle }}
+                        left={props => <List.Icon {...props} icon="help-circle" color={theme.colors.primary} style={styles.contentPaddingLeft} />}
+                        right={(props) => <List.Icon {...props} icon="chevron-right" color={theme.colors.primary} style={styles.contentPaddingRight}/>}
+                        onPress={() => openLink(helpUrl)}
+                    />
+
+                    <List.Item
                         title="Rate the app"
                         titleStyle={{ ...styles.listTitle }}
                         left={props => <List.Icon {...props} icon="star-outline" color={theme.colors.primary} style={styles.contentPaddingLeft} />}
                         right={(props) => <List.Icon {...props} icon="chevron-right" color={theme.colors.primary} style={styles.contentPaddingRight}/>}
-                        onPress={() => openLink(Platform.select({ ios: 'https://apps.apple.com/us/app/ethanol-free-gas-locator-app', android: 'https://play.google.com/store/apps/details?id=com.ethanol-free-gas-locator-app' }))}
+                        onPress={() => openLink(Platform.select({ ios: appStoreUrl, android: playStoreUrl }))}
                     />
 
                     <List.Item
@@ -136,8 +144,18 @@ export default function SettingsScreen() {
                         titleStyle={{ ...styles.listTitle }}
                         left={props => <List.Icon {...props} icon="web" color={theme.colors.primary} style={styles.contentPaddingLeft} />}
                         right={(props) => <List.Icon {...props} icon="chevron-right" color={theme.colors.primary} style={styles.contentPaddingRight}/>}
-                        onPress={() => openLink('https://ethanol-free-gas-locator.app')}
+                        onPress={() => openLink(websiteUrl)}
                     />
+
+                    <List.Item
+                        title="Version"
+                        description={appVersion}
+                        titleStyle={{ ...styles.listTitle }}
+                        left={props => <List.Icon {...props} icon="information" color={theme.colors.primary} style={styles.contentPaddingLeft} />}
+                        subtitleStyle={{...styles.listDescription, color: theme.colors.outline }}
+                    />
+
+                    <Text style={[localStyles.bottomMessage, {color: theme.colors.outline}]}>{bottomMessage}</Text>
                 </List.Section> 
             </View>
         </ScrollView>
@@ -147,5 +165,10 @@ export default function SettingsScreen() {
 const localStyles = {
     mainView: {
         justifyContent: 'flex-start',
+    },
+
+    bottomMessage: {
+        textAlign: 'center',
+        marginTop: 20,
     },
 };
