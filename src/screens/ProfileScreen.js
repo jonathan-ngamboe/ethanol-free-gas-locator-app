@@ -1,9 +1,10 @@
 import { useGlobalStyles } from '../styles/globalStyles';
 import { View, StyleSheet, ScrollView, Platform } from 'react-native';
-import { useTheme, Button, List, Divider } from 'react-native-paper';
+import { useTheme, Button, List, Divider, Text } from 'react-native-paper';
 import ProfileCard from '../components/ProfileCard';
 import { share } from '../navigation/ExternalNavigation';
 import { openLink } from '../navigation/ExternalNavigation';
+import { appStoreUrl, playStoreUrl, privacyPolicyUrl, bottomMessage, appVersion } from '../constants/generalConstants';
 
 export default function ProfileScreen({ navigation }) {
     const styles = useGlobalStyles();
@@ -126,11 +127,19 @@ export default function ProfileScreen({ navigation }) {
 
                     <List.Section title='More' style={{...styles.listSection}} titleStyle={{...styles.listTitle, color: theme.colors.outline, ...styles.contentPaddingLeft}}>
                         <List.Item
+                            title="Privacy policy"
+                            titleStyle={{ ...styles.listTitle }}
+                            left={props => <List.Icon {...props} icon="shield-account" color={theme.colors.primary} style={styles.contentPaddingLeft} />}
+                            right={(props) => <List.Icon {...props} icon="chevron-right" color={theme.colors.primary} style={styles.contentPaddingRight}/>}
+                            onPress={() => openLink(privacyPolicyUrl)}
+                        />
+
+                        <List.Item
                             title="Rate the app"
                             titleStyle={{ ...styles.listTitle }}
                             left={props => <List.Icon {...props} icon="star-outline" color={theme.colors.primary} style={styles.contentPaddingLeft} />}
                             right={(props) => <List.Icon {...props} icon="chevron-right" color={theme.colors.primary} style={styles.contentPaddingRight}/>}
-                            onPress={() => openLink(Platform.select({ ios: 'https://apps.apple.com/us/app/ethanol-free-gas-locator-app', android: 'https://play.google.com/store/apps/details?id=com.ethanol-free-gas-locator-app' }))}
+                            onPress={() => openLink(Platform.select({ ios: appStoreUrl, android: playStoreUrl }))}
                         />
                         <List.Item
                             title="Logout"
@@ -146,6 +155,16 @@ export default function ProfileScreen({ navigation }) {
                             right={(props) => <List.Icon {...props} icon="chevron-right" color={theme.colors.primary} style={styles.contentPaddingRight} />}
                             onPress={() => console.log('Delete account')}
                         />  
+
+                        <List.Item
+                            title="Version"
+                            description={appVersion}
+                            titleStyle={{ ...styles.listTitle }}
+                            left={props => <List.Icon {...props} icon="information" color={theme.colors.primary} style={styles.contentPaddingLeft} />}
+                            subtitleStyle={{...styles.listDescription, color: theme.colors.outline }}
+                        />
+
+                        <Text style={[localStyles.bottomMessage, {color: theme.colors.outline}]}>{bottomMessage}</Text>
                     </List.Section>
   
                 </List.Section>
@@ -158,5 +177,10 @@ const localStyles = StyleSheet.create({
     mainView: {
         width: '100%',
         height: '100%',
+    },
+
+    bottomMessage: {
+        textAlign: 'center',
+        marginTop: 20,
     },
 });
