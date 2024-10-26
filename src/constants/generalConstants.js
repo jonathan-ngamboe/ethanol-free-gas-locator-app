@@ -1,0 +1,11 @@
+export const websiteUrl = 'https://www.reactnativemap.app';
+export const privacyPolicyUrl = 'https://www.reactnativemap.app/privacy';
+export const termsOfServiceUrl = 'https://www.reactnativemap.app/terms';
+export const helpUrl = 'https://www.reactnativemap.app/help';
+export const reportIssueUrl = 'https://www.reactnativemap.app/report-issue';
+export const rateAppUrl = 'https://www.reactnativemap.app/rate';
+export const contactEmail = 'contact@example.com';
+export const appVersion = '1.0.0';
+export const appStoreUrl = 'https://www.reactnativemap.app/app-store';
+export const playStoreUrl = 'https://www.reactnativemap.app/play-store';
+export const bottomMessage = 'Made with ❤️ by Jonathan Ngamboe';
