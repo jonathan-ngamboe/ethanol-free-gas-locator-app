@@ -11,7 +11,7 @@ import { useSharedValue } from "react-native-reanimated";
 import CarouselPagination from './CarouselPagination';
 
 
-export default function StationCarousel({ stationList, navigation }) {
+export default function StationCarousel({ stationList, navigation, showShadow=false, containerStyle, cardColor, cardContainerStyle, headerStyle, showHeader=true }) {
     const width = Dimensions.get('window').width;
     const styles = useGlobalStyles();
     const theme = useTheme();
@@ -34,11 +34,12 @@ export default function StationCarousel({ stationList, navigation }) {
     const renderItem = ({ item, index }) => (
         <StationCard 
             station={item} 
-            showShadow={false}
+            showShadow={showShadow}
             onPressCard={() => navigation.navigate('StationDetails', { station: item })}
             onPressPrimaryButton={() => openMap({ destinationName: item.station_name, destinationLat: item.latitude, destinationLon: item.longitude })}
             onPressSecondaryButton={() => navigation.navigate('StationDetails', { station: item })}
-            style={ localStyles.stationCard }
+            cardContainerStyle={[ cardContainerStyle ]}
+            cardColor={cardColor}
         />
     );
 
@@ -52,18 +53,20 @@ export default function StationCarousel({ stationList, navigation }) {
     };
 
     return (
-        <View style={[styles.container, localStyles.mainView]}>
+        <View style={[styles.container, localStyles.mainView, containerStyle]}>
             { stationList?.length > 0 && (
             <>
-                <List.Item 
-                    title={renderStationCount()}
-                    titleStyle={styles.listTitle}
-                    description="Swipe to see more"
-                    descriptionStyle={styles.listDescription}
-                    left={() => <List.Icon icon="arrow-left" color={theme.colors.primary} />}
-                    right={() => <List.Icon icon="arrow-right" color={theme.colors.primary} />}
-                    style={localStyles.header}
-                />
+                { showHeader && (
+                    <List.Item 
+                        title={renderStationCount()}
+                        titleStyle={styles.listTitle}
+                        description={stationList?.length > 1 ? "Swipe to see more" : "Tap to see details"}
+                        descriptionStyle={styles.listDescription}
+                        left={() => <List.Icon icon="arrow-left" color={theme.colors.primary} />}
+                        right={() => <List.Icon icon="arrow-right" color={theme.colors.primary} />}
+                        style={[localStyles.header, headerStyle]}
+                    />
+                )}
                 <View style={localStyles.carouselContainer}>
                     <Carousel
                         ref={ref}
