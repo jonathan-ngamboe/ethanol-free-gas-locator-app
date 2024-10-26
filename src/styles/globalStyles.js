@@ -16,6 +16,7 @@ export const useGlobalStyles = () => {
       flexGrow: 1,
       backgroundColor: theme.colors.background,
       paddingBottom: 20,
+      maxWidth: '100%',
     },
   
     header: {
@@ -55,7 +56,6 @@ export const useGlobalStyles = () => {
     },
 
     shadow: {
-      shadowColor: '#000', 
       shadowOffset: { width: 0, height: 2 },
       shadowOpacity: 0.25, 
       shadowColor: theme.colors.onSurface,
