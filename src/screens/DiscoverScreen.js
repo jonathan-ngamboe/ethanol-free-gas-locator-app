@@ -16,7 +16,7 @@ export default function DiscoverScreen({navigation}) {
     const theme = useTheme();
 
     // Used to choose between the carousel and the list
-    const displayModal = useRef('carousel');
+    const viewMode = useRef('carousel');
 
     // Reference to the bottom sheet modal
     const bottomSheetRef = useRef(null);
@@ -70,7 +70,14 @@ export default function DiscoverScreen({navigation}) {
 
     const renderStationCarousel = () => {
         return (
-            <StationCarousel stationList={stationList} navigation={navigation} />
+            <StationCarousel 
+                stationList={stationList} 
+                navigation={navigation} 
+                showHeader={true}
+                containerStyle={localStyles.carouselContainer} 
+                cardContainerStyle={localStyles.carouselCardContainer}
+                headerStyle={[localStyles.carouselHeader, {backgroundColor: theme.colors.background}]}
+            />
         );
     };
 
@@ -141,7 +148,7 @@ export default function DiscoverScreen({navigation}) {
 
     const filterIcon = (
         <Avatar.Icon
-            icon='filter-variant'
+            icon='tune'
             size={45}
             style={{backgroundColor: theme.colors.background}}
             color={theme.colors.onBackground}
@@ -168,7 +175,8 @@ export default function DiscoverScreen({navigation}) {
                         initialSnapIndex={1} 
                         snapToOnAction={(snap) => bottomSheetRef.current = snap} 
                         stationList={stationList}
-                        renderItem={() => displayModal.current === 'carousel' ? renderStationCarousel() : renderStationList()}
+                        renderItem={() => viewMode.current === 'carousel' ? renderStationCarousel() : renderStationList()}
+                        backgroundColor={ viewMode.current === 'carousel' ? 'transparent' : theme.colors.background }
                     />
                 </View>
             </BottomSheetModalProvider>
@@ -190,4 +198,20 @@ const localStyles = StyleSheet.create({
         alignItems: 'center',
         zIndex: 1, 
     },
+
+    carouselContainer: {
+        backgroundColor: 'transparent',
+        marginBottom: 60,
+        borderRadius: 12,
+    },
+
+    carouselCardContainer: {
+        padding: 20,
+    },
+
+    carouselHeader: {
+        marginTop: 60,
+        borderRadius: 12,
+        marginHorizontal: 20,
+    }
 });
