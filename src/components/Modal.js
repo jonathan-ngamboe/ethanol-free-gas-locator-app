@@ -41,7 +41,6 @@ export default function Modal({ initialSnapIndex = 1, snapToOnAction, renderItem
   // Dynamically change the background color
   const [modalBackgroundColor, setModalBackgroundColor] = useState('');
   const updateModalBackgroundColor = (index) => {
-    console.log('Is content hidden ?', hideContent);
     // Set backgroundColor when modal is at the bottom index
     if (index === 0) {
       setModalBackgroundColor(theme.colors.background);
