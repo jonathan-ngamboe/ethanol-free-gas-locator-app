@@ -56,18 +56,18 @@ export default function ListScreen({ navigation }) {
                                 label: 'Simple',
                                 icon: 'view-list',
                                 checkedColor: theme.colors.background,
-                                style: { backgroundColor: viewMode === 'simple' ? theme.colors.primary : theme.colors.background },
+                                style: { backgroundColor: viewMode === 'simple' ? theme.colors.primary : theme.colors.background, borderColor: 'transparent' },
                             },
                             {
                                 value: 'detailed',
                                 label: 'Detailed',
                                 icon: 'view-dashboard',
-                                style: { backgroundColor: viewMode === 'detailed' ? theme.colors.primary : theme.colors.background },
+                                style: { backgroundColor: viewMode === 'detailed' ? theme.colors.primary : theme.colors.background, borderColor: 'transparent' },
                                 checkedColor: theme.colors.background,
                             },
                         ]}
                         onValueChange={(mode) => setViewMode(mode)}
-                        style={{ marginVertical: 10 }}
+                        style={[{ marginVertical: 10 }, styles.shadow]}
                     />
                 </List.Section>
 
