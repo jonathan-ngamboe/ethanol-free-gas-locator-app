@@ -7,74 +7,86 @@ import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 
 export default function Modal({ initialSnapIndex = 1, snapToOnAction, renderItem, backgroundColor }) {
   const theme = useTheme();
-
   const [hideContent, setHideContent] = useState(false);
-
   const bottomSheetModalRef = useRef(null);
-
+  const [isContentReady, setIsContentReady] = useState(false);
   // Snap Points used to define the different height of the bottom sheet.
-  const snapPoints = useMemo(() => [50, 300], []);
+  const snapPoints = useMemo(() => [35, 300, 600], []);
+
 
   // Open the bottom sheet when the component mounts
   useEffect(() => {
-    bottomSheetModalRef.current?.present(); 
+    bottomSheetModalRef.current?.present();
+    // Small delay to allow the content to be ready before showing it otherwise the scrollview will not work
+    const timer = setTimeout(() => {
+      setIsContentReady(true);
+    }, 100);
+    
+    return () => clearTimeout(timer);
   }, []);
 
+
   // Function to snap to a specific point, defaults to index 0 (50%)
-  const snapToPosition = useCallback((index = 0) => {
-    bottomSheetModalRef.current?.snapToIndex(index);
+  const snapToPosition = useCallback((snapPoint) => {
+    if (bottomSheetModalRef.current) {
+      bottomSheetModalRef.current.snapToIndex(snapPoint);
+    }
   }, []);
 
   // Give the parent component the ability to snap the bottom sheet to a specific position
   useEffect(() => {
     if (snapToOnAction) {
-      snapToOnAction(snapToPosition); // Pass the snap function to the parent to let it control the sheet position
+      snapToOnAction({
+        minimize: minimizeModal,
+        open: openModal,
+        snapTo: snapToPosition
+      });
     }
-  }, [snapToOnAction, snapToPosition]);
+  }, [snapToOnAction, minimizeModal, openModal, snapToPosition]);
+
 
   // Function to toggle the content visibility
   const toggleContent = (index) => {
-    updateModalBackgroundColor(index);
     setHideContent(!hideContent);
   };
 
-  // Dynamically change the background color
-  const [modalBackgroundColor, setModalBackgroundColor] = useState('');
-  const updateModalBackgroundColor = (index) => {
-    // Set backgroundColor when modal is at the bottom index
-    if (index === 0) {
-      setModalBackgroundColor(theme.colors.background);
-    // Top index
-    } else {
-      setModalBackgroundColor(backgroundColor || theme.colors.background);
+  const openModal = useCallback(() => {
+    if (bottomSheetModalRef.current) {
+      bottomSheetModalRef.current.snapToIndex(1);
     }
-  }
+  }, []);
 
+  const minimizeModal = useCallback(() => {
+    if (bottomSheetModalRef.current) {
+      bottomSheetModalRef.current.snapToIndex(0);
+    }
+  }, []);
+  
 
   return (
     <BottomSheetModal
       enableDynamicSizing={true}
       ref={bottomSheetModalRef}
-      index={initialSnapIndex}  // Default to the initial snap point (30% by default)
+      index={initialSnapIndex}  // Default to the initial snap point 
       snapPoints={snapPoints}
-      backgroundStyle={{ ...localStyles.modalBackground, backgroundColor: modalBackgroundColor, shadowColor: theme.colors.onSurface }}
+      backgroundStyle={{ ...localStyles.modalBackground, backgroundColor:  backgroundColor || theme.colors.background, shadowColor: theme.colors.onSurface }}
       handleIndicatorStyle={localStyles.indicator}
       enablePanDownToClose={false}
       enableOverDrag={false}
       android_keyboardInputMode="adjustResize"
-      onChange={toggleContent}
+      //onChange={toggleContent}
     >
       <BottomSheetView style={localStyles.contentContainer}>
 
-      <Animated.View
-        key={hideContent ? 'hidden' : 'visible'}
-        entering={FadeIn.duration(350)}
-        exiting={FadeOut.duration(200)}
-        style={{ flex: 1, width: '100%', alignItems: 'center', justifyContent: 'center' }}
-      >
-        { !hideContent ? <></> : renderItem ? renderItem() : <Text>No content</Text> }
 
-      </Animated.View>
+        {isContentReady && (
+          <Animated.View 
+            entering={FadeIn.duration(300)}
+            exiting={FadeOut.duration(300)}
+          >
+            {renderItem ? renderItem() : <Text>No content</Text>}
+          </Animated.View>
+        )}
 
       </BottomSheetView>
 
@@ -88,6 +100,15 @@ const localStyles = StyleSheet.create({
     alignItems: 'center',
     padding: 0,
     margin: 0,
+    height: '100%',
+  },
+
+  animatedContent: {
+    flex: 1,
+    width: '100%',
+    padding: 0,
+    margin: 0,
+    height: '100%',
   },
 
   modalBackground: {
