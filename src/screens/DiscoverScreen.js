@@ -124,9 +124,14 @@ export default function DiscoverScreen({navigation}) {
             closeFilters={closeFilters} 
             viewMode={viewMode} 
             setViewMode={handleViewModeChange} 
-            setFiltersData={setFilters}
+            handleFilters={handleApplyFilters}
         />
     ), [closeFilters, viewMode, handleViewModeChange]);
+
+    handleApplyFilters = useCallback((filters) => {
+        setFilters(filters);
+        console.log('Filters applied:', filters);
+    }, [filters]);
 
     // Search bar handling
     const searchBarRef = useRef(null);  
