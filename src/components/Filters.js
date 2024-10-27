@@ -5,7 +5,7 @@ import { List, useTheme, Divider, SegmentedButtons, Button, Chip } from 'react-n
 
 const windowWidth = Dimensions.get('window').width;
 
-export default function Filters({ closeFilters, viewMode, setViewMode, setFiltersData }) {
+export default function Filters({ closeFilters, viewMode, setViewMode, handleFilters }) {
     const theme = useTheme();
     const styles = useGlobalStyles();
 
@@ -61,7 +61,7 @@ export default function Filters({ closeFilters, viewMode, setViewMode, setFilter
     };
 
     const applyFilters = () => {
-        setFiltersData(filters);
+        handleFilters(filters);
         setViewMode(filters.viewMode); // Automatically update the view mode and close the filters
     };
 
@@ -173,40 +173,40 @@ export default function Filters({ closeFilters, viewMode, setViewMode, setFilter
                     {/* Payment Methods Section */}
                     <List.Section title='Payment methods' titleStyle={localStyles.title}>
                         <View style={localStyles.chipContainer}>
-                            {paymentMethods.map(method => (
-                                <Chip
-                                    key={method.id}
-                                    icon={method.icon}
-                                    selected={filters.paymentMethods.includes(method.id)}
-                                    onPress={() => toggleFilter('paymentMethods', method.id)}
-                                    style={[
-                                        localStyles.chip,
-                                        filters.status.includes(method.id) ? { backgroundColor: theme.colors.accent } : { backgroundColor: theme.colors.inverseOnSurface }
-                                    ]}
-                                >
-                                    {method.label}
-                                </Chip>
-                            ))}
+                        {paymentMethods.map(method => (
+                            <Chip
+                                key={method.id}
+                                icon={method.icon}
+                                selected={filters.paymentMethods.includes(method.id)}
+                                onPress={() => toggleFilter('paymentMethods', method.id)}
+                                style={[
+                                    localStyles.chip,
+                                    filters.paymentMethods.includes(method.id) ? { backgroundColor: theme.colors.accent } : { backgroundColor: theme.colors.inverseOnSurface }
+                                ]}
+                            >
+                                {method.label}
+                            </Chip>
+                        ))}
                         </View>
                     </List.Section>
 
                     {/* Access Type Section */}
                     <List.Section title='Access type' titleStyle={localStyles.title}>
                         <View style={localStyles.chipContainer}>
-                            {accessTypes.map(type => (
-                                <Chip
-                                    key={type.id}
-                                    icon={type.icon}
-                                    selected={filters.accessType.includes(type.id)}
-                                    onPress={() => toggleFilter('accessType', type.id)}
-                                    style={[
-                                        localStyles.chip,
-                                        filters.status.includes(type.id) ? { backgroundColor: theme.colors.accent } : { backgroundColor: theme.colors.inverseOnSurface }
-                                    ]}
-                                >
-                                    {type.label}
-                                </Chip>
-                            ))}
+                        {accessTypes.map(type => (
+                            <Chip
+                                key={type.id}
+                                icon={type.icon}
+                                selected={filters.accessType.includes(type.id)}
+                                onPress={() => toggleFilter('accessType', type.id)}
+                                style={[
+                                    localStyles.chip,
+                                    filters.accessType.includes(type.id) ? { backgroundColor: theme.colors.accent } : { backgroundColor: theme.colors.inverseOnSurface }
+                                ]}
+                            >
+                                {type.label}
+                            </Chip>
+                        ))}
                         </View>
                     </List.Section>
 
