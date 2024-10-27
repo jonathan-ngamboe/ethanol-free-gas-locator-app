@@ -152,7 +152,6 @@ export default function HomeScreen({navigation}) {
                     descriptionStyle={[localStyles.headerDescription, {color: theme.colors.background}]}
                     descriptionNumberOfLines={5}
                     left={() => <Text style={[localStyles.headerTitle, styles.contentPaddingLeft]}>👋</Text>}
-                    //style={{ backgroundColor: 'red'}}
                 />
 
                 {/* Searcbar */}
