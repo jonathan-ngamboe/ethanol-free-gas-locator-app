@@ -50,7 +50,7 @@ export const ThemeProvider = ({ children }) => {
   export const useTheme = () => {
     const context = useContext(ThemeContext);
     if (!context) {
-      throw new Error("useTheme doit être utilisé à l'intérieur de ThemeProvider");
+      throw new Error("useTheme must be used within a ThemeProvider");
     }
     return context;
   };
