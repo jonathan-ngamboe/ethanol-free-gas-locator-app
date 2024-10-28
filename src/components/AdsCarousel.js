@@ -16,15 +16,13 @@ export default function AdsCarousel({ adsList }) {
     const validData = Array.isArray(adsList) ? adsList : [];
 
     const renderItem = useCallback(({ item }) => (
-        <View style={[styles.contentPaddingHorizontal]}>
             <Image
                 source={{ uri: item }}
                 style={localStyles.image}
                 resizeMode="cover"
                 onError={(e) => console.log('Image loading error:', e.nativeEvent.error)}
             />
-        </View>
-    ), [styles.contentPaddingHorizontal]);
+    ), []);
 
     const handleDotPress = useCallback((index) => {
         if (ref.current) {
@@ -78,7 +76,6 @@ const localStyles = StyleSheet.create({
         height: 220,
         justifyContent: 'center',
         alignItems: 'center',
-        paddingHorizontal: 16,
     },
 
     image: {

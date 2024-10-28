@@ -15,8 +15,8 @@ export default function HomeScreen({navigation}) {
     const isFocused = useIsFocused();
 
     const user = { 
-        firstName: 'Monkey D.',
-        lastName: 'Luffy',
+        firstName: 'Luffy',
+        lastName: 'Monkey D.',
         email: 'monkey-d@one-piece.rock',
         avatar: 'https://i.pinimg.com/736x/1e/8b/f3/1e8bf3b2adefdfe76bb5dfe9bafe1ed5.jpg',
     };
@@ -187,7 +187,8 @@ export default function HomeScreen({navigation}) {
                             title='Like what we do? A quick click on an ad helps a lot!'
                             titleNumberOfLines={5}
                             titleStyle={[localStyles.headerDescription, {color: theme.colors.outline}]}
-                            left={() => <List.Icon icon="heart" color='red' />}
+                            left={() => <List.Icon icon="heart" color='red' style={{ paddingLeft: 15 }} />}
+                            style={{paddingTop: 0, paddingBottom: 20}}
                         />
                         <AdsCarousel adsList={adsList} />
                     </List.Section>

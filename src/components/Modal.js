@@ -83,6 +83,7 @@ export default function Modal({ initialSnapIndex = 1, snapToOnAction, renderItem
           <Animated.View 
             entering={FadeIn.duration(300)}
             exiting={FadeOut.duration(300)}
+            style={localStyles.animatedContent}
           >
             {renderItem ? renderItem() : <Text>No content</Text>}
           </Animated.View>
