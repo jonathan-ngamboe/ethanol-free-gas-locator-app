@@ -6,6 +6,7 @@ import { useIsFocused } from '@react-navigation/native';
 import StatsCard from '../components/StatsCard';
 import DotMenu from '../components/DotMenu';
 import React, {useEffect} from 'react';
+import AdsCarousel from '../components/AdsCarousel';
 
 export default function HomeScreen({navigation}) {
     const styles = useGlobalStyles();
@@ -140,6 +141,14 @@ export default function HomeScreen({navigation}) {
         }
       }, [isFocused, theme]);
 
+    const randomNum = Math.floor(Math.random() * 1000);
+
+    const adsList = [`https://picsum.photos/seed/${randomNum}/300/200`, 
+                        `https://picsum.photos/seed/${randomNum + 1}/300/200`, 
+                        `https://picsum.photos/seed/${randomNum + 2}/300/200`, 
+                        `https://picsum.photos/seed/${randomNum + 3}/300/200`, 
+                        `https://picsum.photos/seed/${randomNum + 4}/300/200`];
+
     return (
         <View style={[styles.container, { alignItems: 'stretch' }]}>  
 
@@ -171,6 +180,17 @@ export default function HomeScreen({navigation}) {
             {/* Content */}
             <ScrollView contentContainerStyle={styles.scrollView} style={{backgroundColor: theme.colors.background}} showsHorizontalScrollIndicator={false}>
                 <View style={localStyles.contentContainer}>
+
+                    {/* Ads carousel */}
+                    <List.Section title='Promotions' style={[styles.listSection, styles.contentPaddingHorizontal]} titleStyle={[styles.listTitle, {color: theme.colors.outline} ]}>
+                        <List.Item
+                            title='Like what we do? A quick click on an ad helps a lot!'
+                            titleNumberOfLines={5}
+                            titleStyle={[localStyles.headerDescription, {color: theme.colors.outline}]}
+                            left={() => <List.Icon icon="heart" color='red' />}
+                        />
+                        <AdsCarousel adsList={adsList} />
+                    </List.Section>
 
                     {/* Average price */}
                     <List.Section title='Ethanol price' style={[styles.listSection, localStyles.statsCard, styles.contentPaddingHorizontal]} titleStyle={[styles.listTitle, {color: theme.colors.outline} ]}>
