@@ -76,8 +76,8 @@ export default function StationCarousel({ stationList, navigation, showShadow=fa
                         data={stationList}
                         scrollAnimationDuration={1000}
                         renderItem={renderItem}
-                        onScrollEnd={(index) => {
-                            setCurrentIndex(index);
+                        onProgressChange={(offsetProgress, absoluteProgress) => {
+                            setCurrentIndex(Math.round(absoluteProgress));
                         }}
                         defaultIndex={0}
                         mode="horizontal"
