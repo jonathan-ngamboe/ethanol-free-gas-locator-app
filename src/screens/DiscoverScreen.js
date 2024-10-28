@@ -102,7 +102,9 @@ export default function DiscoverScreen({navigation}) {
 
     const openFilters = useCallback(() => {
         Keyboard.dismiss();
-        if (!isFiltersVisible) {
+        if(isFiltersVisible) {
+            closeFilters();
+        } else {
             setFiltersVisibility(true);
             openModal(2); // Open modal at the top snap point for filters
         }
