@@ -7,9 +7,6 @@ const AuthContext = React.createContext();
 
 // AuthProvider component to wrap the entire app with the auth context
 export const AuthProvider = ({ children }) => {
-    //
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
     const [session, setSession] = useState(null);
 
@@ -23,25 +20,31 @@ export const AuthProvider = ({ children }) => {
         })
     }, [])
   
-    async function signInWithEmail() {
+    async function signInWithEmail(data) {
       setLoading(true)
       const { error } = await supabase.auth.signInWithPassword({
-        email: email,
-        password: password,
+        email: data.email,
+        password: data.password,
       })
   
       if (error) Alert.alert(error.message)
       setLoading(false)
     }
   
-    async function signUpWithEmail() {
+    async function signUpWithEmail(data) {
       setLoading(true)
       const {
         data: { session },
         error,
       } = await supabase.auth.signUp({
-        email: email,
-        password: password,
+        email: data.email,
+        password: data.password,
+        options: {
+          data: { 
+            first_name: data.first_name,
+            last_name: data.last_name,
+          },
+        }
       })
   
       if (error) Alert.alert(error.message)
@@ -49,8 +52,12 @@ export const AuthProvider = ({ children }) => {
       setLoading(false)
     }
 
+    async function signOut() {
+        await supabase.auth.signOut()
+    }
+
     return(
-        <AuthContext.Provider value={{ email, setEmail, password, setPassword, loading, session, signInWithEmail, signUpWithEmail }}>
+        <AuthContext.Provider value={{ loading, session, signInWithEmail, signUpWithEmail, signOut }}>
             {children}
         </AuthContext.Provider>
     );
