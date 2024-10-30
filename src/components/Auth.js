@@ -9,7 +9,7 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 
 export default function Auth({ screen }) {
-  const { signUpWithEmail, signInWithEmail, loading } = useAuth();
+  const { signUpWithEmail, signInWithEmail, loading, resetPassword } = useAuth();
   const styles = useGlobalStyles();
   const theme = useTheme();
   
