@@ -56,8 +56,14 @@ export const AuthProvider = ({ children }) => {
         await supabase.auth.signOut()
     }
 
+    async function resetPassword(email) {
+        const { error } = await supabase.auth.api.resetPasswordForEmail(email)
+        if (error) Alert.alert(error.message)
+        else Alert.alert('Password recovery email sent')
+    }
+
     return(
-        <AuthContext.Provider value={{ loading, session, signInWithEmail, signUpWithEmail, signOut }}>
+        <AuthContext.Provider value={{ loading, session, signInWithEmail, signUpWithEmail, signOut, resetPassword }}>
             {children}
         </AuthContext.Provider>
     );
