@@ -24,7 +24,6 @@ export default function ProfileScreen({ navigation }) {
             const { data } = await getUser(showSnackbar);
             if (data?.user) {
                 setUser(data.user);
-                console.log('User data:', data.user);
             }
         };
         
