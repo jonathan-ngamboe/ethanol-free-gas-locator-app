@@ -6,7 +6,7 @@ import { share } from '../navigation/ExternalNavigation';
 import { openLink } from '../navigation/ExternalNavigation';
 import { appStoreUrl, playStoreUrl, privacyPolicyUrl, bottomMessage, appVersion } from '../constants/generalConstants';
 import { useAuth } from '../context/AuthContext';
-import { getUser } from '../services/userService';
+import { getUser, deleteUser } from '../services/userService';
 import { useSnackbar } from '../context/SnackbarContext';
 import { useEffect, useState } from 'react';
 
@@ -99,6 +99,28 @@ export default function ProfileScreen({ navigation }) {
         );
     };
 
+    const deleteAccount = () => {
+        Alert.alert(
+            'Delete account',
+            'Are you sure you want to delete your account? This action cannot be undone.',
+            [
+                {
+                    text: 'Cancel',
+                    style: 'cancel'
+                },
+                {
+                    text: 'Delete account',
+                    onPress: async () => {
+                        const { error } = await deleteUser(showSnackbar);
+                        if (!error) {
+                            signOut();
+                        }
+                    }
+                }
+            ]
+        );
+    }
+
 
     return (
         <ScrollView contentContainerStyle={styles.scrollView} style={{backgroundColor: theme.colors.background}}>
@@ -190,7 +212,7 @@ export default function ProfileScreen({ navigation }) {
                             titleStyle={{ ...styles.listTitle, color: theme.colors.error }}
                             left={props => <List.Icon {...props} icon="delete" color={theme.colors.error} style={styles.contentPaddingLeft} />}
                             right={(props) => <List.Icon {...props} icon="chevron-right" color={theme.colors.primary} style={styles.contentPaddingRight} />}
-                            onPress={() => console.log('Delete account')}
+                            onPress={() => deleteAccount()}
                         />  
 
                         <List.Item
