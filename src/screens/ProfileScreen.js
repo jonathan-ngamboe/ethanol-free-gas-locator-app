@@ -1,14 +1,35 @@
 import { useGlobalStyles } from '../styles/globalStyles';
-import { View, StyleSheet, ScrollView, Platform } from 'react-native';
+import { View, StyleSheet, ScrollView, Platform, Alert } from 'react-native';
 import { useTheme, Button, List, Divider, Text } from 'react-native-paper';
 import ProfileCard from '../components/ProfileCard';
 import { share } from '../navigation/ExternalNavigation';
 import { openLink } from '../navigation/ExternalNavigation';
 import { appStoreUrl, playStoreUrl, privacyPolicyUrl, bottomMessage, appVersion } from '../constants/generalConstants';
+import { useAuth } from '../context/AuthContext';
+import { getUser } from '../services/userService';
+import { useSnackbar } from '../context/SnackbarContext';
+import { useEffect, useState } from 'react';
+
 
 export default function ProfileScreen({ navigation }) {
     const styles = useGlobalStyles();
     const theme = useTheme();
+    const { signOut } = useAuth();
+    const { showSnackbar } = useSnackbar();
+    const [user, setUser] = useState(null);
+
+    // Fetch user data when the component mounts
+    useEffect(() => {
+        const fetchUser = async () => {
+            const { data } = await getUser(showSnackbar);
+            if (data?.user) {
+                setUser(data.user);
+                console.log('User data:', data.user);
+            }
+        };
+        
+        fetchUser();
+    }, []);
 
     const exampleE85Station = {
         // Essential station identification
@@ -62,16 +83,23 @@ export default function ProfileScreen({ navigation }) {
         longitude: -118.4441,
     };
 
-    const user = { 
-        firstName: 'Monkey D.',
-        lastName: 'Luffy',
-        email: 'monkey-d@one-piece.rock',
-        avatar: 'https://i.pinimg.com/736x/1e/8b/f3/1e8bf3b2adefdfe76bb5dfe9bafe1ed5.jpg',
-        bannerImage: 'https://i.pinimg.com/736x/53/1b/f2/531bf28ee274611ab3b887c9c301d88a.jpg',
-        isPro: false,
-        favoriteStations: [exampleE85Station],
-        searchHistory: [minimalE85Station, exampleE85Station ],
+    const logOut = () => {
+        Alert.alert(
+            'Log out',
+            'Are you sure you want to log out?',
+            [
+                {
+                    text: 'Cancel',
+                    style: 'cancel'
+                },
+                {
+                    text: 'Log out',
+                    onPress: () => signOut()
+                }
+            ]
+        );
     };
+
 
     return (
         <ScrollView contentContainerStyle={styles.scrollView} style={{backgroundColor: theme.colors.background}}>
@@ -80,15 +108,25 @@ export default function ProfileScreen({ navigation }) {
 
                 <List.Section style={{ paddingHorizontal: 0 }}>
                     <List.Item
-                        title={user.firstName + ' ' + user.lastName}
-                        description={user.email}
+                        title={user?.firstName+ ' ' + user?.lastName}
+                        description={user?.email}
                         left={props => <List.Icon {...props} icon="account-multiple-plus" color={theme.colors.primary} style={styles.contentPaddingLeft} />}
-                        right={(props) => <Button {...props} icon="plus" mode="contained" textColor={theme.colors.background} onPress={() => share('Hey, Join me on this app!')}>Invite</Button>}
+                        right={(props) => <Button {...props} icon="plus" mode="contained" textColor={theme.colors.background} onPress={() => share('Hey, Find the nearest E85 station with this app: ' + Platform.select({ ios: appStoreUrl, android: playStoreUrl }))}>Invite</Button>}
                         titleStyle={styles.listTitle}
                         titleVariant='bodySmall'
                         subtitleStyle={{...styles.listDescription, color: theme.colors.outline }}
                         subtitleVariant='bodySmall'
                     />
+                    
+                    {!user?.isPro && (
+                        <List.Item
+                                title="Upgrade to Premium"
+                                titleStyle={{ ...styles.listTitle }}
+                                left={props => <List.Icon {...props} icon="star" color={theme.colors.primary} style={styles.contentPaddingLeft} />}
+                                right={(props) => <List.Icon {...props} icon="chevron-right" color={theme.colors.primary} style={styles.contentPaddingRight}/>}
+                                onPress={() => console.log('Upgrade to Premium')}
+                        />
+                    )}
 
                     <Divider style={styles.divider} />
 
@@ -146,7 +184,7 @@ export default function ProfileScreen({ navigation }) {
                             titleStyle={{ ...styles.listTitle, color: theme.colors.outline }}
                             left={props => <List.Icon {...props} icon="logout" color={theme.colors.outline} style={styles.contentPaddingLeft} />}
                             right={(props) => <List.Icon {...props} icon="chevron-right" color={theme.colors.primary} style={styles.contentPaddingRight}/>}
-                            onPress={() => console.log('Logout')}
+                            onPress={() => logOut()}
                         />
                         <List.Item
                             title="Delete account"
