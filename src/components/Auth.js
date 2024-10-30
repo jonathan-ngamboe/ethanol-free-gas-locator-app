@@ -72,7 +72,7 @@ export default function Auth({ screen }) {
     if (screen === 'Sign up') {
       signUpWithEmail(formData);
     } else {
-      signInWithEmail(formData.email, formData.password);
+      signInWithEmail(formData);
     }
   };
 
