@@ -5,21 +5,33 @@ import { Avatar, List, useTheme } from 'react-native-paper';
 import { useIsFocused } from '@react-navigation/native'; 
 import StatsCard from '../components/StatsCard';
 import DotMenu from '../components/DotMenu';
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import AdsCarousel from '../components/AdsCarousel';
+import { getUser } from '../services/userService';
+import { useSnackbar } from '../context/SnackbarContext';
+
 
 export default function HomeScreen({navigation}) {
     const styles = useGlobalStyles();
     const theme = useTheme();
-
     const isFocused = useIsFocused();
+    const [user, setUser] = useState(null);
+    const { showSnackbar } = useSnackbar();
 
-    const user = { 
-        firstName: 'Luffy',
-        lastName: 'Monkey D.',
-        email: 'monkey-d@one-piece.rock',
-        avatar: 'https://i.pinimg.com/736x/1e/8b/f3/1e8bf3b2adefdfe76bb5dfe9bafe1ed5.jpg',
-    };
+
+    // Fetch user data when the component mounts
+    useEffect(() => {
+        const fetchUser = async () => {
+            const { data } = await getUser(showSnackbar);
+            if (data?.user) {
+                setUser(data.user);
+                console.log('User data:', data.user);
+            }
+        };
+        
+        fetchUser();
+    }, []);
+
 
     const searchBarRightComponent = (
         <Avatar.Image 
@@ -155,7 +167,7 @@ export default function HomeScreen({navigation}) {
             <View style={[localStyles.headerView, {backgroundColor: theme.colors.onBackground}]}>
                 {/* Header */}
                 <List.Item
-                    title={`Hi, ${user?.firstName || 'there'}!`}
+                    title={`Hi, ${user?.firstName|| 'there'}!`}
                     description="Find ethanol stations around you."
                     titleStyle={[localStyles.headerTitle, {color: theme.colors.background}]}
                     descriptionStyle={[localStyles.headerDescription, {color: theme.colors.background}]}
