@@ -6,6 +6,8 @@ import { ThemeProvider, useTheme } from './src/context/ThemeContext';
 import { TabNavigator } from './src/navigation/TabNavigator';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { AuthProvider } from './src/context/AuthContext';
+import { SnackbarProvider } from './src/context/SnackbarContext';
+import SnackbarNotification from './src/components/SnackbarNotification'; 
 
 function AppContent() {
   const { theme } = useTheme();
@@ -16,6 +18,7 @@ function AppContent() {
         <NavigationContainer>
           <TabNavigator />
         </NavigationContainer>
+        <SnackbarNotification /> 
       </SafeAreaProvider>
     </PaperProvider>
   );
@@ -25,9 +28,11 @@ export default function App() {
   return (
       <GestureHandlerRootView style={{ flex: 1 }}>
           <ThemeProvider>
-            <AuthProvider>
-              <AppContent />
-            </AuthProvider>
+              <AuthProvider>
+                <SnackbarProvider>
+                  <AppContent />
+                </SnackbarProvider>
+              </AuthProvider>
           </ThemeProvider>
       </GestureHandlerRootView>
   );
