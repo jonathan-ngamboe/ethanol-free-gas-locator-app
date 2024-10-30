@@ -3,13 +3,14 @@ import { useGlobalStyles } from "../styles/globalStyles"
 import { Image, StyleSheet, Dimensions } from "react-native"
 import { Text, Button } from "react-native-paper";
 import { useTheme as themeContext } from '../context/ThemeContext';
+import { useSnackbar } from '../context/SnackbarContext';
 
 const { width: screenWidth } = Dimensions.get("window");
 
 export default function WelcomeScreen ( { navigation } ) {
     const styles = useGlobalStyles();
     const { theme } = themeContext();
-
+    const { showSnackbar } = useSnackbar();
 
     return (
         <View style={[styles.container, localStyles.container, styles.contentPaddingHorizontal]}>
@@ -18,7 +19,7 @@ export default function WelcomeScreen ( { navigation } ) {
                 style={localStyles.image}
                 resizeMode="stretch"
                 alt="Illustration of a yellow fuel pump nozzle with a fuel drop."
-                onError={(e) => console.log('Image loading error:', e.nativeEvent.error)}
+                onError={(e) => showSnackbar('Image loading error:', e.nativeEvent.error)}
             />
             <View style={localStyles.titleContainer}>
                 <Text style={localStyles.title} variant="displayLarge">Find the </Text>

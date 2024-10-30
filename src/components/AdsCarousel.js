@@ -4,6 +4,8 @@ import { useTheme } from "react-native-paper";
 import Carousel from "react-native-reanimated-carousel";
 import CarouselPagination from "./CarouselPagination";
 import { useGlobalStyles } from "../styles/globalStyles";
+import { useSnackbar } from '../context/SnackbarContext';
+
 
 export default function AdsCarousel({ adsList }) {
     const width = Dimensions.get('window').width;
@@ -11,6 +13,7 @@ export default function AdsCarousel({ adsList }) {
     const theme = useTheme();
     const ref = useRef(null);
     const [currentIndex, setCurrentIndex] = useState(0);
+    const { showSnackbar } = useSnackbar();
 
     // Ensure we have valid data
     const validData = Array.isArray(adsList) ? adsList : [];
@@ -20,7 +23,7 @@ export default function AdsCarousel({ adsList }) {
                 source={{ uri: item }}
                 style={localStyles.image}
                 resizeMode="cover"
-                onError={(e) => console.log('Image loading error:', e.nativeEvent.error)}
+                onError={(e) => showSnackbar('Image loading error:', e.nativeEvent.error)}
             />
     ), []);
 
