@@ -26,3 +26,23 @@ export const getUser = async (showSnackbar) => {
         return { error, data: null };
     }
 };
+
+export const deleteUser = async (showSnackbar) => {
+    try {
+        const { error } = await supabase.rpc('deleteUser');
+        
+        if (error) {
+            showSnackbar('Error deleting user', error);
+            console.log('Error deleting user:', error);
+            return { error };
+        } else {
+            showSnackbar('User deleted successfully');
+        }
+
+        return { error: null };
+    } catch (error) {
+        console.log('Error deleting user:', error);
+        showSnackbar('An unexpected error occurred while deleting user', error);
+        return { error };
+    }
+}
