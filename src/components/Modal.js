@@ -7,7 +7,6 @@ import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 
 export default function Modal({ initialSnapIndex = 1, snapToOnAction, renderItem, backgroundColor }) {
   const theme = useTheme();
-  const [hideContent, setHideContent] = useState(false);
   const bottomSheetModalRef = useRef(null);
   const [isContentReady, setIsContentReady] = useState(false);
   // Snap Points used to define the different height of the bottom sheet.
@@ -45,11 +44,6 @@ export default function Modal({ initialSnapIndex = 1, snapToOnAction, renderItem
   }, [snapToOnAction, minimizeModal, openModal, snapToPosition]);
 
 
-  // Function to toggle the content visibility
-  const toggleContent = (index) => {
-    setHideContent(!hideContent);
-  };
-
   const openModal = useCallback(() => {
     if (bottomSheetModalRef.current) {
       bottomSheetModalRef.current.snapToIndex(1);
@@ -65,7 +59,7 @@ export default function Modal({ initialSnapIndex = 1, snapToOnAction, renderItem
 
   return (
     <BottomSheetModal
-      enableDynamicSizing={true}
+      enableDynamicSizing={false}
       ref={bottomSheetModalRef}
       index={initialSnapIndex}  // Default to the initial snap point 
       snapPoints={snapPoints}
@@ -74,16 +68,16 @@ export default function Modal({ initialSnapIndex = 1, snapToOnAction, renderItem
       enablePanDownToClose={false}
       enableOverDrag={false}
       android_keyboardInputMode="adjustResize"
-      //onChange={toggleContent}
+      enableContentPanningGesture={true}
     >
-      <BottomSheetView style={localStyles.contentContainer}>
+      
+      <BottomSheetView style={localStyles.container} scrollEnabled>
 
 
         {isContentReady && (
           <Animated.View 
             entering={FadeIn.duration(300)}
             exiting={FadeOut.duration(300)}
-            style={localStyles.animatedContent}
           >
             {renderItem ? renderItem() : <Text>No content</Text>}
           </Animated.View>
@@ -96,20 +90,8 @@ export default function Modal({ initialSnapIndex = 1, snapToOnAction, renderItem
 }
 
 const localStyles = StyleSheet.create({
-  contentContainer: {
+  container: {
     flex: 1,
-    alignItems: 'center',
-    padding: 0,
-    margin: 0,
-    height: '100%',
-  },
-
-  animatedContent: {
-    flex: 1,
-    width: '100%',
-    padding: 0,
-    margin: 0,
-    height: '100%',
   },
 
   modalBackground: {
