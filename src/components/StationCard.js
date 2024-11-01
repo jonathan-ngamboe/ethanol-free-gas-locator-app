@@ -124,7 +124,7 @@ export default function StationCard({ station, onPressPrimaryButton, onPressSeco
                                     <Text 
                                         variant="bodySmall"
                                         style={{ color: theme.colors.onSurfaceVariant }}
-                                        numberOfLines={1}
+                                        numberOfLines={2}
                                     >
                                         {station.access_days_time}
                                     </Text>
