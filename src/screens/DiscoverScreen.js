@@ -188,7 +188,9 @@ export default function DiscoverScreen({navigation}) {
     ), [navigation, stations]);
 
     const renderStationList = useCallback(() => (
-        <StationList stationList={stations} navigation={navigation} />
+        <View style={{height: '100%'}}>
+            <StationList stationList={stations} navigation={navigation} />
+        </View>
     ), [navigation, stations]);
 
 
