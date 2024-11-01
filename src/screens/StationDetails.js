@@ -97,6 +97,7 @@ export default function StationDetails({ route }) {
                             {station?.station_name && station?.street_address && station?.city && station?.state && station?.zip && (
                                 <List.Item
                                     title={station?.station_name}
+                                    titleNumberOfLines={2}
                                     description={[
                                         station?.street_address,
                                         station?.city,
@@ -183,7 +184,7 @@ export default function StationDetails({ route }) {
                                     {/* Open hours */}
                                     {station?.access_days_time && (
                                         <List.Item
-                                            title="Opening hours"
+                                            title="Opening restrictions"
                                             description={station.access_days_time}
                                             left={props => <List.Icon {...props} icon="clock-outline" />}
                                             titleStyle={styles.listTitle}
