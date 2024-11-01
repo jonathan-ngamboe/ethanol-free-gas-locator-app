@@ -28,6 +28,7 @@ export default function StationCarousel({
     const flatListRef = useRef(null);
     const [currentIndex, setCurrentIndex] = useState(selectedIndex);
     const previousSelectedIndexRef = useRef(selectedIndex);
+    const [isScrolling, setIsScrolling] = useState(false);
 
     const renderStationCount = () => {
         if (stationList.length === 0) return 'No station found';
@@ -54,38 +55,56 @@ export default function StationCarousel({
     ), [navigation, showShadow, cardContainerStyle, cardColor]);
 
     const scrollToIndex = useCallback((index) => {
-        if (flatListRef.current && index >= 0 && index < stationList.length) {
+        if (flatListRef.current && index >= 0 && index < stationList.length && !isScrolling) {
+            setIsScrolling(true);
+            
             flatListRef.current.scrollToIndex({
                 index,
                 animated: true,
                 viewOffset: 0,
                 viewPosition: 0
             });
+
             setCurrentIndex(index);
+            
+            // Reset isScrolling after animation
+            setTimeout(() => {
+                setIsScrolling(false);
+            }, 300);
         }
-    }, [stationList.length]);
+    }, [stationList.length, isScrolling]);
 
     const handleScroll = useCallback((event) => {
-        const offsetX = event.nativeEvent.contentOffset.x;
-        const index = Math.round(offsetX / ITEM_WIDTH);
-        setCurrentIndex(index);
+        if (!isScrolling) {
+            const offsetX = event.nativeEvent.contentOffset.x;
+            const index = Math.round(offsetX / ITEM_WIDTH);
+            if (index !== currentIndex) {
+                setCurrentIndex(index);
+            }
+        }
+    }, [currentIndex, isScrolling]);
+
+    const handleMomentumScrollEnd = useCallback(() => {
+        setIsScrolling(false);
     }, []);
 
     const handleDotPress = useCallback((index) => {
-        scrollToIndex(index);
-    }, [scrollToIndex]);
+        if (!isScrolling) {
+            scrollToIndex(index);
+        }
+    }, [scrollToIndex, isScrolling]);
 
     const goToNextItem = useCallback(() => {
-        if (currentIndex < stationList.length - 1) {
+        if (currentIndex < stationList.length - 1 && !isScrolling) {
             scrollToIndex(currentIndex + 1);
         }
-    }, [currentIndex, stationList.length, scrollToIndex]);
+    }, [currentIndex, stationList.length, scrollToIndex, isScrolling]);
     
     const goToPreviousItem = useCallback(() => {
-        if (currentIndex > 0) {
+        if (currentIndex > 0 && !isScrolling) {
             scrollToIndex(currentIndex - 1);
         }
-    }, [currentIndex, scrollToIndex]);
+    }, [currentIndex, scrollToIndex, isScrolling]);
 
     // Scroll to selected index when selectedIndex changes
     useEffect(() => {
@@ -110,6 +129,7 @@ export default function StationCarousel({
                             onPress={goToPreviousItem}
                             size={24}
                             style={{ opacity: currentIndex === 0 ? 0.5 : 1 }}
+                            disabled={isScrolling || currentIndex === 0 || stationList.length === 1 || !currentIndex}
                         /> 
                     )}
                     right={() => stationList?.length > 1 && ( 
@@ -119,6 +139,7 @@ export default function StationCarousel({
                             onPress={goToNextItem}
                             size={24}
                             style={{ opacity: currentIndex === stationList.length - 1 ? 0.5 : 1 }}
+                            disabled={isScrolling || currentIndex === stationList.length - 1 || stationList.length === 1 }
                         />)}
                     style={[localStyles.header, headerStyle, { backgroundColor: theme.colors.background }]}
                 />
@@ -136,6 +157,7 @@ export default function StationCarousel({
                 snapToAlignment="center"
                 decelerationRate="fast"
                 onScroll={handleScroll}
+                onMomentumScrollEnd={handleMomentumScrollEnd}
                 contentContainerStyle={localStyles.flatListContent}
                 getItemLayout={(_, index) => ({
                     length: ITEM_WIDTH,
