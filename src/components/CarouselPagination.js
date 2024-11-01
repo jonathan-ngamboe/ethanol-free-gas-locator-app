@@ -80,24 +80,27 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    height: 40,
   },
+
   indicator: {
     width: 8,
     height: 8,
     borderRadius: 4,
     marginHorizontal: 4,
   },
+
   activeIndicator: {
     width: 16,
     height: 8,
     borderRadius: 4,
   },
+
   ellipsis: {
     flexDirection: 'row',
     alignItems: 'center',
     marginHorizontal: 4,
   },
+  
   ellipsisDot: {
     width: 4,
     height: 4,
