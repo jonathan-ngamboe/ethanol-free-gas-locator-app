@@ -1,4 +1,4 @@
-import React, { useState, useRef, useCallback } from "react";
+import React, { useState, useRef, useCallback, useEffect } from "react";
 import { StyleSheet, View, Dimensions, FlatList } from 'react-native';
 import { useTheme, IconButton, List } from 'react-native-paper';
 
@@ -21,16 +21,17 @@ export default function StationCarousel({
     headerStyle, 
     showHeader=true,
     loading=false,
+    selectedIndex = 0,
 }) {
     const styles = useGlobalStyles();
     const theme = useTheme();
     const flatListRef = useRef(null);
-    const [currentIndex, setCurrentIndex] = useState(0);
+    const [currentIndex, setCurrentIndex] = useState(selectedIndex);
+    const previousSelectedIndexRef = useRef(selectedIndex);
 
     const renderStationCount = () => {
         if (stationList.length === 0) return 'No station found';
         if (stationList.length === 1) return '1 Station found';
-        // Show the station index and total count
         return `${currentIndex + 1} of ${stationList.length} Stations`;
     };
 
@@ -52,6 +53,18 @@ export default function StationCarousel({
         </View>
     ), [navigation, showShadow, cardContainerStyle, cardColor]);
 
+    const scrollToIndex = useCallback((index) => {
+        if (flatListRef.current && index >= 0 && index < stationList.length) {
+            flatListRef.current.scrollToIndex({
+                index,
+                animated: true,
+                viewOffset: 0,
+                viewPosition: 0
+            });
+            setCurrentIndex(index);
+        }
+    }, [stationList.length]);
+
     const handleScroll = useCallback((event) => {
         const offsetX = event.nativeEvent.contentOffset.x;
         const index = Math.round(offsetX / ITEM_WIDTH);
@@ -59,31 +72,28 @@ export default function StationCarousel({
     }, []);
 
     const handleDotPress = useCallback((index) => {
-        flatListRef.current?.scrollToIndex({
-            index,
-            animated: true,
-            viewOffset: 0,
-            viewPosition: 0
-        });
-    }, []);
+        scrollToIndex(index);
+    }, [scrollToIndex]);
 
     const goToNextItem = useCallback(() => {
         if (currentIndex < stationList.length - 1) {
-            flatListRef.current?.scrollToIndex({
-                index: currentIndex + 1,
-                animated: true
-            });
+            scrollToIndex(currentIndex + 1);
         }
-    }, [currentIndex, stationList.length]);
+    }, [currentIndex, stationList.length, scrollToIndex]);
     
     const goToPreviousItem = useCallback(() => {
         if (currentIndex > 0) {
-            flatListRef.current?.scrollToIndex({
-                index: currentIndex - 1,
-                animated: true
-            });
+            scrollToIndex(currentIndex - 1);
         }
-    }, [currentIndex]);
+    }, [currentIndex, scrollToIndex]);
+
+    // Scroll to selected index when selectedIndex changes
+    useEffect(() => {
+        if (selectedIndex !== previousSelectedIndexRef.current) {
+            scrollToIndex(selectedIndex);
+            previousSelectedIndexRef.current = selectedIndex;
+        }
+    }, [selectedIndex, scrollToIndex]);
 
     return (
         <View style={[localStyles.mainContainer, containerStyle]}>
@@ -110,7 +120,7 @@ export default function StationCarousel({
                             size={24}
                             style={{ opacity: currentIndex === stationList.length - 1 ? 0.5 : 1 }}
                         />)}
-                    style={[localStyles.header, headerStyle]}
+                    style={[localStyles.header, headerStyle, { backgroundColor: theme.colors.background }]}
                 />
             )}
             
@@ -153,12 +163,12 @@ const localStyles = StyleSheet.create({
         width: SCREEN_WIDTH,
         backgroundColor: 'transparent',
     },
-
+    
     itemContainer: {
         width: ITEM_WIDTH,
         paddingHorizontal: CONTAINER_PADDING,
     },
-    
+
     card: {
         width: '100%',
     },
