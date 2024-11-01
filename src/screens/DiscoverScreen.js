@@ -38,6 +38,8 @@ export default function DiscoverScreen({navigation}) {
     const {openKeyboard = false} = params || {};
     // Timer ref to handle cleanup
     const timerRef = useRef(null);
+    // Index of the selected station on the map
+    const [selectedStationIndex, setSelectedStationIndex] = useState(null);
 
     // Filter icon
     const filterIcon = (
@@ -184,8 +186,9 @@ export default function DiscoverScreen({navigation}) {
             cardContainerStyle={localStyles.carouselCardContainer}
             headerStyle={[localStyles.carouselHeader, {backgroundColor: theme.colors.background}]}
             loading={loading}
+            selectedIndex={selectedStationIndex}
         />
-    ), [navigation, stations]);
+    ), [navigation, stations, selectedStationIndex]);
 
     const renderStationList = useCallback(() => (
         <View style={{height: '100%'}}>
@@ -245,7 +248,13 @@ export default function DiscoverScreen({navigation}) {
         <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{flex: 1}}>
             <BottomSheetModalProvider>
                 <View style={localStyles.container}>
-                    <Map onTouch={handleMapTouch} markers={stations} />
+                    <Map 
+                        onTouch={handleMapTouch} 
+                        markers={stations} 
+                        userCoordinates={userLocation} 
+                        navigation={navigation} 
+                        setMarkerIndex={setSelectedStationIndex}
+                    />
                         
                     {/* Search bar */}  
                     <View style={localStyles.searchBarContainer}>
