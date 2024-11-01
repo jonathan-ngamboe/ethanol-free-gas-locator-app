@@ -89,7 +89,7 @@ export default function stationList({ stationList, navigation, displayHeader = t
             {hasMoreItems && !isScrolled && showMoreIndicator && (
                 <View style={localStyles.moreIndicatorContainer}>
                     <Text style={{ ...localStyles.moreIndicator, ...styles.moreIndicator }}>
-                        ↓ {stationList.length - 3} more stations
+                        ↓ more stations
                     </Text>
                 </View>
             )}
