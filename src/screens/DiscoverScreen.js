@@ -10,6 +10,11 @@ import StationList from "../components/StationList";
 import Filters from "../components/Filters";
 import Animated, { FadeIn, FadeOut, runOnJS } from 'react-native-reanimated';
 import React, { useState, useRef, useCallback, useEffect } from "react";
+import { getAllStations, getNearbyStations } from "../services/stationService";
+import * as Location from 'expo-location';
+import { useSnackbar } from '../context/SnackbarContext';
+
+
 
 export default function DiscoverScreen({navigation}) {
     const route = useRoute();
@@ -17,24 +22,48 @@ export default function DiscoverScreen({navigation}) {
     const theme = useTheme();
     const [viewMode, setViewMode] = useState('detailed');
     const [filters, setFilters] = useState({});
-    
+    const { showSnackbar } = useSnackbar();
     // State to handle animations
     const [shouldRenderCarousel, setShouldRenderCarousel] = useState(true);
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [modalControls, setModalControls] = useState(null);
     const [isFiltersVisible, setFiltersVisibility] = useState(false);
-    
+    // Stations 
+    const [stations, setStations] = useState([]);
+    const [loading, setLoading] = useState(false);
+    // Location
+    const [userLocation, setLocation] = useState(null);
+    // Search bar handling
+    const searchBarRef = useRef(null);  
+    const {openKeyboard = false} = params || {};
     // Timer ref to handle cleanup
     const timerRef = useRef(null);
 
-    // Cleanup function for timers
-    useEffect(() => {
-        return () => {
-            if (timerRef.current) {
-                clearTimeout(timerRef.current);
-            }
-        };
-    }, []);
+    // Filter icon
+    const filterIcon = (
+        <IconButton
+            icon='tune'
+            size={25}
+            onPress={() => openFilters()}
+            iconColor={theme.colors.onBackground}
+        />
+    );
+
+    ///// Callbacks /////
+
+    // Fetch stations
+    const getStations = useCallback((longitude, latitude) => {
+        setLoading(true);
+        getNearbyStations(longitude, latitude)
+            .then(stations => {
+                setStations(stations);
+                setLoading(false);
+            })
+            .catch(error => {
+                showSnackbar('Error fetching stations:', error);
+                console.error('Error fetching stations:', error);
+            });
+    }, [userLocation]);
 
     // Modal control functions
     const minimizeModal = useCallback(() => {
@@ -90,16 +119,6 @@ export default function DiscoverScreen({navigation}) {
         setFiltersVisibility(false);
     }, [isModalVisible, openModal, minimizeModal]);
 
-    // Filter functions
-    const filterIcon = (
-        <IconButton
-            icon='tune'
-            size={25}
-            onPress={() => openFilters()}
-            iconColor={theme.colors.onBackground}
-        />
-    );
-
     const openFilters = useCallback(() => {
         Keyboard.dismiss();
         if(isFiltersVisible) {
@@ -135,10 +154,7 @@ export default function DiscoverScreen({navigation}) {
         console.log('Filters applied:', filters);
     }, [filters]);
 
-    // Search bar handling
-    const searchBarRef = useRef(null);  
-    const {openKeyboard = false} = params || {};
-
+    // Focus on search bar when the screen is focused and openKeyboard is true
     useFocusEffect(
         React.useCallback(() => {
             if (searchBarRef.current && openKeyboard) {
@@ -161,73 +177,82 @@ export default function DiscoverScreen({navigation}) {
     // Station rendering
     const renderStationCarousel = useCallback(() => (
         <StationCarousel 
-            stationList={stationList} 
+            stationList={stations} 
             navigation={navigation} 
             showHeader={true}
             containerStyle={localStyles.carouselContainer} 
             cardContainerStyle={localStyles.carouselCardContainer}
             headerStyle={[localStyles.carouselHeader, {backgroundColor: theme.colors.background}]}
+            loading={loading}
         />
-    ), [theme.colors.background, navigation]);
+    ), [navigation, stations]);
 
     const renderStationList = useCallback(() => (
-        <StationList stationList={stationList} navigation={navigation} />
-    ), [navigation]);
+        <StationList stationList={stations} navigation={navigation} />
+    ), [navigation, stations]);
 
-    // Dummy data
-    const exampleE85Station = {
-        id: 1519,
-        station_name: "Springfield E85 Station",
-        fuel_type_code: "E85",
-        street_address: "1394 S Sepulveda Blvd",
-        city: "Los Angeles",
-        state: "CA",
-        zip: "90024",
-        status_code: "T",
-        access_code: "public",
-        access_days_time: "24 hours daily",
-        e85_blender_pump: true,
-        e85_other_ethanol_blends: ["E15", "E20-E25"],
-        cards_accepted: "CREDIT DEBIT CASH V M D A",
-        ev_network_web: "http://www.example.com",
-        station_phone: "310-555-0123",
-        facility_type: "GAS_STATION",
-        latitude: 34.0453,
-        longitude: -118.4441,
-        intersection_directions: "Corner of Sepulveda and Santa Monica Blvd",
-        distance: 0.5,
-    };
+
+    ///// useEffects /////
+
+    // Fetch stations when userLocation changes
+    useEffect(() => {
+        if (userLocation) {
+            getStations(userLocation?.longitude, userLocation?.latitude);
+        }
+    }, [userLocation]);
+
+    // Cleanup function for timers
+    useEffect(() => {
+        return () => {
+            if (timerRef.current) {
+                clearTimeout(timerRef.current);
+            }
+        };
+    }, []);
+
+    // Get user's userLocation when the component mounts
+    useEffect(() => {
+        function getLocation() {
+            setLoading(true);
+            Location.requestForegroundPermissionsAsync()
+                .then(response => {
+                    if (response.status !== 'granted') {
+                        showSnackbar('Permission to access userLocation was denied. Please enable userLocation services to view nearby stations.');
+                        return;
+                    }
+                    return Location.getCurrentPositionAsync({});
+                })
+                .then(userLocation => {
+                    if (userLocation) {
+                        setLocation(userLocation.coords);
+                    }
+                })
+                .catch(error => {
+                    showSnackbar('Error fetching userLocation:', error);
+                })
+                .finally(() => {
+                    setLoading(false);
+                });
+        }
+        
+        getLocation();
+    }, []);
     
-    const minimalE85Station = {
-        id: 1520,
-        fuel_type_code: "E85",
-        station_name: "Quick E85",
-        street_address: "123 Main St",
-        city: "Springfield",
-        state: "IL",
-        status_code: "T",
-        access_code: "public",
-        latitude: 34.0453,
-        longitude: -118.4441,
-    };
-
-    const stationList = [
-        exampleE85Station,
-        minimalE85Station,
-    ];
 
     return (
         <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{flex: 1}}>
             <BottomSheetModalProvider>
                 <View style={localStyles.container}>
-                    <Map onTouch={handleMapTouch} />
-                    
+                    <Map onTouch={handleMapTouch} markers={stations} />
+                        
+                    {/* Search bar */}  
                     <View style={localStyles.searchBarContainer}>
                         <SearchBar
                             barRef={searchBarRef}
                             leftIcon='map-marker'
                             onLeftIconPress={() => console.log('Map icon pressed')}
                             rightComponent={filterIcon}
+                            isLoading={loading}  
                         />
                     </View>
 
@@ -247,16 +272,16 @@ export default function DiscoverScreen({navigation}) {
 
                     {isModalVisible && (
                         <Modal 
-                        initialSnapIndex={isFiltersVisible ? 2 : 1} // Default to the initial snap point depending on the state of the filters
-                        snapToOnAction={setModalControls}
-                            stationList={stationList}
-                            renderItem={() => isFiltersVisible ? renderFilters() : renderStationList()}
-                            onDismiss={() => {
-                                setIsModalVisible(false);
-                                if (isFiltersVisible) {
-                                    setFiltersVisibility(false);
-                                }
-                            }}
+                            initialSnapIndex={isFiltersVisible ? 2 : 1} // Default to the initial snap point depending on the state of the filters
+                            snapToOnAction={setModalControls}
+                                stationList={stations}
+                                renderItem={() => isFiltersVisible ? renderFilters() : renderStationList()}
+                                onDismiss={() => {
+                                    setIsModalVisible(false);
+                                    if (isFiltersVisible) {
+                                        setFiltersVisibility(false);
+                                    }
+                                }}
                         />
                     )}
                 </View>
@@ -289,11 +314,12 @@ const localStyles = StyleSheet.create({
     },
 
     carouselCardContainer: {
-        padding: 20,
+        paddingVertical: 20,
     },
 
     carouselHeader: {
         borderRadius: 12,
         marginHorizontal: 20,
-    }
+    },
+
 });
