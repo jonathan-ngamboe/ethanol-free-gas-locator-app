@@ -1,10 +1,11 @@
 import React from 'react';
-import { View, StyleSheet, ScrollView, Pressable, Text } from 'react-native';
-import { List, useTheme, Surface, Button, Divider, Chip } from 'react-native-paper';
+import { View, StyleSheet, ScrollView, Pressable } from 'react-native';
+import { List, useTheme, Surface, Button, Divider, Chip, Text } from 'react-native-paper';
 import MapView, { Marker } from "react-native-maps";
 import { openMap, openPhone, openLink } from '../navigation/ExternalNavigation';
 import { useGlobalStyles } from '../styles/globalStyles';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { cards_accepted, accessDetailCodes } from '../constants/nrelApiOptions';
 
 export default function StationDetails({ route }) {
     const theme = useTheme();
@@ -15,20 +16,18 @@ export default function StationDetails({ route }) {
     // Format the payment methods
     const formatPaymentMethods = (cards) => {
         if (!cards) return null;
-        const methodMap = {
-            'V': 'Visa',
-            'M': 'MasterCard',
-            'D': 'Discover',
-            'A': 'AmEx',
-            'CREDIT': 'Credit',
-            'DEBIT': 'Debit',
-            'CASH': 'Cash'
-        };
+        
+        // Convert `cards_accepted` en un objet map pour accéder facilement aux labels par ID.
+        const methodMap = cards_accepted.reduce((map, card) => {
+            map[card.id] = card.label;
+            return map;
+        }, {});
+    
         return cards.split(' ')
             .map(card => methodMap[card] || card)
             .filter(Boolean);
     };
-
+    
     // Check if the station is available (Status E = Available)
     const getStatusInfo = () => {
         const statusMap = {
@@ -111,40 +110,67 @@ export default function StationDetails({ route }) {
                                 />
                             )}
 
-                            {/* Subheader */}
-                                <View style={localStyles.headerContainer}>
-                                    {station?.status_code && (
-                                        <List.Item
-                                            title={statusInfo.label}
-                                            titleNumberOfLines={2}
-                                            left={props => (
-                                                <Icon {...props} name={statusInfo.icon} color={statusInfo.color} size={24} />
-                                            )}
-                                            titleStyle={[ localStyles.subHeaderTitle, {color: statusInfo.color} ]}
-                                            style={{ flex: 1 }}
-                                        />
-                                    )}
+                            {/* Subheader line 1 */}
+                            <View style={localStyles.headerContainer}>
+                                {/* Status */}
+                                {station?.status_code && (
+                                    <List.Item
+                                        title={statusInfo.label}
+                                        titleNumberOfLines={2}
+                                        left={props => (
+                                            <Icon {...props} name={statusInfo.icon} color={statusInfo.color} size={24} />
+                                        )}
+                                        titleStyle={[ localStyles.subHeaderTitle, {color: statusInfo.color} ]}
+                                        style={{ flex: 1 }}
+                                    />
+                                )}
+                                
+                                {/* Last updated */}
+                                {station?.updated_at && (
+                                    <List.Item
+                                        title={`Last updated: ${new Date(station.updated_at).toLocaleString()}`}
+                                        titleNumberOfLines={2}
+                                        left={props => <List.Icon {...props} icon="clock" color={theme.colors.onBackground} size={24}/>}
+                                        titleStyle={{fontSize: 12}}
+                                        style={{ flex: 1 }}
+                                    />
+                                )}
 
-                                    { station?.distance && (
-                                        <List.Item
-                                            title={`${station.distance.toFixed(2)} miles`}
-                                            titleNumberOfLines={2}
-                                            left={props => <Icon {...props} name="map-marker-distance" color={theme.colors.onBackground} size={24} />}
-                                            titleStyle={[ localStyles.subHeaderTitle, {color: theme.colors.onBackground} ]}
-                                            style={{ flex: 1 }}
-                                        />
-                                    )}
-                                    
-                                    {station?.e85_blender_pump && (
-                                        <List.Item
-                                            title="Blender Pump"
-                                            titleNumberOfLines={2}
-                                            left={props => <Icon {...props} name="gas-station" color={theme.colors.onBackground} size={24} />}
-                                            titleStyle={[ localStyles.subHeaderTitle, {color: theme.colors.onBackground} ]}
-                                            style={{ flex: 1 }}
-                                        />
-                                    )}
-                                </View>
+                            </View>
+
+                            {/* Subheader line 2 */}
+                            <View style={localStyles.headerContainer}>
+                                {/* Distance */}
+                                { station?.distance && (
+                                    <List.Item
+                                        title={`${station.distance.toFixed(2)} miles`}
+                                        titleNumberOfLines={2}
+                                        left={props => <Icon {...props} name="map-marker-distance" color={theme.colors.onBackground} size={24} />}
+                                        titleStyle={[ localStyles.subHeaderTitle, {color: theme.colors.onBackground} ]}
+                                        style={{ flex: 1 }}
+                                    />
+                                )}
+
+                                {/* Blender pump */}
+                                {station?.e85_blender_pump ?
+                                    <List.Item
+                                        title="Blender pump available"
+                                        titleNumberOfLines={2}
+                                        left={props => <Icon {...props} name="gas-station" color={theme.colors.onBackground} size={24} />}
+                                        titleStyle={[ localStyles.subHeaderTitle, {color: theme.colors.onBackground} ]}
+                                        style={{ flex: 1 }}
+                                    />
+                                    :
+                                    <List.Item
+                                        title="No blender pump"
+                                        titleNumberOfLines={2}
+                                        left={props => <Icon {...props} name="gas-station-off" color={theme.colors.onBackground} size={24} />}
+                                        titleStyle={[ localStyles.subHeaderTitle, {color: theme.colors.onBackground} ]}
+                                        style={{ flex: 1 }}
+                                    />
+                                }
+                                
+                            </View>
                             
                             { hasDestinationCoordinates && (
                                 <Button 
@@ -213,8 +239,32 @@ export default function StationDetails({ route }) {
                                     {station?.access_code && (
                                         <List.Item
                                             title={(station.access_code).charAt(0).toUpperCase() + (station.access_code).slice(1)}
-                                            description={`This is a ${station?.access_code} station`}
+                                            description={ station.access_code === "public" ? "This is a public station." : "Private stations are strictly reserved for fleets, workplaces, and multi-family housing, and may include stations that are physically inaccessible to the public, such as behind a gate." }
+                                            descriptionNumberOfLines={5}
                                             left={props => <List.Icon {...props} icon={station.access_code === "public" ? "account-group-outline" : "lock"} />}
+                                            titleStyle={styles.listTitle}
+                                            style={styles.contentPaddingHorizontal}
+                                        />
+                                    )}
+
+                                    {/* Restricted access */}
+                                    {station?.restricted_access && (
+                                        <List.Item
+                                            title="Restricted access"
+                                            description="The station is reserved for patrons of a business, such as guests of a hotel, visitors of a museum, or customers of a retail store."
+                                            descriptionNumberOfLines={5}
+                                            left={props => <List.Icon {...props} icon="lock" />}
+                                            titleStyle={styles.listTitle}
+                                            style={styles.contentPaddingHorizontal}
+                                        />
+                                    )}
+
+                                    {/* Access details */}
+                                    {station?.access_detail_code && (
+                                        <List.Item
+                                            title="Access details"
+                                            description={accessDetailCodes.find(info => info.id === station.access_detail_code)?.label}
+                                            left={props => <List.Icon {...props} icon={accessDetailCodes.find(info => info.id === station.access_detail_code)?.icon} />}
                                             titleStyle={styles.listTitle}
                                             style={styles.contentPaddingHorizontal}
                                         />
@@ -231,28 +281,41 @@ export default function StationDetails({ route }) {
 
                                 <List.Section title='Additional information' style={{...styles.listSection}} titleStyle={{...styles.listTitle, color: theme.colors.outline, ...styles.contentPaddingLeft}}>
                                     {station?.e85_other_ethanol_blends?.length > 0 && (
-                                        <>
-                                                <View style={styles.contentPaddingHorizontal}>
-                                                    <List.Item title="Ethanol blends" titleStyle={styles.listTitle} left={props => <List.Icon {...props} icon="water" />} />
-                                                    <View style={[localStyles.chipsContainer, styles.contentPaddingHorizontal]}>
-                                                        <Chip
-                                                            style={[localStyles.blend, { backgroundColor: theme.colors.accent }]}
-                                                            textStyle={{ color: theme.colors.onAccent }}
-                                                        >
-                                                            E85
-                                                        </Chip>
-                                                        {station.e85_other_ethanol_blends.map((blend) => (
-                                                            <Chip
-                                                                key={blend}
-                                                                style={[localStyles.blend, { backgroundColor: theme.colors.accent }]}
-                                                                textStyle={{ color: theme.colors.onAccent }}
-                                                            >
-                                                                {blend}
-                                                            </Chip>
-                                                        ))}
-                                                    </View>
-                                                </View>
-                                        </>
+                                    <>
+                                        <View style={styles.contentPaddingHorizontal}>
+                                            <List.Item title="Ethanol blends" titleStyle={styles.listTitle} left={props => <List.Icon {...props} icon="water" />} />
+                                            <View style={[localStyles.chipsContainer, styles.contentPaddingHorizontal]}>
+                                                <Chip
+                                                    style={[localStyles.blend, { backgroundColor: theme.colors.accent }]}
+                                                    textStyle={{ color: theme.colors.onAccent }}
+                                                >
+                                                    E85
+                                                </Chip>
+                                                {station.e85_other_ethanol_blends.map((blend) => (
+                                                    <Chip
+                                                        key={blend}
+                                                        style={[localStyles.blend, { backgroundColor: theme.colors.accent }]}
+                                                        textStyle={{ color: theme.colors.onAccent }}
+                                                    >
+                                                        {blend}
+                                                    </Chip>
+                                                ))}
+                                            </View>
+                                        </View>
+                                    </>
+                                    )}
+
+                                    {/* Intersection directions */}
+                                    {station?.intersection_directions && (
+                                        <View style={styles.contentPaddingHorizontal}>
+                                            <List.Item
+                                                title="Intersection directions"
+                                                description={station.intersection_directions}
+                                                left={props => <List.Icon {...props} icon="sign-direction" />}
+                                                titleStyle={styles.listTitle}
+                                                style={localStyles.lastItem}
+                                            />
+                                        </View>
                                     )}
 
                                     {/* Payment methods */}
@@ -275,18 +338,6 @@ export default function StationDetails({ route }) {
                                         </>
                                     )}
 
-                                    {/* Complementary information */}
-                                    {station?.intersection_directions && (
-                                        <View style={styles.contentPaddingHorizontal}>
-                                            <List.Item
-                                                title="Intersection directions"
-                                                description={station.intersection_directions}
-                                                left={props => <List.Icon {...props} icon="sign-direction" />}
-                                                titleStyle={styles.listTitle}
-                                                style={localStyles.lastItem}
-                                            />
-                                        </View>
-                                    )}
                                 </List.Section>
                             </>
                         )}
