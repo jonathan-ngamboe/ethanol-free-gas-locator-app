@@ -16,7 +16,6 @@ export const LocationProvider = ({ children }) => {
             setHasPermission(status === 'granted');
             return status === 'granted';
         } catch (error) {
-            console.error('Error checking permissions:', error);
             setHasPermission(false);
             return false;
         }
@@ -40,11 +39,9 @@ export const LocationProvider = ({ children }) => {
                 maximumAge: 10000
             });
 
-            console.log('Location obtained:', location);
             setUserLocation(location.coords);
             return location;
         } catch (error) {
-            console.error('Error getting location:', error);
             showSnackbar('Error getting location: ' + error.message);
             return null;
         } finally {
