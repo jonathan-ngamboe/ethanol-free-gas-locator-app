@@ -2,6 +2,7 @@ import MapView, { Callout, Marker } from "react-native-maps";
 import { DEFAULT_REGION, ZOOM_LEVELS } from '../constants/mapConstants';
 import { Pressable, StyleSheet } from "react-native";
 import { List, useTheme } from 'react-native-paper';
+import dark from '../../assets/mapStyles/dark.json';
 
 export default function Map( { onTouch, markers, userCoordinates, navigation, setMarkerIndex }) {
     const theme = useTheme();
@@ -52,9 +53,8 @@ export default function Map( { onTouch, markers, userCoordinates, navigation, se
             zoomControlEnabled={true}
             zoomLevel={ZOOM_LEVELS.CITY}
             onTouchStart={onTouch}
-            // NOTE: It's not possible to style Apple Maps so we need to use Google Maps but it requires an API key and Google Map does not work on iOS simulator. It works on Android emulator and real iOS devices.
-            //provider="google"  
-            //googleMapId={process.env.EXPO_PUBLIC_GOOGLE_MAPS_API_KEY}
+            userInterfaceStyle = {theme.dark ? 'dark' : 'light'} // This is for iOS only
+            customMapStyle={theme.dark ? dark : []} // This is for Android only
         >
             {userCoordinates && (
                 <Marker
