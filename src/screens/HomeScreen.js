@@ -47,7 +47,7 @@ export default function HomeScreen({navigation}) {
     );
 
     const navigateToMap = useCallback(async (getLocation = false) => {
-        if(getLocation) { // INFO: This will be skipped if we already have the location
+        if(getLocation && !isLocationLoading) { // INFO: This will be skipped if we already have the location
             setIsLocationLoading(true);
             // Get the user location first
             try {
@@ -148,7 +148,7 @@ export default function HomeScreen({navigation}) {
                         rightComponent={searchBarRightComponent}
                         onRightComponentPress={() => navigation.navigate('ProfileStack')}
                         onFocus={() => navigateToMap(false)} // Open the map when the search bar is focused
-                        loading={isLocationLoading}
+                        isLoading={isLocationLoading}
                     />
                 }
                 </View>
