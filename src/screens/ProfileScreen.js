@@ -132,7 +132,7 @@ export default function ProfileScreen({ navigation }) {
                         title={user?.firstName+ ' ' + user?.lastName}
                         description={user?.email}
                         left={props => <List.Icon {...props} icon="account-multiple-plus" color={theme.colors.primary} style={styles.contentPaddingLeft} />}
-                        right={(props) => <Button {...props} icon="plus" mode="contained" textColor={theme.colors.background} onPress={() => share('Hey, Find the nearest E85 station with this app: ' + Platform.select({ ios: appStoreUrl, android: playStoreUrl }))}>Invite</Button>}
+                        right={(props) => <Button {...props} icon="plus" mode="contained" textColor="white" onPress={() => share('Hey, Find the nearest E85 station with this app: ' + Platform.select({ ios: appStoreUrl, android: playStoreUrl }))}>Invite</Button>}
                         titleStyle={styles.listTitle}
                         titleVariant='bodySmall'
                         subtitleStyle={{...styles.listDescription, color: theme.colors.outline }}
