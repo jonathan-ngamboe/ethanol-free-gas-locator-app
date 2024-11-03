@@ -35,28 +35,29 @@ export default function Filters({ sortBy, setSortBy, viewMode, setViewMode, onAp
     };
 
     const applyFilters = () => {
+        // Only apply the filters if they have changed to avoid unnecessary API calls
+        if(JSON.stringify(tempFilters) !== JSON.stringify(filters)) {
+            onApply(tempFilters); // Perform a search with the new filters
+        }
         setFilters(tempFilters);
         setViewMode(tempViewMode); // Automatically update the view mode and close the filters modal
         if(sortBy !== tempSortBy) {
             setSortBy(tempSortBy);
         }
-        // Only apply the filters if they have changed to avoid unnecessary API calls
-        if(tempFilters !== filters) {
-            onApply(tempFilters); // Perform a search with the new filters
-        }
     };
 
     const resetFilters = () => {
+        // Update the temporary filters to the initial values
+        setTempFilters(initialFilters);
+        setTempViewMode(initialViewMode);
+        setTempSortBy(initialSortBy);
+        setSliderValue(initialFilters.radius);
+        
+        // Apply the changes to the actual filters
+        onApply(initialFilters);
         setFilters(initialFilters);
         setViewMode(initialViewMode);
-        // Only sort if the sort by has changed
-        if(sortBy !== initialSortBy) {
-            setSortBy(initialSortBy);
-        }
-        // Only apply the filters if they have changed to avoid unnecessary API calls
-        if(tempFilters !== filters) {
-            onApply(initialFilters); // Perform a search with the initial filters
-        }
+        setSortBy(initialSortBy);
     };
 
     return (        
