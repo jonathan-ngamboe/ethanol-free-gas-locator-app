@@ -6,6 +6,7 @@ import { openMap, openPhone, openLink } from '../navigation/ExternalNavigation';
 import { useGlobalStyles } from '../styles/globalStyles';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { cards_accepted, accessDetailCodes } from '../constants/nrelApiOptions';
+import { getFormattedAddress } from '../utils/utils';
 
 export default function StationDetails({ route }) {
     const theme = useTheme();
@@ -97,11 +98,7 @@ export default function StationDetails({ route }) {
                                 <List.Item
                                     title={station?.station_name}
                                     titleNumberOfLines={2}
-                                    description={[
-                                        station?.street_address,
-                                        station?.city,
-                                        [station?.state, station?.zip].filter(Boolean).join(' ')
-                                    ].filter(Boolean).join(', ')}
+                                    description={getFormattedAddress(station)}
                                     left={props => (
                                         <List.Icon {...props} icon="map-marker" color={theme.colors.primary} />
                                     )}
@@ -129,7 +126,7 @@ export default function StationDetails({ route }) {
                                 {station?.updated_at && (
                                     <List.Item
                                         title={`Last updated: ${new Date(station.updated_at).toLocaleString()}`}
-                                        titleNumberOfLines={2}
+                                        titleNumberOfLines={3}
                                         left={props => <List.Icon {...props} icon="clock" color={theme.colors.onBackground} size={24}/>}
                                         titleStyle={{fontSize: 12}}
                                         style={{ flex: 1 }}
