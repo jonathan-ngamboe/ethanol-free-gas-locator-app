@@ -15,6 +15,9 @@ import { useSnackbar } from '../context/SnackbarContext';
 import { initialFilters, initialViewMode, initialSortBy } from "../constants/filtersConstants";
 import { useLocation } from "../context/LocationContext";
 import { useStation } from "../context/StationContext";
+import { useMap } from "../context/MapContext";
+
+
 
 export default function DiscoverScreen({navigation}) {
     const route = useRoute();
@@ -46,6 +49,8 @@ export default function DiscoverScreen({navigation}) {
     const [viewMode, setViewMode] = useState(initialViewMode);
     // Sort by
     const [sortBy, setSortBy] = useState(initialSortBy);
+    // Map context
+    const { setMapRef } = useMap();
     
 
     // Filter icon
@@ -312,6 +317,7 @@ export default function DiscoverScreen({navigation}) {
                         userCoordinates={userLocation} 
                         navigation={navigation} 
                         setMarkerIndex={setSelectedStationIndex}
+                        setMapRef={setMapRef}
                     />
                         
                     {/* Search bar */}  
