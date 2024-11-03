@@ -1,6 +1,8 @@
 
 import { copyToClipboard } from "../navigation/ExternalNavigation";
 import { useShowOnMap } from "./mapUtils";
+import { share, openEmail } from "../navigation/ExternalNavigation";
+import { contactEmail } from "../constants/generalConstants";
 
 
 // Format the address
@@ -15,7 +17,7 @@ export const getFormattedAddress = (station) => {
 
 
 // Menu items
-export const getMenuItems = (station, menuTypes = ['favorite', 'map', 'address']) => {
+export const getMenuItems = (station = {}, menuTypes = ['favorite', 'map', 'address']) => {
     const showOnMap = useShowOnMap();
     
     const menuConfigs = {
@@ -27,12 +29,22 @@ export const getMenuItems = (station, menuTypes = ['favorite', 'map', 'address']
         map: {
             title: 'Show on map',
             icon: 'map-marker-radius-outline',
-            onPress: () => showOnMap(station.longitude, station.latitude, station.id)
+            onPress: () => showOnMap(station?.longitude, station?.latitude, station?.id)
         },
         address: {
             title: 'Copy address',
             icon: 'content-copy',
             onPress: () => copyToClipboard(getFormattedAddress(station))
+        },
+        share: {
+            title: 'Share',
+            icon: 'share-variant',
+            onPress: () => share('Check out this station!')
+        },
+        report: {
+            title: 'Report',
+            icon: 'alert-circle-outline',
+            onPress: () => openEmail(contactEmail)
         }
     };
     
