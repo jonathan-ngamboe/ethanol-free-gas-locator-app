@@ -9,11 +9,6 @@ export const MapProvider = ({ children }) => {
         mapRef.current = ref;
     };
 
-    useEffect(() => {
-        console.log('MapProvider mounted');
-        console.log('Map Ref:', mapRef);
-    }, [mapRef]);
-
     return (
         <MapContext.Provider value={{ mapRef, setMapRef }}>
             {children}
