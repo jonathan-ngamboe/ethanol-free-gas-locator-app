@@ -1,8 +1,8 @@
 // Initial filters
 export const initialFilters = {
-    status: [],
+    status: ['E'],
     cards_accepted: [],
-    access: '',
+    access: 'public',
     e85_other_ethanol_blends: [],
     e85_blender_pump: false,
     radius: 50,
