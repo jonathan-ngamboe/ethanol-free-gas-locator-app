@@ -9,6 +9,7 @@ import { AuthProvider } from './src/context/AuthContext';
 import { SnackbarProvider } from './src/context/SnackbarContext';
 import { LocationProvider } from './src/context/LocationContext';
 import { StationProvider } from './src/context/StationContext';
+import { MapProvider } from './src/context/MapContext';
 import SnackbarNotification from './src/components/SnackbarNotification'; 
 
 
@@ -35,7 +36,9 @@ export default function App() {
                 <SnackbarProvider>
                   <LocationProvider>
                     <StationProvider>
-                      <AppContent />
+                      <MapProvider>
+                        <AppContent />
+                      </MapProvider>
                     </StationProvider>
                   </LocationProvider>
                 </SnackbarProvider>
