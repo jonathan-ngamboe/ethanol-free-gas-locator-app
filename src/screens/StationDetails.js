@@ -2,7 +2,7 @@ import React from 'react';
 import { View, StyleSheet, ScrollView, Pressable } from 'react-native';
 import { List, useTheme, Surface, Button, Divider, Chip, Text } from 'react-native-paper';
 import MapView, { Marker } from "react-native-maps";
-import { openMap, openPhone, openLink } from '../navigation/ExternalNavigation';
+import { openMap, openPhone, openLink, copyToClipboard } from '../navigation/ExternalNavigation';
 import { useGlobalStyles } from '../styles/globalStyles';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { cards_accepted, accessDetailCodes } from '../constants/nrelApiOptions';
@@ -98,7 +98,11 @@ export default function StationDetails({ route }) {
                                 <List.Item
                                     title={station?.station_name}
                                     titleNumberOfLines={2}
-                                    description={getFormattedAddress(station)}
+                                    description={() => 
+                                        <Pressable onPress={() => copyToClipboard(getFormattedAddress(station))}>
+                                            <Text style={ localStyles.link }>{getFormattedAddress(station)}</Text>
+                                        </Pressable>
+                                    }
                                     left={props => (
                                         <List.Icon {...props} icon="map-marker" color={theme.colors.primary} />
                                     )}
