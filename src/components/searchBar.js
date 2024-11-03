@@ -5,12 +5,16 @@ import React, { useState } from 'react';
 
 export default function SearchBar({ 
                             barRef,
-                            leftIcon= 'map-marker', 
+                            leftIcon='map-marker', 
                             onLeftIconPress, 
                             rightComponent, 
                             onRightComponentPress, 
                             isLoading, 
                             onFocus,
+                            placeholder="Search",
+                            searchQuery,
+                            setSearchQuery,
+                            onSubmit
                         }) {
     const styles = useGlobalStyles();
     const theme = useTheme();
@@ -21,12 +25,10 @@ export default function SearchBar({
         </Pressable>
     );
 
-    const [searchQuery, setSearchQuery] = useState('');
-
     return (
         <Searchbar
             ref={barRef}
-            placeholder="Search for a station"
+            placeholder={placeholder}
             style={[ localStyles.searchBar, {backgroundColor: theme.colors.background}, styles.shadow ]}
             inputStyle={localStyles.searchInput}
             icon={leftIcon}
@@ -37,6 +39,7 @@ export default function SearchBar({
             onFocus={onFocus}
             value={searchQuery}
             onChangeText={(query) => setSearchQuery(query)}
+            onSubmitEditing={onSubmit}
         />
     );
 }
