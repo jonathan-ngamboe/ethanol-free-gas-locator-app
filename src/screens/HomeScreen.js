@@ -10,6 +10,9 @@ import AdsCarousel from '../components/AdsCarousel';
 import { getUser } from '../services/userService';
 import { useSnackbar } from '../context/SnackbarContext';
 import { useStation } from '../context/StationContext';
+import { getMenuItems } from '../utils/utils';
+
+
 
 export default function HomeScreen({navigation}) {
     const styles = useGlobalStyles();
@@ -18,6 +21,8 @@ export default function HomeScreen({navigation}) {
     const [user, setUser] = useState(null);
     const { showSnackbar } = useSnackbar();
     const { nearbyStations } = useStation();
+    const [nearbyStationList, setNearbyStationList] = useState(nearbyStations);
+
 
     // Fetch user data when the component mounts
     useEffect(() => {
@@ -53,25 +58,7 @@ export default function HomeScreen({navigation}) {
         period: 'Last 7 days'
     };
 
-    const [nearbyStationList, setNearbyStationList] = useState(nearbyStations);
 
-    const getMenuItems = (station) => [
-        { 
-            title: 'Add to favorites',
-            icon: 'heart-outline',
-            onPress: () => console.log('Add to favorites')
-        },
-        { 
-            title: 'Show on map', 
-            icon: 'map-marker-radius-outline', 
-            onPress: () => console.log('Show on map')
-        },
-        { 
-            title: 'Copy address',
-            icon: 'content-copy',
-            onPress: () => copyToClipboard(getFormattedAddress())
-        },
-    ];
 
     // Function to display the stations in a list. Note: Flatlist can not be used because of the scrollview
     const renderStationList = (stationList) => {
@@ -96,7 +83,7 @@ export default function HomeScreen({navigation}) {
                                 itemID={item.id} 
                                 color={props.color} 
                                 style={props.style} 
-                                items={getMenuItems(item)} 
+                                items={getMenuItems(item, ['favorite', 'address'])} 
                             />
                         )}
                         onPress={() => navigation.navigate('StationDetails', { station: item })}
