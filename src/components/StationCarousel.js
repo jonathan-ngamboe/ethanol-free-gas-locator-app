@@ -30,6 +30,9 @@ export default function StationCarousel({
     const previousSelectedIndexRef = useRef(selectedIndex);
     const [isScrolling, setIsScrolling] = useState(false);
 
+    // Memoize the StationCard component to prevent unnecessary re-renders
+    const MemoizedStationCard = React.memo(StationCard);
+
     const renderStationCount = () => {
         if (stationList.length === 0) return 'No station found';
         if (stationList.length === 1) return '1 Station found';
@@ -38,7 +41,7 @@ export default function StationCarousel({
 
     const renderItem = useCallback(({ item }) => (
         <View style={localStyles.itemContainer}>
-            <StationCard  
+            <MemoizedStationCard  
                 station={item} 
                 showShadow={showShadow}
                 onPressCard={() => navigation.navigate('StationDetails', { station: item })}
