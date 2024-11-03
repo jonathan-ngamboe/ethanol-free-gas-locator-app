@@ -11,9 +11,9 @@ import Filters from "../components/Filters";
 import Animated, { FadeIn, FadeOut, runOnJS } from 'react-native-reanimated';
 import React, { useState, useRef, useCallback, useEffect } from "react";
 import { getNearbyStations } from "../services/stationService";
-import * as Location from 'expo-location';
 import { useSnackbar } from '../context/SnackbarContext';
 import { initialFilters, initialViewMode, initialSortBy } from "../constants/filtersConstants";
+import { useLocation } from "../context/LocationContext";
 
 export default function DiscoverScreen({navigation}) {
     const route = useRoute();
@@ -29,7 +29,7 @@ export default function DiscoverScreen({navigation}) {
     const [stations, setStations] = useState([]);
     const [loading, setLoading] = useState(false);
     // Location
-    const [userLocation, setUserLocation] = useState(null);
+    const { userLocation, setUserLocation, getUserLocation, isLoading: locationLoading } = useLocation();
     const [searchLocation, setSearchLocation] = useState(''); // Location from the search bar (street, city, state, postal code)
     // Search bar handling
     const searchBarRef = useRef(null);  
@@ -58,39 +58,35 @@ export default function DiscoverScreen({navigation}) {
 
     ///// Callbacks /////
 
-    // Fetch userLocation
+    // Fetch userLocation and perform search
     const getLocation = useCallback(async () => {
+        if (loading) return;
+        
         setLoading(true);
+        
         try {
-            const { status } = await Location.requestForegroundPermissionsAsync();
-            if (status !== 'granted') {
-                showSnackbar('Permission to access location was denied. Please enable location services to view nearby stations.');
+            const location = await getUserLocation(true); // Force a new location request
+            if (!location) {
                 return;
             }
-            
-            const userLocation = await Location.getCurrentPositionAsync({});
-            setUserLocation(userLocation.coords);
-            
-            setSearchLocation('');
 
-            performSearch({ 
-                longitude: userLocation.coords.longitude, 
-                latitude: userLocation.coords.latitude, 
+            setSearchLocation('');
+            await performSearch({ 
+                longitude: location?.coords?.longitude, 
+                latitude: location?.coords?.latitude, 
                 filters 
             });
-
-            handleSort(sortBy);
         } catch (error) {
-            showSnackbar('Error fetching location:', error);
-            console.error('Error fetching location:', error);
+            showSnackbar('Error getting location');
         } finally {
             setLoading(false);
         }
-    }, [showSnackbar, searchLocation, filters, performSearch]);
+    }, [getUserLocation, performSearch, filters, showSnackbar]);
 
     // Fetch stations
     const performSearch = useCallback(async (searchParams) => {
         const { location, longitude, latitude, filters } = searchParams;
+        if(!location && (!longitude || !latitude)) return;
         setLoading(true);
         try {
             const stations = await getNearbyStations(
@@ -100,6 +96,7 @@ export default function DiscoverScreen({navigation}) {
                 filters
             );
             setStations(stations);
+            handleSort(sortBy);
         } catch (error) {
             showSnackbar('Error fetching stations:', error);
         } finally {
@@ -216,8 +213,8 @@ export default function DiscoverScreen({navigation}) {
                 performSearch({ location: searchLocation.trim(), filters: updatedFilters });
             } else if (userLocation) {
                 performSearch({ 
-                    longitude: userLocation.longitude, 
-                    latitude: userLocation.latitude, 
+                    longitude: userLocation?.longitude, 
+                    latitude: userLocation?.latitude, 
                     filters: updatedFilters 
                 });
             }
@@ -287,12 +284,21 @@ export default function DiscoverScreen({navigation}) {
         };
     }, []);
 
-    // Get user's userLocation when the component mounts
+    // Initial search
     useEffect(() => {
-        getLocation();
-    }, []);
+        if (userLocation) {
+            setSearchLocation('');
+            performSearch({
+                longitude: userLocation?.coords?.longitude,
+                latitude: userLocation?.coords?.latitude,
+                filters
+            });
+        } else if (searchLocation) {
+            performSearch({ location: searchLocation, filters });
+        }
+    }, [userLocation]);
 
-    
+ 
     return (
         <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{flex: 1}}>
             <BottomSheetModalProvider>
@@ -312,7 +318,7 @@ export default function DiscoverScreen({navigation}) {
                             leftIcon='map-marker'
                             onLeftIconPress={() => getLocation()}
                             rightComponent={filterIcon}
-                            isLoading={loading}
+                            isLoading={loading || locationLoading}
                             placeholder={userLocation && !searchLocation ? 'Current location' : 'Search by location'}
                             onSubmit={() => handleSearch()}
                             searchQuery={searchLocation}
