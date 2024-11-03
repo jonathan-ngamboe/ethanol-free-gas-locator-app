@@ -6,11 +6,40 @@ import { List, useTheme } from 'react-native-paper';
 export default function Map( { onTouch, markers, userCoordinates, navigation, setMarkerIndex }) {
     const theme = useTheme();
 
+    // Get the marker with the shortest "distance" value from the search location
+    const getMinMarker = (markers) => {
+        return markers.reduce((minMarker, currentMarker) => {
+            return currentMarker.distance < minMarker.distance ? currentMarker : minMarker;
+        }, markers[0]);
+    };
+
+    // Calculate the perfect latitude and longitude delta for the map to fit all markers
+    const calculateDelta = (markers) => {
+        const latitudes = markers.map(marker => marker.latitude);
+        const longitudes = markers.map(marker => marker.longitude);
+
+        const maxLat = Math.max(...latitudes);
+        const minLat = Math.min(...latitudes);
+        const maxLng = Math.max(...longitudes);
+        const minLng = Math.min(...longitudes);
+
+        const latitudeDelta = (maxLat - minLat) * 1.2;
+        const longitudeDelta = (maxLng - minLng) * 1.2;
+
+        return { latitudeDelta, longitudeDelta };
+    };    
+
     return (
         <MapView
             style={localStyles.map}
             initialRegion={DEFAULT_REGION}
             region={
+                markers.length > 0 ? {
+                    latitude: getMinMarker(markers).latitude,
+                    longitude: getMinMarker(markers).longitude,
+                    latitudeDelta: calculateDelta(markers).latitudeDelta,
+                    longitudeDelta: calculateDelta(markers).longitudeDelta
+                }: 
                 userCoordinates ? {
                     latitude: userCoordinates.latitude,
                     longitude: userCoordinates.longitude,
