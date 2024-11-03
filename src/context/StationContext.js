@@ -1,5 +1,4 @@
 import React, { createContext, useContext, useState } from 'react';
-import { get } from 'react-native/Libraries/TurboModule/TurboModuleRegistry';
 
 const StationContext = createContext();
 
