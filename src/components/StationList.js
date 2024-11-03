@@ -50,7 +50,7 @@ export default function stationList({ stationList, navigation, displayHeader = t
             <List.Item
                 title={renderStationCount()}
                 titleStyle={styles.listTitle}
-                description={stationList.length > 0 ? 'Swipe to see more' : 'No station found'}
+                description={stationList.length > 0 ? 'Scroll to see more' : 'No station found'}
                 descriptionStyle={styles.listDescription}
                 left={() => 
                     <List.Icon 
