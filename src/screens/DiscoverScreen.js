@@ -14,6 +14,7 @@ import { getNearbyStations } from "../services/stationService";
 import { useSnackbar } from '../context/SnackbarContext';
 import { initialFilters, initialViewMode, initialSortBy } from "../constants/filtersConstants";
 import { useLocation } from "../context/LocationContext";
+import { useStation } from "../context/StationContext";
 
 export default function DiscoverScreen({navigation}) {
     const route = useRoute();
@@ -26,6 +27,7 @@ export default function DiscoverScreen({navigation}) {
     const [modalControls, setModalControls] = useState(null);
     const [isFiltersVisible, setFiltersVisibility] = useState(false);
     // Stations 
+    const { setNearbyStations } = useStation();
     const [stations, setStations] = useState([]);
     const [loading, setLoading] = useState(false);
     // Location
@@ -76,6 +78,7 @@ export default function DiscoverScreen({navigation}) {
                 latitude: location?.coords?.latitude, 
                 filters 
             });
+            setNearbyStations(stations);
         } catch (error) {
             showSnackbar('Error getting location');
         } finally {
