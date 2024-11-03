@@ -4,21 +4,12 @@ import { Text, useTheme, Card, Button, List } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import DotMenu from './DotMenu';
 import { useGlobalStyles } from '../styles/globalStyles';
-import { openMap, copyToClipboard } from '../navigation/ExternalNavigation';
+import { getMenuItems, getFormattedAddress } from '../utils/utils';
+
 
 export default function StationCard({ station, onPressPrimaryButton, onPressSecondaryButton, showShadow = true, cardContainerStyle, cardColor }) {
     const theme = useTheme();
     const styles = useGlobalStyles();
-
-    // Format the address
-    const getFormattedAddress = () => {
-        const parts = [
-            station?.street_address,
-            station?.city,
-            station?.state && station?.zip ? `${station.state} ${station.zip}` : null
-        ].filter(Boolean);
-        return parts.join(', ');
-    };
 
     // Check if the station is available (Status E = Available)
     const getStatusInfo = () => {
@@ -31,25 +22,6 @@ export default function StationCard({ station, onPressPrimaryButton, onPressSeco
     };
 
     const statusInfo = getStatusInfo();
-
-
-    const getMenuItems = (station) => [
-        { 
-            title: 'Add to favorites',
-            icon: 'heart-outline',
-            onPress: () => console.log('Add to favorites')
-        },
-        { 
-            title: 'Show on map', 
-            icon: 'map-marker-radius-outline', 
-            onPress: () => console.log('Show on map')
-        },
-        { 
-            title: 'Copy address',
-            icon: 'content-copy',
-            onPress: () => copyToClipboard(getFormattedAddress())
-        },
-    ];
 
     return (
         <View style={[ showShadow ? styles.shadow : {}, cardContainerStyle ]}>
@@ -66,7 +38,7 @@ export default function StationCard({ station, onPressPrimaryButton, onPressSeco
                         <List.Item
                             title={station?.station_name || ''}
                             titleStyle={styles.listTitle}
-                            description={getFormattedAddress()}
+                            description={getFormattedAddress(station)}
                             left={(props) => (
                                 <List.Icon 
                                     {...props} 
@@ -77,7 +49,7 @@ export default function StationCard({ station, onPressPrimaryButton, onPressSeco
                             right={(props) => (
                                 <DotMenu 
                                     {...props} 
-                                    items={getMenuItems(station)}
+                                    items={getMenuItems(station, ['favorite', 'map', 'address'])}
                                 />
                             )}
                             style={{paddingVertical: 0, paddingRight: 16 }}
