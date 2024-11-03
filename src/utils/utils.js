@@ -15,24 +15,28 @@ export const getFormattedAddress = (station) => {
 
 
 // Menu items
-export const getMenuItems = (station) => {
+export const getMenuItems = (station, menuTypes = ['favorite', 'map', 'address']) => {
     const showOnMap = useShowOnMap();
-
-    return [
-        { 
+    
+    const menuConfigs = {
+        favorite: {
             title: 'Add to favorites',
             icon: 'heart-outline',
             onPress: () => console.log('Add to favorites')
         },
-        { 
-            title: 'Show on map', 
-            icon: 'map-marker-radius-outline', 
+        map: {
+            title: 'Show on map',
+            icon: 'map-marker-radius-outline',
             onPress: () => showOnMap(station.longitude, station.latitude, station.id)
         },
-        { 
+        address: {
             title: 'Copy address',
             icon: 'content-copy',
             onPress: () => copyToClipboard(getFormattedAddress(station))
-        },
-    ];
-}
+        }
+    };
+    
+    return menuTypes
+        .filter(type => menuConfigs[type]) // Filter the visible menu items
+        .map(type => menuConfigs[type]);
+};
