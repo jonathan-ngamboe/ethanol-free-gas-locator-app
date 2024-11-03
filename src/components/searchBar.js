@@ -55,5 +55,6 @@ const localStyles = StyleSheet.create({
         minHeight: 0, 
         paddingBottom: 0, 
         textAlignVertical: 'center', 
+        alignSelf: 'auto'
     },
 });
