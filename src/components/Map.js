@@ -4,7 +4,7 @@ import { Pressable, StyleSheet } from "react-native";
 import { List, useTheme } from 'react-native-paper';
 import dark from '../../assets/mapStyles/dark.json';
 
-export default function Map( { onTouch, markers, userCoordinates, navigation, setMarkerIndex }) {
+export default function Map( { onTouch, markers, userCoordinates, navigation, setMarkerIndex, setMapRef } ) {
     const theme = useTheme();
 
     // Get the marker with the shortest "distance" value from the search location
@@ -32,6 +32,7 @@ export default function Map( { onTouch, markers, userCoordinates, navigation, se
 
     return (
         <MapView
+            ref={(ref) => setMapRef(ref)}
             style={localStyles.map}
             initialRegion={DEFAULT_REGION}
             region={
