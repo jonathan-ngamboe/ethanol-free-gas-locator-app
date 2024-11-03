@@ -8,7 +8,9 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { AuthProvider } from './src/context/AuthContext';
 import { SnackbarProvider } from './src/context/SnackbarContext';
 import { LocationProvider } from './src/context/LocationContext';
+import { StationProvider } from './src/context/StationContext';
 import SnackbarNotification from './src/components/SnackbarNotification'; 
+
 
 function AppContent() {
   const { theme } = useTheme();
@@ -32,7 +34,9 @@ export default function App() {
               <AuthProvider>
                 <SnackbarProvider>
                   <LocationProvider>
-                    <AppContent />
+                    <StationProvider>
+                      <AppContent />
+                    </StationProvider>
                   </LocationProvider>
                 </SnackbarProvider>
               </AuthProvider>
