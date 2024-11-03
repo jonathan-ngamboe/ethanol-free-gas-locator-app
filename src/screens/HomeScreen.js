@@ -9,7 +9,7 @@ import React, {useEffect, useState} from 'react';
 import AdsCarousel from '../components/AdsCarousel';
 import { getUser } from '../services/userService';
 import { useSnackbar } from '../context/SnackbarContext';
-
+import { useStation } from '../context/StationContext';
 
 export default function HomeScreen({navigation}) {
     const styles = useGlobalStyles();
@@ -17,7 +17,7 @@ export default function HomeScreen({navigation}) {
     const isFocused = useIsFocused();
     const [user, setUser] = useState(null);
     const { showSnackbar } = useSnackbar();
-
+    const { nearbyStations } = useStation();
 
     // Fetch user data when the component mounts
     useEffect(() => {
@@ -53,44 +53,7 @@ export default function HomeScreen({navigation}) {
         period: 'Last 7 days'
     };
 
-    const nearbyStationList = [{
-        // Essential station identification
-        id: 1519,
-        station_name: "Springfield E85 Station",
-        fuel_type_code: "E85",  // Important pour identifier le type de carburant
-        
-        // Location information
-        street_address: "1394 S Sepulveda Blvd",
-        city: "Los Angeles",
-        state: "CA",
-        zip: "90024",
-        
-        // Station status and accessibility
-        status_code: "T",      // E = Available, P = Planned, T = Temporarily Unavailable
-        access_code: "public", // public ou private
-        access_days_time: "24 hours daily",
-        
-        // E85 specific information
-        e85_blender_pump: true,  // Indique si la station a une pompe de mélange
-        e85_other_ethanol_blends: ["E15", "E20-E25"], // Autres mélanges disponibles
-        
-        // Payment information
-        cards_accepted: "CREDIT DEBIT CASH V M D A", // Types de paiement acceptés
-        
-        // Additional useful information
-        ev_network_web: "http://www.example.com", // Site web de la station
-        station_phone: "310-555-0123",
-        access_days_time: "24 hours daily",
-        facility_type: "GAS_STATION", // Type d'établissement
-        
-        // Optionnel : informations de navigation
-        latitude: 34.0453,
-        longitude: -118.4441,
-        intersection_directions: "Corner of Sepulveda and Santa Monica Blvd", // Aide à la localisation
-
-        // Distance from the user's location
-        distance: 0.5, // Distance en miles
-    }];
+    const [nearbyStationList, setNearbyStationList] = useState(nearbyStations);
 
     const getMenuItems = (station) => [
         { 
