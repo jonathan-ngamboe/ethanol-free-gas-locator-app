@@ -163,6 +163,7 @@ export default function Filters({ sortBy, setSortBy, viewMode, setViewMode, onAp
                                 }}
                                 minimumTrackTintColor={theme.colors.primary}
                                 disabled={tempFilters.radius === "infinite"}
+                                tapToSeek={true}
                             />
                         </>
                         )}
@@ -177,6 +178,7 @@ export default function Filters({ sortBy, setSortBy, viewMode, setViewMode, onAp
                                     icon={status.icon}
                                     selected={tempFilters.status.includes(status.id)}
                                     onPress={() => toggleFilter('status', status.id)}
+                                    textStyle={{ color: tempFilters.status.includes(status.id) ? theme.colors.background : theme.colors.onBackground}}
                                     style={[
                                         localStyles.chip,
                                         tempFilters.status.includes(status.id) ? { backgroundColor: theme.colors.accent } : { backgroundColor: theme.colors.inverseOnSurface }
@@ -197,6 +199,7 @@ export default function Filters({ sortBy, setSortBy, viewMode, setViewMode, onAp
                                 icon={type.icon}
                                 selected={tempFilters.access === type.id} 
                                 onPress={() => setTempFilters(prev => ({ ...prev, access: type.id }))} 
+                                textStyle={{ color: tempFilters.access.includes(type.id) ? theme.colors.background : theme.colors.onBackground}}
                                 style={[
                                     localStyles.chip,
                                     tempFilters.access.includes(type.id) ? { backgroundColor: theme.colors.accent } : { backgroundColor: theme.colors.inverseOnSurface }
@@ -216,6 +219,7 @@ export default function Filters({ sortBy, setSortBy, viewMode, setViewMode, onAp
                                 key={blend.id}
                                 selected={tempFilters.e85_other_ethanol_blends.includes(blend.id)}
                                 onPress={() => toggleFilter('e85_other_ethanol_blends', blend.id)}
+                                textStyle={{ color: tempFilters.e85_other_ethanol_blends.includes(blend.id) ? theme.colors.background : theme.colors.onBackground}}
                                 style={[
                                     localStyles.chip,
                                     tempFilters.e85_other_ethanol_blends.includes(blend.id) ? { backgroundColor: theme.colors.accent } : { backgroundColor: theme.colors.inverseOnSurface }
@@ -233,6 +237,7 @@ export default function Filters({ sortBy, setSortBy, viewMode, setViewMode, onAp
                             icon="gas-station"
                             selected={tempFilters.e85_blender_pump}
                             onPress={() => toggleBooleanFilter('e85_blender_pump')}
+                            textStyle={{ color: tempFilters.e85_blender_pump ? theme.colors.background : theme.colors.onBackground}}
                             style={[
                                 localStyles.chip,
                                 tempFilters.e85_blender_pump ? { backgroundColor: theme.colors.accent } : { backgroundColor: theme.colors.inverseOnSurface }
@@ -251,6 +256,7 @@ export default function Filters({ sortBy, setSortBy, viewMode, setViewMode, onAp
                                 icon={method.icon}
                                 selected={tempFilters.cards_accepted.includes(method.id)}
                                 onPress={() => toggleFilter('cards_accepted', method.id)}
+                                textStyle={{ color: tempFilters.cards_accepted.includes(method.id) ? theme.colors.background : theme.colors.onBackground}}
                                 style={[
                                     localStyles.chip,
                                     tempFilters.cards_accepted.includes(method.id) ? { backgroundColor: theme.colors.accent } : { backgroundColor: theme.colors.inverseOnSurface }
