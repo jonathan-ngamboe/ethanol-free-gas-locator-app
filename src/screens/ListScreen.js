@@ -26,6 +26,9 @@ export default function ListScreen({ navigation }) {
 
     const [viewMode, setViewMode] = useState('detailed');
 
+    const MemoizedStationCard = React.memo(StationCard);
+
+
     return (
         <View style={styles.container}>
             <List.Section style={localStyles.contentContainer}>
@@ -46,29 +49,33 @@ export default function ListScreen({ navigation }) {
                     />
 
                     {/* View mode SegmentedButtons */}
-                    <Text style={[styles.listSection, { color: theme.colors.outline, fontWeight: 'bold' }]}>View mode</Text>
-                    <SegmentedButtons
-                        value={viewMode}
-                        density='small'
-                        buttons={[
-                            {
-                                value: 'simple',
-                                label: 'Simple',
-                                icon: 'view-list',
-                                checkedColor: theme.colors.background,
-                                style: { backgroundColor: viewMode === 'simple' ? theme.colors.primary : theme.colors.background, borderColor: 'transparent' },
-                            },
-                            {
-                                value: 'detailed',
-                                label: 'Detailed',
-                                icon: 'view-dashboard',
-                                style: { backgroundColor: viewMode === 'detailed' ? theme.colors.primary : theme.colors.background, borderColor: 'transparent' },
-                                checkedColor: theme.colors.background,
-                            },
-                        ]}
-                        onValueChange={(mode) => setViewMode(mode)}
-                        style={[{ marginVertical: 10 }, styles.shadow]}
-                    />
+                    {stationList?.length > 0 && (
+                    <>
+                        <Text style={[styles.listSection, { color: theme.colors.outline, fontWeight: 'bold' }]}>View mode</Text>
+                        <SegmentedButtons
+                            value={viewMode}
+                            density='small'
+                            buttons={[
+                                {
+                                    value: 'simple',
+                                    label: 'Simple',
+                                    icon: 'view-list',
+                                    checkedColor: theme.colors.background,
+                                    style: { backgroundColor: viewMode === 'simple' ? theme.colors.primary : theme.colors.background, borderColor: 'transparent' },
+                                },
+                                {
+                                    value: 'detailed',
+                                    label: 'Detailed',
+                                    icon: 'view-dashboard',
+                                    style: { backgroundColor: viewMode === 'detailed' ? theme.colors.primary : theme.colors.background, borderColor: 'transparent' },
+                                    checkedColor: theme.colors.background,
+                                },
+                            ]}
+                            onValueChange={(mode) => setViewMode(mode)}
+                            style={[{ marginVertical: 10 }, styles.shadow]}
+                        />
+                    </>    
+                    )}
                 </List.Section>
 
                 <List.Section style={localStyles.listSection}>
@@ -87,7 +94,7 @@ export default function ListScreen({ navigation }) {
                             data={stationList}
                             keyExtractor={(item) => item.id}
                             renderItem={({ item }) => (
-                                <StationCard 
+                                <MemoizedStationCard 
                                     station={item} 
                                     showShadow={false}
                                     onPressCard={() => navigation.navigate('StationDetails', { station: item })}
