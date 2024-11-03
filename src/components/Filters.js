@@ -1,51 +1,25 @@
 import React, { useState } from "react";
 import { View, StyleSheet, ScrollView, Dimensions } from "react-native";
 import { useGlobalStyles } from "../styles/globalStyles";
-import { List, useTheme, Divider, SegmentedButtons, Button, Chip } from 'react-native-paper';
+import { List, useTheme, Divider, SegmentedButtons, Button, Chip, Switch } from 'react-native-paper';
+import Slider from '@react-native-community/slider';
+import { cards_accepted, statusOptions, accessTypes, otherEthanolBlends } from "../constants/nrelApiOptions"
+import { initialFilters, initialViewMode, initialSortBy } from "../constants/filtersConstants";
 
 const windowWidth = Dimensions.get('window').width;
 
-export default function Filters({ closeFilters, viewMode, setViewMode, handleFilters }) {
+export default function Filters({ sortBy, setSortBy, viewMode, setViewMode, onApply, filters, setFilters }) {
     const theme = useTheme();
     const styles = useGlobalStyles();
 
-    // Initial filters state
-    const [filters, setFilters] = useState({
-        viewMode: viewMode,
-        sortBy: 'nearest',
-        status: [],
-        paymentMethods: [],
-        accessType: [],
-        ethanolBlends: [],
-        hasBlenderPump: false
-    });
+    const [tempViewMode, setTempViewMode] = useState(viewMode);
+    const [tempSortBy, setTempSortBy] = useState(sortBy);
+    const [tempFilters, setTempFilters] = useState(filters);
 
-    // Available payment methods based on station details
-    const paymentMethods = [
-        { id: 'V', label: 'Visa', icon: 'credit-card' },
-        { id: 'M', label: 'MasterCard', icon: 'credit-card' },
-        { id: 'D', label: 'Discover', icon: 'credit-card' },
-        { id: 'A', label: 'AmEx', icon: 'credit-card' },
-        { id: 'CREDIT', label: 'Credit', icon: 'credit-card' },
-        { id: 'DEBIT', label: 'Debit', icon: 'credit-card' },
-        { id: 'CASH', label: 'Cash', icon: 'cash' }
-    ];
-
-    // Status options
-    const statusOptions = [
-        { id: 'E', label: 'Available', icon: 'check-circle' },
-        { id: 'P', label: 'Planned', icon: 'clock-outline' },
-        { id: 'T', label: 'Unavailable', icon: 'alert-circle' }
-    ];
-
-    // Access types
-    const accessTypes = [
-        { id: 'public', label: 'Public', icon: 'account-group-outline' },
-        { id: 'private', label: 'Private', icon: 'lock' }
-    ];
+    const [sliderValue, setSliderValue] = useState(tempFilters.radius);
 
     const toggleFilter = (category, value) => {
-        setFilters(prev => ({
+        setTempFilters(prev => ({
             ...prev,
             [category]: prev[category].includes(value)
                 ? prev[category].filter(item => item !== value)
@@ -54,28 +28,35 @@ export default function Filters({ closeFilters, viewMode, setViewMode, handleFil
     };
 
     const toggleBooleanFilter = (category) => {
-        setFilters(prev => ({
+        setTempFilters(prev => ({
             ...prev,
             [category]: !prev[category]
         }));
     };
 
     const applyFilters = () => {
-        handleFilters(filters);
-        setViewMode(filters.viewMode); // Automatically update the view mode and close the filters
+        setFilters(tempFilters);
+        setViewMode(tempViewMode); // Automatically update the view mode and close the filters modal
+        if(sortBy !== tempSortBy) {
+            setSortBy(tempSortBy);
+        }
+        // Only apply the filters if they have changed to avoid unnecessary API calls
+        if(tempFilters !== filters) {
+            onApply(tempFilters); // Perform a search with the new filters
+        }
     };
 
     const resetFilters = () => {
-        setFilters({
-            viewMode: 'simple',
-            sortBy: 'nearest',
-            status: [],
-            paymentMethods: [],
-            accessType: [],
-            ethanolBlends: [],
-            hasBlenderPump: false
-        });
-        closeFilters();
+        setFilters(initialFilters);
+        setViewMode(initialViewMode);
+        // Only sort if the sort by has changed
+        if(sortBy !== initialSortBy) {
+            setSortBy(initialSortBy);
+        }
+        // Only apply the filters if they have changed to avoid unnecessary API calls
+        if(tempFilters !== filters) {
+            onApply(initialFilters); // Perform a search with the initial filters
+        }
     };
 
     return (        
@@ -101,7 +82,7 @@ export default function Filters({ closeFilters, viewMode, setViewMode, handleFil
                     {/* View Mode Section */}
                     <List.Section title='View mode' titleStyle={localStyles.title}>
                         <SegmentedButtons
-                            value={filters.viewMode}
+                            value={tempViewMode}
                             density='small'
                             style={[localStyles.segmentedButtons, styles.shadow]}
                             buttons={[
@@ -110,24 +91,24 @@ export default function Filters({ closeFilters, viewMode, setViewMode, handleFil
                                     label: 'Simple',
                                     icon: 'view-list',
                                     checkedColor: theme.colors.background,
-                                    style: { backgroundColor: filters.viewMode === 'simple' ? theme.colors.primary : theme.colors.background, borderColor: 'transparent'},
+                                    style: { backgroundColor: tempViewMode === 'simple' ? theme.colors.primary : theme.colors.background, borderColor: 'transparent'},
                                 },
                                 {
                                     value: 'detailed',
                                     label: 'Detailed',
                                     icon: 'view-dashboard',
-                                    style: { backgroundColor: filters.viewMode === 'detailed' ? theme.colors.primary : theme.colors.background, borderColor: 'transparent'},
+                                    style: { backgroundColor: tempViewMode === 'detailed' ? theme.colors.primary : theme.colors.background, borderColor: 'transparent'},
                                     checkedColor: theme.colors.background,
                                 },
                             ]}
-                            onValueChange={value => setFilters({ ...filters, viewMode: value })}
+                            onValueChange={value => setTempViewMode(value)}
                         />
                     </List.Section>
-
+                    
                     {/* Sort By Section */}
                     <List.Section title='Sort by' titleStyle={localStyles.title}>
                         <SegmentedButtons
-                            value={filters.sortBy}
+                            value={tempSortBy}
                             density='small'
                             style={[localStyles.segmentedButtons, styles.shadow]}
                             buttons={[
@@ -135,19 +116,55 @@ export default function Filters({ closeFilters, viewMode, setViewMode, handleFil
                                     value: 'nearest',
                                     label: 'Nearest',
                                     icon: 'map-marker',
-                                    style: { backgroundColor: filters.sortBy === 'nearest' ? theme.colors.primary : theme.colors.background, borderColor: 'transparent'},
+                                    style: { backgroundColor: tempSortBy === 'nearest' ? theme.colors.primary : theme.colors.background, borderColor: 'transparent'},
                                     checkedColor: theme.colors.background,
                                 },
                                 {
                                     value: 'name',
                                     label: 'Name',
                                     icon: 'alphabetical',
-                                    style: { backgroundColor: filters.sortBy === 'name' ? theme.colors.primary : theme.colors.background, borderColor: 'transparent'},
+                                    style: { backgroundColor: tempSortBy === 'name' ? theme.colors.primary : theme.colors.background, borderColor: 'transparent'},
                                     checkedColor: theme.colors.background,
                                 },
                             ]}
-                            onValueChange={value => setFilters({ ...filters, sortBy: value })}
+                            onValueChange={value => setTempSortBy(value)}
                         />
+                    </List.Section>
+
+                    {/* Radius Section */}
+                    <List.Section title='Search radius' titleStyle={localStyles.title}>
+                        {/*  */}
+                        <List.Item
+                            title="No limit"
+                            right={() => (
+                                <Switch
+                                    value={tempFilters.radius === "infinite"}
+                                    onValueChange={() => {
+                                        setTempFilters({ ...tempFilters, radius: tempFilters.radius === "infinite" ? initialFilters.radius : "infinite" });
+                                        setSliderValue(initialFilters.radius);
+                                    }}
+                                />
+                            )}
+                        />
+                        {/* Slider for the radius */}
+                        {tempFilters.radius !== "infinite" && (
+                        <>
+                            <List.Item title={`${sliderValue} miles`} />
+                            <Slider
+                                lowerLimit={0}
+                                minimumValue={0}
+                                maximumValue={500}
+                                step={1}
+                                value={filters.radius}
+                                onValueChange={(value) => setSliderValue(value)} // To show the value in real-time
+                                onSlidingComplete={(value) => {
+                                    setTempFilters({ ...tempFilters, radius: value });
+                                }}
+                                minimumTrackTintColor={theme.colors.primary}
+                                disabled={tempFilters.radius === "infinite"}
+                            />
+                        </>
+                        )}
                     </List.Section>
 
                     {/* Status Section */}
@@ -157,36 +174,16 @@ export default function Filters({ closeFilters, viewMode, setViewMode, handleFil
                                 <Chip
                                     key={status.id}
                                     icon={status.icon}
-                                    selected={filters.status.includes(status.id)}
+                                    selected={tempFilters.status.includes(status.id)}
                                     onPress={() => toggleFilter('status', status.id)}
                                     style={[
                                         localStyles.chip,
-                                        filters.status.includes(status.id) ? { backgroundColor: theme.colors.accent } : { backgroundColor: theme.colors.inverseOnSurface }
+                                        tempFilters.status.includes(status.id) ? { backgroundColor: theme.colors.accent } : { backgroundColor: theme.colors.inverseOnSurface }
                                     ]}
                                 >
                                     {status.label}
                                 </Chip>
                             ))}
-                        </View>
-                    </List.Section>
-
-                    {/* Payment Methods Section */}
-                    <List.Section title='Payment methods' titleStyle={localStyles.title}>
-                        <View style={localStyles.chipContainer}>
-                        {paymentMethods.map(method => (
-                            <Chip
-                                key={method.id}
-                                icon={method.icon}
-                                selected={filters.paymentMethods.includes(method.id)}
-                                onPress={() => toggleFilter('paymentMethods', method.id)}
-                                style={[
-                                    localStyles.chip,
-                                    filters.paymentMethods.includes(method.id) ? { backgroundColor: theme.colors.accent } : { backgroundColor: theme.colors.inverseOnSurface }
-                                ]}
-                            >
-                                {method.label}
-                            </Chip>
-                        ))}
                         </View>
                     </List.Section>
 
@@ -197,14 +194,33 @@ export default function Filters({ closeFilters, viewMode, setViewMode, handleFil
                             <Chip
                                 key={type.id}
                                 icon={type.icon}
-                                selected={filters.accessType.includes(type.id)}
-                                onPress={() => toggleFilter('accessType', type.id)}
+                                selected={tempFilters.access === type.id} 
+                                onPress={() => setTempFilters(prev => ({ ...prev, access: type.id }))} 
                                 style={[
                                     localStyles.chip,
-                                    filters.accessType.includes(type.id) ? { backgroundColor: theme.colors.accent } : { backgroundColor: theme.colors.inverseOnSurface }
+                                    tempFilters.access.includes(type.id) ? { backgroundColor: theme.colors.accent } : { backgroundColor: theme.colors.inverseOnSurface }
                                 ]}
                             >
                                 {type.label}
+                            </Chip>
+                        ))}
+                        </View>
+                    </List.Section>
+
+                    {/* Ethanol Blends Section */}
+                    <List.Section title='Ethanol blends' titleStyle={localStyles.title}>
+                        <View style={localStyles.chipContainer}>
+                        {otherEthanolBlends.map(blend => (
+                            <Chip
+                                key={blend.id}
+                                selected={tempFilters.e85_other_ethanol_blends.includes(blend.id)}
+                                onPress={() => toggleFilter('e85_other_ethanol_blends', blend.id)}
+                                style={[
+                                    localStyles.chip,
+                                    tempFilters.e85_other_ethanol_blends.includes(blend.id) ? { backgroundColor: theme.colors.accent } : { backgroundColor: theme.colors.inverseOnSurface }
+                                ]}
+                            >
+                                {blend.label}
                             </Chip>
                         ))}
                         </View>
@@ -214,22 +230,44 @@ export default function Filters({ closeFilters, viewMode, setViewMode, handleFil
                     <List.Section title='Additional features' titleStyle={localStyles.title}>
                         <Chip
                             icon="gas-station"
-                            selected={filters.hasBlenderPump}
-                            onPress={() => toggleBooleanFilter('hasBlenderPump')}
+                            selected={tempFilters.e85_blender_pump}
+                            onPress={() => toggleBooleanFilter('e85_blender_pump')}
                             style={[
                                 localStyles.chip,
-                                filters.hasBlenderPump ? { backgroundColor: theme.colors.accent } : { backgroundColor: theme.colors.inverseOnSurface }
+                                tempFilters.e85_blender_pump ? { backgroundColor: theme.colors.accent } : { backgroundColor: theme.colors.inverseOnSurface }
                             ]}
                         >
                             Blender Pump
                         </Chip>
                     </List.Section>
+
+                    {/* Payment Methods Section */}
+                    <List.Section title='Payment methods' titleStyle={localStyles.title}>
+                        <View style={localStyles.chipContainer}>
+                        {cards_accepted.map(method => (
+                            <Chip
+                                key={method.id}
+                                icon={method.icon}
+                                selected={tempFilters.cards_accepted.includes(method.id)}
+                                onPress={() => toggleFilter('cards_accepted', method.id)}
+                                style={[
+                                    localStyles.chip,
+                                    tempFilters.cards_accepted.includes(method.id) ? { backgroundColor: theme.colors.accent } : { backgroundColor: theme.colors.inverseOnSurface }
+                                ]}
+                            >
+                                {method.label}
+                            </Chip>
+                        ))}
+                        </View>
+                    </List.Section>
+
                 </View>
             </ScrollView>
 
             <Button 
                 icon="filter" 
                 mode="contained" 
+                textColor="white"
                 style={localStyles.applyButton}
                 onPress={applyFilters}
             >
