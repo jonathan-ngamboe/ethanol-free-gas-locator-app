@@ -8,7 +8,8 @@ import DiscoverScreen from '../../screens/DiscoverScreen';
 import StationDetails from '../../screens/StationDetails';
 import { ProfileStack } from './ProfileStack';
 import DotMenu from '../../components/DotMenu';
-import { share, openEmail, copyToClipboard } from '../ExternalNavigation';
+import { share, openEmail } from '../../navigation/ExternalNavigation';
+import { contactEmail, websiteUrl } from '../../constants/generalConstants';
 
 const Stack = createStackNavigator();
 
@@ -17,9 +18,8 @@ export const DiscoverStack = () => {
   const styles = useGlobalStyles();
 
   const items = [
-    { title: 'Share', icon: 'share-variant', onPress: () => share('Check out this station!') },
-    { title: 'Report', icon: 'alert-circle-outline', onPress: () => openEmail('contact@ethanol-free-gas-locator.app') },
-    { title: 'Copy address', icon: 'content-copy', onPress: () => copyToClipboard('1234 Station St, Houston, TX 77002') },
+    { title: 'Share', icon: 'share-variant', onPress: () => share('Check out this station on Ethanol Free Gas Finder App - ' + websiteUrl) },
+    { title: 'Report', icon: 'alert-circle-outline', onPress: () => openEmail(contactEmail) },
   ];
 
   return (
