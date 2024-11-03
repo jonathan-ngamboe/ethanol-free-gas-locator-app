@@ -1,3 +1,4 @@
+import React, {useEffect, useState, useCallback} from 'react';
 import { View, StyleSheet, ScrollView, Text, StatusBar } from 'react-native';
 import { useGlobalStyles } from '../styles/globalStyles';
 import SearchBar from '../components/SearchBar';
@@ -5,13 +6,12 @@ import { Avatar, List, useTheme } from 'react-native-paper';
 import { useIsFocused } from '@react-navigation/native'; 
 import StatsCard from '../components/StatsCard';
 import DotMenu from '../components/DotMenu';
-import React, {useEffect, useState} from 'react';
 import AdsCarousel from '../components/AdsCarousel';
 import { getUser } from '../services/userService';
 import { useSnackbar } from '../context/SnackbarContext';
 import { useStation } from '../context/StationContext';
 import { getMenuItems } from '../utils/utils';
-
+import { useLocation } from '../context/LocationContext';
 
 
 export default function HomeScreen({navigation}) {
@@ -22,7 +22,8 @@ export default function HomeScreen({navigation}) {
     const { showSnackbar } = useSnackbar();
     const { nearbyStations } = useStation();
     const [nearbyStationList, setNearbyStationList] = useState(nearbyStations);
-
+    const { getUserLocation } = useLocation();
+    const [isLocationLoading, setIsLocationLoading] = useState(false);
 
     // Fetch user data when the component mounts
     useEffect(() => {
@@ -45,11 +46,25 @@ export default function HomeScreen({navigation}) {
         />
     );
 
-    const navigateToMap = () => {
-        navigation.navigate('Map', { 
-            openKeyboard: true 
-        });
-    };
+    const navigateToMap = useCallback(async (getLocation = false) => {
+        if(getLocation) { // INFO: This will be skipped if we already have the location
+            setIsLocationLoading(true);
+            // Get the user location first
+            try {
+                await getUserLocation();
+                // Once we have the location, navigate to the map
+                navigation.navigate('Map', {openKeyboard: false});
+            } catch (error) {
+                showSnackbar('Error getting location', 'error');
+                // If the user denies the location permission, navigate to the map anyway with the keyboard open
+                navigation.navigate('Map', {openKeyboard: true});
+            }
+            setIsLocationLoading(false);
+        } else {
+            navigation.navigate('Map', {openKeyboard: true});
+        }
+    }, [getUserLocation, navigation, showSnackbar]);
+
 
     const ethanolData = {
         price: 2.99,
@@ -129,12 +144,13 @@ export default function HomeScreen({navigation}) {
                 {isFocused && 
                     <SearchBar
                         leftIcon='map-marker'
-                        onLeftIconPress={navigateToMap} // Open the map when the left icon is pressed and get the user's location (TODO)
+                        onLeftIconPress={() => navigateToMap(true)} // Open the map when the left icon is pressed
                         rightComponent={searchBarRightComponent}
                         onRightComponentPress={() => navigation.navigate('ProfileStack')}
-                        onFocus={navigateToMap} // Open the map when the search bar is focused
-                        />
-                    }
+                        onFocus={() => navigateToMap(false)} // Open the map when the search bar is focused
+                        loading={isLocationLoading}
+                    />
+                }
                 </View>
             </View>
 
