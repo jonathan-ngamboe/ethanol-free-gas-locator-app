@@ -7,6 +7,7 @@ import { useGlobalStyles } from '../styles/globalStyles';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { cards_accepted, accessDetailCodes } from '../constants/nrelApiOptions';
 import { getFormattedAddress } from '../utils/utils';
+import dark from '../../assets/mapStyles/dark.json';
 
 export default function StationDetails({ route }) {
     const theme = useTheme();
@@ -70,6 +71,8 @@ export default function StationDetails({ route }) {
                                     longitudeDelta: 0.02
                                 }}
                                 zoomEnabled={true}
+                                userInterfaceStyle = {theme.dark ? 'dark' : 'light'} // This is for iOS only
+                                customMapStyle={theme.dark ? dark : []} // This is for Android only
                             >
                                 {station?.station_name && station?.street_address && station?.city && station?.state && station?.zip && (
                                     <Marker
