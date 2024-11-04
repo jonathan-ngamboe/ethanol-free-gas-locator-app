@@ -4,7 +4,7 @@ import { Pressable, StyleSheet } from "react-native";
 import { List, useTheme } from 'react-native-paper';
 import dark from '../../assets/mapStyles/dark.json';
 
-export default function Map( { onTouch, markers, userCoordinates, navigation, setMarkerIndex, setMapRef } ) {
+export default function Map( { onTouch, markers, userLocation, navigation, setMarkerIndex, setMapRef, startingPoint }) {
     const theme = useTheme();
 
     // Get the marker with the shortest "distance" value from the search location
@@ -35,6 +35,7 @@ export default function Map( { onTouch, markers, userCoordinates, navigation, se
             ref={(ref) => setMapRef(ref)}
             style={localStyles.map}
             initialRegion={DEFAULT_REGION}
+            // Set the region to the minimum marker if there are markers, otherwise set it to starting region if available or the user's location 
             region={
                 markers.length > 0 ? {
                     latitude: getMinMarker(markers).latitude,
@@ -42,9 +43,9 @@ export default function Map( { onTouch, markers, userCoordinates, navigation, se
                     latitudeDelta: calculateDelta(markers).latitudeDelta,
                     longitudeDelta: calculateDelta(markers).longitudeDelta
                 }: 
-                userCoordinates ? {
-                    latitude: userCoordinates.latitude,
-                    longitude: userCoordinates.longitude,
+                userLocation ? {
+                    latitude: userLocation.latitude,
+                    longitude: userLocation.longitude,
                     latitudeDelta: 0.0922,
                     longitudeDelta: 0.0421
                 } : DEFAULT_REGION
@@ -57,16 +58,31 @@ export default function Map( { onTouch, markers, userCoordinates, navigation, se
             userInterfaceStyle = {theme.dark ? 'dark' : 'light'} // This is for iOS only
             customMapStyle={theme.dark ? dark : []} // This is for Android only
         >
-            {userCoordinates && (
+            {/* Starting point marker */}
+            {startingPoint && (startingPoint?.latitude !== userLocation?.latitude && startingPoint?.longitude !== userLocation?.longitude) && (
                 <Marker
                     coordinate={{
-                        latitude: userCoordinates.latitude,
-                        longitude: userCoordinates.longitude
+                        latitude: startingPoint?.latitude,
+                        longitude: startingPoint?.longitude
                     }}
-                    title="You are here"
-                    pinColor="blue"
+                    title="Starting point"
+                    pinColor={theme.colors.primary}
                 />
             )}
+
+            {/* User location marker */}
+            {userLocation && (
+                <Marker
+                    coordinate={{
+                        latitude: userLocation?.latitude,
+                        longitude: userLocation?.longitude
+                    }}
+                    title="You are here"
+                    pinColor='blue'
+                />
+            )}
+
+            {/* Station markers */}
             {markers?.map((marker, index) => (
                 <Marker
                     key={index}
@@ -101,6 +117,7 @@ export default function Map( { onTouch, markers, userCoordinates, navigation, se
                         />
                     </Callout>
                 </Marker>
+
             ))}
         </MapView>
     );
