@@ -12,7 +12,7 @@ const SnackbarNotification = () => {
             onDismiss={hideSnackbar}
             duration={3000}
             icon="alert"
-            style={{ backgroundColor: theme.colors.onBackground }}
+            style={{ backgroundColor: theme.colors.onBackground, bottom: 50, marginHorizontal: 20 }}
         >
             {message}
         </Snackbar>
