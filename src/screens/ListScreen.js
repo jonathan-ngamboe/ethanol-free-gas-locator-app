@@ -84,7 +84,7 @@ export default function ListScreen({ navigation }) {
                     { viewMode === 'simple' && (
                     <>
                         {/* Simple view */}
-                        <StationList stationList={stationList} navigation={navigation} displayHeader={false} showMoreIndicator={false} />
+                        <StationList stationList={stationList} navigation={navigation} displayHeader={false} showMoreIndicator={false} menuItems={['favorite', 'address']} />
                     </>
                     )}
 
@@ -101,6 +101,7 @@ export default function ListScreen({ navigation }) {
                                     onPressPrimaryButton={() => openMap({ destinationName: item.station_name, destinationLat: item.latitude, destinationLon: item.longitude })}
                                     onPressSecondaryButton={() => navigation.navigate('StationDetails', { station: item })}
                                     cardContainerStyle={ localStyles.stationCard }
+                                    menuItems={['favorite', 'address']}
                                 />
                             )}
                             ItemSeparatorComponent={() => <Divider style={styles.divider} />}
