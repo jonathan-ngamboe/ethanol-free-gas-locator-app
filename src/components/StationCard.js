@@ -57,19 +57,23 @@ export default function StationCard({ station, onPressPrimaryButton, onPressSeco
 
                         {/* Content Section */}
                         <View style={localStyles.infoRow}>
-                            <View style={localStyles.distanceContainer}>
-                                <Icon 
-                                    name="map-marker-distance"
-                                    size={16}
-                                    color={theme.colors.onSurfaceVariant}
-                                />
-                                <Text 
-                                    variant="bodyMedium"
-                                    style={{ color: theme.colors.onSurfaceVariant }}
-                                >
-                                    {station?.distance?.toFixed(1) || '?'} mi
-                                </Text>
-                            </View>
+                            {/* Distance */}
+                            {station?.distance && (
+                                <View style={localStyles.distanceContainer}>
+                                    <Icon 
+                                        name="map-marker-distance"
+                                        size={16}
+                                        color={theme.colors.onSurfaceVariant}
+                                    />
+                                    <Text 
+                                        variant="bodyMedium"
+                                        style={{ color: theme.colors.onSurfaceVariant }}
+                                    >
+                                        { station?.distance ? `${station.distance.toFixed(2)} mi` : '' }
+                                    </Text>
+                                </View>
+                            )}
+                            {/* Status */}
                             <View style={localStyles.statusContainer}>
                                 <Icon 
                                     name={statusInfo.icon}
