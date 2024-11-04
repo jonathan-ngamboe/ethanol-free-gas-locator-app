@@ -4,7 +4,7 @@ import DotMenu from './DotMenu';
 import { View, StyleSheet, FlatList, Text } from 'react-native';
 import { List, useTheme, Divider } from 'react-native-paper';
 import { getMenuItems } from '../utils/utils';
-
+import { getFormattedAddress } from '../utils/utils';
 
 
 export default function stationList({ stationList, navigation, displayHeader = true, showMoreIndicator = true, menuItems = ['favorite', 'map', 'address'] }) {
@@ -54,7 +54,7 @@ export default function stationList({ stationList, navigation, displayHeader = t
                                 <List.Item 
                                     title={item.station_name} 
                                     titleStyle={styles.listTitle}
-                                    description={`${item.distance} miles away`}
+                                    description={item?.distance ? `${item?.distance?.toFixed(2)} miles away` : getFormattedAddress(item)}
                                     left={props => <List.Icon {...props} icon="gas-station" style={{ paddingLeft: 20 }} color={theme.colors.primary} />}
                                     right={props =><DotMenu itemID={item.id} color={props.color} style={props.style} items={getMenuItems(item, menuItems)} />}
                                     onPress={() => navigation.navigate('StationDetails', { station: item })}
