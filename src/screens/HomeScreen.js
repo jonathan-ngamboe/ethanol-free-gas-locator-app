@@ -51,7 +51,7 @@ export default function HomeScreen({navigation}) {
             setIsLocationLoading(true);
             // Get the user location first
             try {
-                await getUserLocation();
+                getUserLocation();
                 // Once we have the location, navigate to the map
                 navigation.navigate('Map', {openKeyboard: false});
             } catch (error) {
