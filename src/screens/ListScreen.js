@@ -92,7 +92,7 @@ export default function ListScreen({ navigation }) {
                     { viewMode === 'detailed' && (
                         <FlatList
                             data={stationList}
-                            keyExtractor={(item) => item.id}
+                            keyExtractor={(item) => item?.id}
                             renderItem={({ item }) => (
                                 <MemoizedStationCard 
                                     station={item} 
