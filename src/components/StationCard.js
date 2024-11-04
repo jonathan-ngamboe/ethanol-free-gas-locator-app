@@ -129,7 +129,7 @@ export default function StationCard({ station, onPressPrimaryButton, onPressSeco
                                 mode="contained"
                                 icon="map"
                                 buttonColor={theme.colors.primary}
-                                textColor={theme.colors.background}
+                                textColor='white'
                                 onPress={onPressPrimaryButton}
                                 style={localStyles.navigationButton}
                             >
