@@ -62,7 +62,7 @@ export async function getNearbyStations(location = null, longitude = null, latit
             limit
         });
         const stations = await fetchStations('/nearest', params);
-        return stations?.fuel_stations;
+        return stations;
     } catch (error) {
         console.error('Error fetching nearby stations:', error);
         throw error;
