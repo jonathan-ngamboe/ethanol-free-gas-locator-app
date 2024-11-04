@@ -6,6 +6,7 @@ import StationList from '../components/StationList';
 import { List, useTheme, Divider, SegmentedButtons } from 'react-native-paper';
 import { useRoute } from '@react-navigation/native';
 import { openMap } from '../navigation/ExternalNavigation';
+import { useStation } from '../context/StationContext';
 
 
 export default function ListScreen({ navigation }) {
@@ -13,8 +14,10 @@ export default function ListScreen({ navigation }) {
     const styles = useGlobalStyles();
     const route = useRoute();
 
-    const stationList = route.params?.stationList || [];
+    const { favoriteStations, searchedStations } = useStation();
+
     const pageTitle = route.params?.pageTitle || 'List';
+    const stationList = pageTitle === 'Favorites' ? favoriteStations : pageTitle === 'Search History' ? searchedStations : null;
     const pageIcon = route.params?.pageIcon || 'alert-circle-outline';
 
     const renderStationCount = () => {
