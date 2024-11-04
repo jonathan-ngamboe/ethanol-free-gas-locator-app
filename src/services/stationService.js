@@ -64,7 +64,20 @@ export async function getNearbyStations(location = null, longitude = null, latit
         const stations = await fetchStations('/nearest', params);
         return stations?.fuel_stations;
     } catch (error) {
-        console.error('Error fetching stations:', error);
+        console.error('Error fetching nearby stations:', error);
+        throw error;
+    }
+}
+
+export async function getStationDetails(id) {
+    if(!id) {
+        throw new Error('Station ID must be provided');
+    }
+    try {
+        const stations = await fetchStations(`/${id}`);
+        return stations?.alt_fuel_station;
+    } catch (error) {
+        console.error('Error fetching station details:', error);
         throw error;
     }
 }
