@@ -3,7 +3,8 @@ import { copyToClipboard } from "../navigation/ExternalNavigation";
 import { useShowOnMap } from "./mapUtils";
 import { share, openEmail } from "../navigation/ExternalNavigation";
 import { contactEmail } from "../constants/generalConstants";
-
+import { useStation } from "../context/StationContext";
+import { useSnackbar } from "../context/SnackbarContext";
 
 // Format the address
 export const getFormattedAddress = (station) => {
@@ -19,12 +20,49 @@ export const getFormattedAddress = (station) => {
 // Menu items
 export const getMenuItems = (station = {}, menuTypes = ['favorite', 'map', 'address']) => {
     const showOnMap = useShowOnMap();
+    const { showSnackbar } = useSnackbar();
+    const { favoriteStations, addFavoriteStation, removeFavoriteStation, loading } = useStation();
+
+    const getFavoriteMenuItem = () => {
+        const isFavorite = favoriteStations.some(favorite => 
+            String(favorite.station_id) === String(station.station_id || station.id)
+        );
+        
+        return {
+            title: isFavorite ? 'Remove from favorites' : 'Add to favorites',
+            icon: isFavorite ? 'heart' : 'heart-outline',
+            onPress: () => {
+                if (loading) return;
+                
+                if (isFavorite) {
+                    const stationIdToRemove = station.station_id || station.id;
+                    const favoriteToRemove = favoriteStations.find(f => 
+                        String(f.station_id) === String(stationIdToRemove)
+                    );
+                    
+                    if (favoriteToRemove) {
+                        removeFavoriteStation({
+                            ...station,
+                            id: stationIdToRemove
+                        }).catch(error => {
+                            showSnackbar('Error removing favorite', error);
+                        });
+                    }
+                } else {
+                    addFavoriteStation({
+                        ...station,
+                        id: station.station_id || station.id
+                    }).catch(error => {
+                        showSnackbar('Error adding favorite', error);
+                    });
+                }
+            }
+        };
+    };
     
     const menuConfigs = {
         favorite: {
-            title: 'Add to favorites',
-            icon: 'heart-outline',
-            onPress: () => console.log('Add to favorites')
+            ...getFavoriteMenuItem()
         },
         map: {
             title: 'Show on map',
