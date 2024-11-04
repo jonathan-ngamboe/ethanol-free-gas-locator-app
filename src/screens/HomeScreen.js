@@ -148,7 +148,8 @@ export default function HomeScreen({navigation}) {
                         rightComponent={searchBarRightComponent}
                         onRightComponentPress={() => navigation.navigate('ProfileStack')}
                         onFocus={() => navigateToMap(false)} // Open the map when the search bar is focused
-                        isLoading={isLocationLoading}
+                        loading={isLocationLoading}
+                        disabled={isLocationLoading}
                     />
                 }
                 </View>

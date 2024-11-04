@@ -327,10 +327,11 @@ export default function DiscoverScreen({navigation}) {
                             leftIcon='map-marker'
                             onLeftIconPress={() => getLocation()}
                             rightComponent={filterIcon}
-                            isLoading={loading || locationLoading}
+                            loading={loading || locationLoading}
                             placeholder={userLocation && !searchLocation ? 'Current location' : 'Search by location'}
                             onSubmit={() => handleSearch()}
                             searchQuery={searchLocation}
+                            disabled={loading || locationLoading}
                             setSearchQuery={
                                 (query) => {setSearchLocation(query)
                                 if (query.trim() === '') {

@@ -9,12 +9,13 @@ export default function SearchBar({
                             onLeftIconPress, 
                             rightComponent, 
                             onRightComponentPress, 
-                            isLoading, 
+                            loading, 
                             onFocus,
                             placeholder="Search",
                             searchQuery,
                             setSearchQuery,
-                            onSubmit
+                            onSubmit,
+                            disabled
                         }) {
     const styles = useGlobalStyles();
     const theme = useTheme();
@@ -34,7 +35,8 @@ export default function SearchBar({
             icon={leftIcon}
             iconColor={styles.textColor.color}
             onIconPress={onLeftIconPress}
-            loading={isLoading}
+            loading={loading}
+            disabled={disabled}
             right={RightComponent}
             onFocus={onFocus}
             value={searchQuery}
