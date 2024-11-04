@@ -36,6 +36,7 @@ export default function DiscoverScreen({navigation}) {
     // Location
     const { userLocation, setUserLocation, getUserLocation, isLoading: locationLoading } = useLocation();
     const [searchLocation, setSearchLocation] = useState(''); // Location from the search bar (street, city, state, postal code)
+    const [startingPoint, setStartingPoint] = useState({}); // Starting point for the map
     // Search bar handling
     const searchBarRef = useRef(null);  
     const {openKeyboard = false} = params || {};
@@ -65,52 +66,40 @@ export default function DiscoverScreen({navigation}) {
 
     ///// Callbacks /////
 
-    // Fetch userLocation and perform search
-    const getLocation = useCallback(async () => {
-        if (loading) return;
-        
-        setLoading(true);
-        
-        try {
-            const location = await getUserLocation(true); // Force a new location request
-            if (!location) {
-                return;
-            }
-
-            setSearchLocation('');
-            await performSearch({ 
-                longitude: location?.coords?.longitude, 
-                latitude: location?.coords?.latitude, 
-                filters 
-            });
-            setNearbyStations(stations);
-        } catch (error) {
-            showSnackbar('Error getting location');
-        } finally {
-            setLoading(false);
-        }
-    }, [getUserLocation, performSearch, filters, showSnackbar]);
-
     // Fetch stations
     const performSearch = useCallback(async (searchParams) => {
         const { location, longitude, latitude, filters } = searchParams;
-        if(!location && (!longitude || !latitude)) return;
+      
+        if (!location && (!longitude || !latitude)) return;
+      
         setLoading(true);
+      
         try {
-            const stations = await getNearbyStations(
-                location, 
-                longitude, 
-                latitude, 
-                filters
-            );
-            setStations(stations);
-            handleSort(sortBy);
+          const response = await getNearbyStations(
+            location,
+            longitude,
+            latitude,
+            filters
+          );
+          const stations = response?.fuel_stations;
+          setStations(stations);
+          handleSort(sortBy);
+      
+          // Set the starting point for the map
+          const startingLongitude = response?.longitude || longitude;
+          const startingLatitude = response?.latitude || latitude;
+          setStartingPoint({
+            longitude: startingLongitude,
+            latitude: startingLatitude
+          });
         } catch (error) {
-            showSnackbar('Error fetching stations:', error);
+          showSnackbar('Error fetching stations');
+          console.error('Error fetching stations:', error);
         } finally {
-            setLoading(false);
+          setLoading(false);
         }
-    }, [showSnackbar]);
+      }, [showSnackbar]);
+      
 
     // Modal control functions
     const minimizeModal = useCallback(() => {
@@ -294,13 +283,13 @@ export default function DiscoverScreen({navigation}) {
 
     // Initial search
     useEffect(() => {
-        if (userLocation) {
-            setSearchLocation('');
+        if (userLocation?.longitude && userLocation?.latitude) {
             performSearch({
-                longitude: userLocation?.coords?.longitude,
-                latitude: userLocation?.coords?.latitude,
+                longitude: userLocation.longitude,
+                latitude: userLocation.latitude,
                 filters
             });
+            setNearbyStations(stations);
         } else if (searchLocation) {
             performSearch({ location: searchLocation, filters });
         }
@@ -314,10 +303,11 @@ export default function DiscoverScreen({navigation}) {
                     <Map 
                         onTouch={handleMapTouch} 
                         markers={stations} 
-                        userCoordinates={userLocation} 
+                        userLocation={userLocation} 
                         navigation={navigation} 
                         setMarkerIndex={setSelectedStationIndex}
                         setMapRef={setMapRef}
+                        startingPoint={startingPoint}
                     />
                         
                     {/* Search bar */}  
@@ -325,7 +315,7 @@ export default function DiscoverScreen({navigation}) {
                         <SearchBar
                             barRef={searchBarRef}
                             leftIcon='map-marker'
-                            onLeftIconPress={() => getLocation()}
+                            onLeftIconPress={() => getUserLocation()}
                             rightComponent={filterIcon}
                             loading={loading || locationLoading}
                             placeholder={userLocation && !searchLocation ? 'Current location' : 'Search by location'}
