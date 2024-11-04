@@ -9,7 +9,6 @@ import { useAuth } from '../context/AuthContext';
 import { getUser, deleteUser } from '../services/userService';
 import { useSnackbar } from '../context/SnackbarContext';
 import { useEffect, useState } from 'react';
-import { useStation } from '../context/StationContext';
 
 
 export default function ProfileScreen({ navigation }) {
@@ -18,8 +17,8 @@ export default function ProfileScreen({ navigation }) {
     const { signOut } = useAuth();
     const { showSnackbar } = useSnackbar();
     const [user, setUser] = useState(null);
-    const { favoriteStations, searchedStations } = useStation();
 
+    
     // Fetch user data when the component mounts
     useEffect(() => {
         const fetchUser = async () => {
@@ -112,7 +111,6 @@ export default function ProfileScreen({ navigation }) {
                             onPress={() => navigation.navigate('ListScreenStack', {
                                 screen: 'List Screen',
                                 params: {           
-                                  stationList: favoriteStations, 
                                   pageTitle: 'Favorites',
                                   pageIcon: 'heart'
                                 }
@@ -126,7 +124,6 @@ export default function ProfileScreen({ navigation }) {
                             onPress={() => navigation.navigate('ListScreenStack', {
                                 screen: 'List Screen',  
                                 params: {             
-                                  stationList: searchedStations,
                                   pageTitle: 'Search History',
                                   pageIcon: 'history'
                                 }
