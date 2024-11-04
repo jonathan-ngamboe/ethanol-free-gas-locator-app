@@ -24,37 +24,30 @@ export const getMenuItems = (station = {}, menuTypes = ['favorite', 'map', 'addr
     const { favoriteStations, addFavoriteStation, removeFavoriteStation, loading } = useStation();
 
     const getFavoriteMenuItem = () => {
+        if (!station?.id) {
+            console.warn('No station ID provided for favorite menu item');
+            return null;
+        }
+
         const isFavorite = favoriteStations.some(favorite => 
-            String(favorite.station_id) === String(station.station_id || station.id)
+            String(favorite.id) === String(station.id)
         );
         
         return {
             title: isFavorite ? 'Remove from favorites' : 'Add to favorites',
             icon: isFavorite ? 'heart' : 'heart-outline',
-            onPress: () => {
+            onPress: async () => {
                 if (loading) return;
                 
-                if (isFavorite) {
-                    const stationIdToRemove = station.station_id || station.id;
-                    const favoriteToRemove = favoriteStations.find(f => 
-                        String(f.station_id) === String(stationIdToRemove)
-                    );
-                    
-                    if (favoriteToRemove) {
-                        removeFavoriteStation({
-                            ...station,
-                            id: stationIdToRemove
-                        }).catch(error => {
-                            showSnackbar('Error removing favorite', error);
-                        });
+                try {
+                    if (isFavorite) {
+                        await removeFavoriteStation(station.id);
+                    } else {
+                        await addFavoriteStation(station.id);
                     }
-                } else {
-                    addFavoriteStation({
-                        ...station,
-                        id: station.station_id || station.id
-                    }).catch(error => {
-                        showSnackbar('Error adding favorite', error);
-                    });
+                } catch (error) {
+                    console.error('Error handling favorite:', error);
+                    showSnackbar(`Error ${isFavorite ? 'removing' : 'adding'} favorite`);
                 }
             }
         };
