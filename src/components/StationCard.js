@@ -7,7 +7,7 @@ import { useGlobalStyles } from '../styles/globalStyles';
 import { getMenuItems, getFormattedAddress } from '../utils/utils';
 
 
-export default function StationCard({ station, onPressPrimaryButton, onPressSecondaryButton, showShadow = true, cardContainerStyle, cardColor }) {
+export default function StationCard({ station, onPressPrimaryButton, onPressSecondaryButton, showShadow = true, cardContainerStyle, cardColor, menuItems = ['favorite', 'map', 'address'] }) {
     const theme = useTheme();
     const styles = useGlobalStyles();
 
@@ -49,7 +49,7 @@ export default function StationCard({ station, onPressPrimaryButton, onPressSeco
                             right={(props) => (
                                 <DotMenu 
                                     {...props} 
-                                    items={getMenuItems(station, ['favorite', 'map', 'address'])}
+                                    items={getMenuItems(station, menuItems)}
                                 />
                             )}
                             style={{paddingVertical: 0, paddingRight: 16 }}

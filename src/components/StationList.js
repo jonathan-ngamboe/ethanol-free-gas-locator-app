@@ -7,7 +7,7 @@ import { getMenuItems } from '../utils/utils';
 
 
 
-export default function stationList({ stationList, navigation, displayHeader = true, showMoreIndicator = true }) {
+export default function stationList({ stationList, navigation, displayHeader = true, showMoreIndicator = true, menuItems = ['favorite', 'map', 'address'] }) {
     const styles = useGlobalStyles();
     const [isScrolled, setIsScrolled] = useState(false);
     const theme = useTheme();
@@ -56,7 +56,7 @@ export default function stationList({ stationList, navigation, displayHeader = t
                                     titleStyle={styles.listTitle}
                                     description={`${item.distance} miles away`}
                                     left={props => <List.Icon {...props} icon="gas-station" style={{ paddingLeft: 20 }} color={theme.colors.primary} />}
-                                    right={props =><DotMenu itemID={item.id} color={props.color} style={props.style} items={getMenuItems(item, ['favorite', 'map', 'address'])} />}
+                                    right={props =><DotMenu itemID={item.id} color={props.color} style={props.style} items={getMenuItems(item, menuItems)} />}
                                     onPress={() => navigation.navigate('StationDetails', { station: item })}
                                 />
                             </List.Section>
