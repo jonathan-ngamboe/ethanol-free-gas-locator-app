@@ -15,7 +15,7 @@ export default function SearchBar({
                             searchQuery,
                             setSearchQuery,
                             onSubmit,
-                            disabled
+                            editable
                         }) {
     const styles = useGlobalStyles();
     const theme = useTheme();
@@ -36,7 +36,7 @@ export default function SearchBar({
             iconColor={styles.textColor.color}
             onIconPress={onLeftIconPress}
             loading={loading}
-            disabled={disabled}
+            editable={editable}
             right={RightComponent}
             onFocus={onFocus}
             value={searchQuery}

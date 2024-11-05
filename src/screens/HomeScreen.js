@@ -149,7 +149,7 @@ export default function HomeScreen({navigation}) {
                         onRightComponentPress={() => navigation.navigate('ProfileStack')}
                         onFocus={() => navigateToMap(false)} // Open the map when the search bar is focused
                         loading={isLocationLoading}
-                        disabled={isLocationLoading}
+                        editable={!isLocationLoading}
                     />
                 }
                 </View>

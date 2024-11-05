@@ -321,7 +321,7 @@ export default function DiscoverScreen({navigation}) {
                             placeholder={userLocation && !searchLocation ? 'Current location' : 'Search by location'}
                             onSubmit={() => handleSearch()}
                             searchQuery={searchLocation}
-                            disabled={loading || locationLoading}
+                            editable={!loading && !locationLoading}
                             setSearchQuery={
                                 (query) => {setSearchLocation(query)
                                 if (query.trim() === '') {
