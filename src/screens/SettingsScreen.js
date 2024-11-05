@@ -22,7 +22,7 @@ export default function SettingsScreen() {
             push: true,
             email: true,
         },
-        startScreen: 'Home',
+        startScreen: 'Discover',
         theme: theme.dark === false ? 'light' : 'dark',
     });
 
