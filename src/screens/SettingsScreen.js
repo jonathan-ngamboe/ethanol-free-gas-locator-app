@@ -30,15 +30,15 @@ export default function SettingsScreen() {
 
   const availableStartScreens = ["Home", "Discover"];
 
-  // Settings
-  const [settings, setSettings] = useState({
-    notifications: {
-      push: true,
-      email: true,
-    },
-    startScreen: "Discover",
-    theme: theme.dark === false ? "light" : "dark",
-  });
+    // Settings
+    const [settings, setSettings] = useState({
+        notifications: {
+            push: true,
+            email: true,
+        },
+        startScreen: 'Discover',
+        theme: theme.dark === false ? 'light' : 'dark',
+    });
 
   // Load settings
   useEffect(() => {
