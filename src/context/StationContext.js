@@ -16,7 +16,6 @@ export const StationProvider = ({ children }) => {
   const [activeStation, setActiveStation] = useState(null);
   const [nearbyStations, setNearbyStations] = useState([]);
   const [favoriteStations, setFavoriteStations] = useState([]);
-  const [searchedStations, setSearchedStations] = useState([]);
   const [searchHistory, setSearchHistory] = useState([]);
   const { session } = useAuth();
   const { showSnackbar } = useSnackbar();
@@ -150,20 +149,58 @@ export const StationProvider = ({ children }) => {
     [session?.user?.id, pendingOperations, showSnackbar]
   );
 
-  // Add to search history
+  // Add to search history by checking if the station is already in the history
   async function addToSearchHistory(station) {
-    try {
-      const { error } = await supabase.from("search_history").insert([
-        {
-          profile_id: session?.user?.id,
-          station_id: station.id,
-        },
-      ]);
+    if (!session?.user?.id) {
+      console.warn("No user session found when adding to search history");
+      return;
+    }
 
-      if (error) throw error;
-      await fetchSearchHistory();
-    } catch (error) {
-      showSnackbar("Error adding to search history", error.message);
+    // Check if the station is already in the search history
+    const existingHistoryItem = searchHistory.find(
+      (item) => item.id === station.id
+    );
+
+    // If the station is already in the history, update the timestamp
+    if (existingHistoryItem) {
+      try {
+        const { error } = await supabase
+          .from("search_history")
+          .update({ searched_at: new Date() })
+          .eq("id", existingHistoryItem.history_id);
+
+        if (error) throw error;
+        // Update the existing history item
+        const updatedHistoryItem = {
+          ...existingHistoryItem,
+          searched_at: new Date().toISOString(),
+        };
+        setSearchHistory((prev) =>
+          prev.map((item) =>
+            item.history_id === existingHistoryItem.history_id
+              ? updatedHistoryItem
+              : item
+          )
+        );
+      } catch (error) {
+        console.error("Error updating search history item:", error);
+        showSnackbar("Error updating search history item");
+      }
+    } else {
+      try {
+        const { error } = await supabase.from("search_history").insert([
+          {
+            profile_id: session?.user?.id,
+            station_id: station.id,
+          },
+        ]);
+
+        if (error) throw error;
+
+        fetchSearchHistory();
+      } catch (error) {
+        showSnackbar("Error adding to search history", error.message);
+      }
     }
   }
 
@@ -182,14 +219,14 @@ export const StationProvider = ({ children }) => {
         .from("search_history")
         .select(
           `
-                    id,
-                    station_id,
-                    searched_at
-                `
+          id,
+          station_id,
+          searched_at
+        `
         )
         .eq("profile_id", session.user.id)
         .order("searched_at", { ascending: false })
-        .limit(10);
+        .range(0, 9);
 
       if (historyError) throw historyError;
 
@@ -203,7 +240,7 @@ export const StationProvider = ({ children }) => {
             return {
               ...stationDetails,
               history_id: historyItem.id,
-              searched_at: historyItem.searched_at,
+              searched_at: new Date(historyItem.searched_at).toISOString(),
             };
           } catch (error) {
             console.error(
@@ -296,7 +333,6 @@ export const StationProvider = ({ children }) => {
         favoriteStations,
         addFavoriteStation,
         removeFavoriteStation,
-        searchedStations,
         searchHistory,
         clearSearchHistory,
         addToSearchHistory,
