@@ -1,4 +1,4 @@
-import React from 'react';
+import { useEffect } from 'react';
 import { View, StyleSheet, ScrollView, Pressable } from 'react-native';
 import { List, useTheme, Surface, Button, Divider, Chip, Text } from 'react-native-paper';
 import MapView, { Marker } from "react-native-maps";
@@ -8,10 +8,13 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { cards_accepted, accessDetailCodes } from '../constants/nrelApiOptions';
 import { getFormattedAddress } from '../utils/utils';
 import dark from '../../assets/mapStyles/dark.json';
+import { useStation } from '../context/StationContext';
+
 
 export default function StationDetails({ route }) {
     const theme = useTheme();
     const styles = useGlobalStyles();
+    const { setActiveStation } = useStation();
 
     const { station } = route.params;
 
@@ -52,7 +55,12 @@ export default function StationDetails({ route }) {
     const hasAdditionalInformation = station && station.e85_other_ethanol_blends?.length > 0 || station?.cards_accepted || station?.intersection_directions;
 
     // Check if the station has destination coordinates
-    const hasDestinationCoordinates = station?.latitude && station?.longitude
+    const hasDestinationCoordinates = station?.latitude && station?.longitude;
+
+    // Set the active station
+    useEffect(() => {
+        setActiveStation(station);
+    }, [station, setActiveStation]);
 
     return (
         <ScrollView style={[{ backgroundColor: theme.colors.background }, styles.scrollView]} contentContainerStyle={{ flexGrow: 1 }}>
