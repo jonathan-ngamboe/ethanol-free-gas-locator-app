@@ -1,151 +1,319 @@
-import { createContext, useContext, useState, useEffect } from 'react';
-import { supabase } from '../../lib/supabase';
-import { useSnackbar } from './SnackbarContext';
-import { useAuth } from './AuthContext';
-import { getStationDetails } from '../services/stationService';
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useCallback,
+} from "react";
+import { supabase } from "../../lib/supabase";
+import { useSnackbar } from "./SnackbarContext";
+import { useAuth } from "./AuthContext";
+import { getStationDetails } from "../services/stationService";
 
 const StationContext = createContext();
 
 export const StationProvider = ({ children }) => {
-    const [nearbyStations, setNearbyStations] = useState([]);
-    const [favoriteStations, setFavoriteStations] = useState([]);
-    const [searchedStations, setSearchedStations] = useState([]);
-    const [searchHistory, setSearchHistory] = useState([]);
-    const [loading, setLoading] = useState(false);
-    const { session } = useAuth();
-    const { showSnackbar } = useSnackbar();
+  const [activeStation, setActiveStation] = useState(null);
+  const [nearbyStations, setNearbyStations] = useState([]);
+  const [favoriteStations, setFavoriteStations] = useState([]);
+  const [searchedStations, setSearchedStations] = useState([]);
+  const [searchHistory, setSearchHistory] = useState([]);
+  const { session } = useAuth();
+  const { showSnackbar } = useSnackbar();
+  const [loading, setLoading] = useState(false); // Used to know when we are fetching stations from the database
+  const [pendingOperations, setPendingOperations] = useState(new Set()); // Used to track pending operations (add/remove favorite) for each station
 
-    // Fetch favorite stations on mount and when session changes
-    useEffect(() => {
-        if (session?.user) {
-            fetchFavoriteStations();
-            fetchSearchHistory();  
-        }
-    }, [session]);
+  // Fetch favorite stations on mount and when session changes
+  useEffect(() => {
+    if (session?.user) {
+      fetchFavoriteStations();
+      fetchSearchHistory();
+    }
+  }, [session]);
 
-    // Fetch favorite stations
-    async function fetchFavoriteStations() {
-        try {
-            setLoading(true);
-            const { data, error } = await supabase
-                .from('favorite_stations')
-                .select(`
+  // Fetch favorite stations
+  const fetchFavoriteStations = async () => {
+    try {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from("favorite_stations")
+        .select("id, station_id, created_at")
+        .eq("profile_id", session?.user?.id);
+
+      if (error) throw error;
+
+      const stations = await Promise.all(
+        data.map(async (favorite) => {
+          const station = await getStationDetails(favorite.station_id);
+          return {
+            ...station,
+            favorite_id: favorite.id,
+            key: `fav-${favorite.id}-${Date.now()}`, // Clé unique avec timestamp
+          };
+        })
+      );
+      setFavoriteStations(stations);
+    } catch (error) {
+      console.error("Error fetching favorite stations:", error);
+      showSnackbar("Error fetching favorite stations");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Add favorite station
+  const addFavoriteStation = useCallback(
+    async (stationId) => {
+      if (!stationId || pendingOperations.has(`add-${stationId}`)) {
+        return;
+      }
+
+      setPendingOperations((prev) => new Set(prev).add(`add-${stationId}`));
+
+      try {
+        const { data, error } = await supabase
+          .from("favorite_stations")
+          .insert([
+            {
+              profile_id: session?.user?.id,
+              station_id: stationId,
+            },
+          ])
+          .select();
+
+        if (error) throw error;
+
+        const stationDetails = await getStationDetails(stationId);
+        const newFavorite = {
+          ...stationDetails,
+          favorite_id: data[0].id,
+          key: `fav-${data[0].id}-${Date.now()}`,
+        };
+
+        setFavoriteStations((prev) => {
+          // Check if the station is not already in the favorites
+          if (prev.some((station) => station.id === stationId)) {
+            return prev;
+          }
+          return [...prev, newFavorite];
+        });
+
+        showSnackbar("Station added to favorites");
+      } catch (error) {
+        console.error("Error adding favorite:", error);
+        showSnackbar("Error adding favorite");
+      } finally {
+        setPendingOperations((prev) => {
+          const newSet = new Set(prev);
+          newSet.delete(`add-${stationId}`);
+          return newSet;
+        });
+      }
+    },
+    [session?.user?.id, pendingOperations, showSnackbar]
+  );
+
+  // Remove favorite station
+  const removeFavoriteStation = useCallback(
+    async (stationId) => {
+      if (!stationId || pendingOperations.has(`remove-${stationId}`)) {
+        return;
+      }
+
+      setPendingOperations((prev) => new Set(prev).add(`remove-${stationId}`));
+
+      try {
+        const { error } = await supabase
+          .from("favorite_stations")
+          .delete()
+          .eq("profile_id", session?.user?.id)
+          .eq("station_id", stationId);
+
+        if (error) throw error;
+
+        setFavoriteStations((prev) =>
+          prev.filter((station) => station.id !== stationId)
+        );
+
+        showSnackbar("Station removed from favorites");
+      } catch (error) {
+        console.error("Error removing favorite:", error);
+        showSnackbar("Error removing favorite");
+      } finally {
+        setPendingOperations((prev) => {
+          const newSet = new Set(prev);
+          newSet.delete(`remove-${stationId}`);
+          return newSet;
+        });
+      }
+    },
+    [session?.user?.id, pendingOperations, showSnackbar]
+  );
+
+  // Add to search history
+  async function addToSearchHistory(station) {
+    try {
+      const { error } = await supabase.from("search_history").insert([
+        {
+          profile_id: session?.user?.id,
+          station_id: station.id,
+        },
+      ]);
+
+      if (error) throw error;
+      await fetchSearchHistory();
+    } catch (error) {
+      showSnackbar("Error adding to search history", error.message);
+    }
+  }
+
+  // Fetch search history
+  async function fetchSearchHistory() {
+    if (!session?.user?.id) {
+      console.warn("No user session found when fetching search history");
+      return;
+    }
+
+    try {
+      setLoading(true);
+
+      // First, fetch the search history records
+      const { data: historyData, error: historyError } = await supabase
+        .from("search_history")
+        .select(
+          `
                     id,
                     station_id,
-                    created_at
-                `)
-                .eq('profile_id', session?.user?.id);
+                    searched_at
+                `
+        )
+        .eq("profile_id", session.user.id)
+        .order("searched_at", { ascending: false })
+        .limit(10);
 
-            if (error) throw error;
+      if (historyError) throw historyError;
 
-            const stations = await Promise.all(
-                data.map(async favorite => {
-                    const station = await getStationDetails(favorite.station_id);
-                    return {
-                        ...station,
-                        favorite_id: favorite.id // Store the favorite record ID
-                    };
-                })
+      // Fetch station details for each history item
+      const searchHistoryWithDetails = await Promise.all(
+        historyData.map(async (historyItem) => {
+          try {
+            const stationDetails = await getStationDetails(
+              historyItem.station_id
             );
-            setFavoriteStations(stations);
-        } catch (error) {
-            console.error('Error fetching favorite stations:', error);
-            showSnackbar('Error fetching favorite stations');
-        } finally {
-            setLoading(false);
-        }
-    }
-
-    // Add favorite station
-    async function addFavoriteStation(stationId) {
-        if (!stationId) {
-            console.error('Invalid station ID provided');
-            showSnackbar('Error adding favorite: Invalid station ID');
-            return;
-        }
-
-        try {
-            setLoading(true);
-            const { data, error } = await supabase
-                .from('favorite_stations')
-                .insert([{
-                    profile_id: session?.user?.id,
-                    station_id: stationId
-                }])
-                .select();
-
-            if (error) throw error;
-
-            // Fetch the station details and add to state
-            const stationDetails = await getStationDetails(stationId);
-            setFavoriteStations(prev => [...prev, {
-                ...stationDetails,
-                favorite_id: data[0].id
-            }]);
-            
-            showSnackbar('Station added to favorites');
-        } catch (error) {
-            console.error('Error adding favorite:', error);
-            showSnackbar('Error adding favorite');
-        } finally {
-            setLoading(false);
-        }
-    }
-
-    // Remove favorite station
-    async function removeFavoriteStation(stationId) {
-        if (!stationId) {
-            console.error('Invalid station ID provided');
-            showSnackbar('Error removing favorite: Invalid station ID');
-            return;
-        }
-
-        try {
-            setLoading(true);
-            const { error } = await supabase
-                .from('favorite_stations')
-                .delete()
-                .eq('profile_id', session?.user?.id)
-                .eq('station_id', stationId);
-
-            if (error) throw error;
-
-            setFavoriteStations(prev => 
-                prev.filter(station => station.id !== stationId)
+            return {
+              ...stationDetails,
+              history_id: historyItem.id,
+              searched_at: historyItem.searched_at,
+            };
+          } catch (error) {
+            console.error(
+              `Error fetching details for station ${historyItem.station_id}:`,
+              error
             );
-            
-            showSnackbar('Station removed from favorites');
-        } catch (error) {
-            console.error('Error removing favorite:', error);
-            showSnackbar('Error removing favorite');
-        } finally {
-            setLoading(false);
-        }
+            return null;
+          }
+        })
+      );
+
+      // Filter out any failed station detail fetches
+      const validSearchHistory = searchHistoryWithDetails.filter(
+        (item) => item !== null
+      );
+
+      setSearchHistory(validSearchHistory);
+    } catch (error) {
+      console.error("Error fetching search history:", error);
+      showSnackbar("Error fetching search history");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function removeFromSearchHistory(historyId) {
+    if (!historyId) {
+      console.error("Invalid history ID provided for removal");
+      showSnackbar("Error removing search history item: Invalid ID");
+      return;
     }
 
+    try {
+      setLoading(true);
 
-    return (
-        <StationContext.Provider value={{
-            loading,
-            nearbyStations,
-            setNearbyStations,
-            favoriteStations,
-            addFavoriteStation,
-            removeFavoriteStation,
-            searchedStations,
-            searchHistory,
-            clearSearchHistory,
-            addToSearchHistory
-        }}>
-            {children}
-        </StationContext.Provider>
-    );
+      const { error } = await supabase
+        .from("search_history")
+        .delete()
+        .eq("id", historyId)
+        .eq("profile_id", session?.user?.id);
+
+      if (error) throw error;
+
+      // Update local state
+      setSearchHistory((prev) =>
+        prev.filter((item) => item.history_id !== historyId)
+      );
+
+      showSnackbar("Search history item removed");
+    } catch (error) {
+      console.error("Error removing search history item:", error);
+      showSnackbar("Error removing search history item");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function clearSearchHistory() {
+    if (!session?.user?.id) {
+      console.warn("No user session found when clearing search history");
+      return;
+    }
+
+    try {
+      setLoading(true);
+
+      const { error } = await supabase
+        .from("search_history")
+        .delete()
+        .eq("profile_id", session.user.id);
+
+      if (error) throw error;
+
+      setSearchHistory([]);
+      showSnackbar("Search history cleared");
+    } catch (error) {
+      console.error("Error clearing search history:", error);
+      showSnackbar("Error clearing search history");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  return (
+    <StationContext.Provider
+      value={{
+        loading,
+        nearbyStations,
+        setNearbyStations,
+        favoriteStations,
+        addFavoriteStation,
+        removeFavoriteStation,
+        searchedStations,
+        searchHistory,
+        clearSearchHistory,
+        addToSearchHistory,
+        activeStation,
+        setActiveStation,
+        pendingOperations,
+      }}
+    >
+      {children}
+    </StationContext.Provider>
+  );
 };
 
 export const useStation = () => {
-    const context = useContext(StationContext);
-    if (!context) {
-        throw new Error('useStation must be used within a StationProvider');
-    }
-    return context;
+  const context = useContext(StationContext);
+  if (!context) {
+    throw new Error("useStation must be used within a StationProvider");
+  }
+  return context;
 };
