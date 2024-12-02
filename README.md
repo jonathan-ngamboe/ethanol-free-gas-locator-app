@@ -33,9 +33,9 @@ This React Native mobile app helps users locate gas stations that offer ethanol-
 ## 📋 Prerequisites
 
 ```bash
-Node.js: v20.10.0
-npm/yarn: 10.9.0
-Expo CLI: 6.3.12
+Node.js: v20.x.x
+npm/yarn: 10.x.x
+Expo CLI: 6.x.x
 ```
 
 ## 🚀 Installation
@@ -110,3 +110,5 @@ src/
 
 - Performance issues when displaying many stations simultaneously
 - Have to replace E85 with E0 in NREL API response
+- Social login (Google, Facebook, Apple) not implemented
+- Profile management not implemented
