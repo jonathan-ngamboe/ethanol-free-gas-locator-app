@@ -12,16 +12,41 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "This app needs access to location to find gas stations near you.",
+        "NSLocationAlwaysUsageDescription": "This app needs access to location to find gas stations near you.",
+        "NSAppTransportSecurity": {
+          "NSAllowsArbitraryLoads": true
+        }
+      },
+      "bundleIdentifier": "com.ethanolfreegas.app"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "permissions": [
+        "INTERNET",
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_COARSE_LOCATION"
+      ],
+      "package": "com.ethanolfreegas.app"
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "plugins": [
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "Allow $(PRODUCT_NAME) to use your location to find nearby gas stations.",
+          "locationAlwaysPermission": "Allow $(PRODUCT_NAME) to use your location to find nearby gas stations.",
+          "locationWhenInUsePermission": "Allow $(PRODUCT_NAME) to use your location to find nearby gas stations."
+        }
+      ]
+    ],
+    "newArchEnabled": true
   }
 }
