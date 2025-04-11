@@ -49,13 +49,12 @@ const buildUrlParams = (paramsObject) => {
     return validParams.join('&');
 };
 
-export async function getNearbyStations(location = null, longitude = null, latitude = null, filters, limit='all') {
-    if(!location && (!longitude || !latitude)) {
+export async function getNearbyStations(longitude = null, latitude = null, filters, limit='all') {
+    if(!longitude || !latitude) {
         throw new Error('Location or longitude and latitude must be provided');
     }
     try {
         const params = buildUrlParams({
-            location,
             longitude,
             latitude,
             ...filters,
